@@ -1,0 +1,138 @@
+import RReact, {useState, useRef} from 'react'
+import {  useGetAllClassRoomByAccountIdQuery, useJoinClassMutation, useFindMyClassesQuery } from "../../features/api/apiSlice"
+import { useSelector } from "react-redux"
+import { useEffect } from 'react'
+import { Link } from 'react-router-dom';
+
+
+const Index = ()=>{
+    
+    const userInfo = useSelector((state) => state.user.userInfo);
+    const {data: classes} = useGetAllClassRoomByAccountIdQuery(userInfo?.accountId)
+    const {data:myClasses} = useFindMyClassesQuery(userInfo._id)
+    const [joinClass, {isLoading}] = useJoinClassMutation()
+    const dialogRef = useRef(null);
+    const [classesData, setClassesData] = useState([])
+
+
+    console.log("my classes", myClasses)
+    
+
+    const[classRoom, setClassRoom] = useState()
+
+    const handleSubmit = async()=>{
+        console.log("this is data", classRoom)
+    // filter classes where clesses id is classRoom
+    const filteredClasses = classes?.filter((item)=>item._id === classRoom)
+    console.log("filtered classes", filteredClasses[0])
+    const payload ={
+        classId:filteredClasses[0]._id,
+        ...userInfo
+    }
+    console.log(payload)
+
+    try{
+ const response = await joinClass(payload)
+    response
+    console.log(response)
+    if(response.data.status === false){
+        dialogRef.current.close();
+      return  alert(response.data.message)
+    }
+
+    if(response.data.status === true){
+        dialogRef.current.close();
+        return  alert(response.data.message)
+    }
+    }catch(error){
+        alert(error)
+    }
+
+    }
+
+
+    return(
+        <>
+        {/* create class modal */}
+       
+        <dialog id="my_modal_3" className="modal" ref={dialogRef}>
+  <div className="modal-box">
+    <form method="dialog">
+      {/* if there is a button in form, it will close the modal */}
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 className="font-bold text-lg">Join a classroom</h3>
+
+    <div className="mt-4">
+    <label className="form-control w-full min-w-full">
+  <div className="label">
+    <span className="label-text font-medium">Select a classroom</span>
+  </div>
+
+  <select 
+//   disabled={isLoading} 
+  onChange={(e) => setClassRoom(e.target.value)} className="select select-bordered">
+    <option disabled selected>Pick one below</option>
+    {classes?.map((i, index) => (
+        // <option key={index} value={classItem}>{classItem}</option>
+        <option value={i._id} key={index}>{i?.classTitle}</option>
+    ))}
+</select>
+
+
+</label>
+    </div>
+
+    <div className="mt-4">
+        <button onClick={handleSubmit} className="btn min-w-full">
+           {
+            isLoading ? ( <div className="flex justify-center">Loading...</div>) : 
+            "Join Classroom"
+           } 
+        </button>
+
+    </div>
+
+    
+  </div>
+         </dialog>
+
+
+         <div className="flex flex-row justify-end mb-5">
+            <button onClick={()=>document.getElementById('my_modal_3').showModal()} className="btn ">
+                 Join a class
+            </button>
+            </div>
+
+
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7'>
+    {
+        myClasses?.classes?.map((i, index) => {
+            return (
+                <div key={index} className="">
+                    <div className="card bg-white border-2 border-slate-300 text-primary-content lg:w-96 lg:h-[200px]  ">
+                        <div className="card-body lg:px-10 px-3 ">
+                            <h2 className="card-title text-slate-950 text-sm lg:text-lg">{i?.classTitle}</h2>
+                            <p className='text-slate-800'>Welcome to {i?.classTitle}</p>
+                            <div className="card-actions justify-end">
+                            <Link
+                                to="/dashboard/class-room" 
+                                state={{ data: i?._id }} 
+                                 >
+                                   <button className="btn">Enter Classroom</button> 
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        })
+    }
+</div>
+     
+        </>
+       
+    )
+}
+
+export default Index

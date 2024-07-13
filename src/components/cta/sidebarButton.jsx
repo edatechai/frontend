@@ -8,14 +8,15 @@ const SidebarButton =(props)=>{
     const [activeItem, setActiveItem] = useState('');
   
     const handleItemClick = (active)=> {
-      setActiveItem(active);
+      // setActiveItem(active);
+      props.active
     };
 
     return(
         <li className='py-1'>
         <Link to={props.to}>
         <button 
-          onClick={() =>{handleItemClick(active)}}
+          onClick={props.click}
           className={`w-full flex flex-row items-center  ${activeItem === `${props.active}` ? 'bg-slate900 text-slate50 rounded-[6px]  btn-sm hover:bg-slate-800 font-normal':
            'bg-white text-slate900 rounded-[6px]  btn-sm hover:bg-slate-200 font-normal'
         } `}>

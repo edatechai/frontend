@@ -6,10 +6,12 @@ const getToken = () => {
 };
 
 // Define our single API slice object
+//https://edatbackend.azurewebsites.net/
+//http://localhost:5000
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000",
+    baseUrl: "https://edatbackend.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {

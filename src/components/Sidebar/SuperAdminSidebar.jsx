@@ -29,18 +29,20 @@ const Sidebar = () => {
 
     <>
    
-    <div className='  flex-col lg:min-h-screen lg:pl-5 pl-3 lg:pr-3 pr-3 border-r border-r-slate200 lg:min-w-[250px] justify-between flex '>
+    <div className='flex-col lg:min-h-screen lg:pl-5 pl-3 lg:pr-3 pr-3 border-r border-r-slate200 lg:min-w-[250px] justify-between flex '>
     <ul className='mt-5'>
-      <div className='justify-center flex bg-slate400 w-20 h-20 rounded-full items-center mb-5'>
-      <LuUser className='' color='white' size="34"/>
+      <div className='justify-center flex bg-slate400 lg:w-20 lg:h-20 w-[30px] h-[30px] rounded-full items-center mb-5'>
+      <LuUser className='lg:w-[34px] lg:h-[34px]' color='white'/>
       </div>
-      <div className='py-2 font-medium'>Hello {userInfo?.firstName} {userInfo?.lastName}</div>
-      <SidebarButton to='/super-admin' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />}/>
-      <SidebarButton to='' label='Profile' active="settings" icon={<FiUsers />}/>
+      <div className='py-2 lg:font-medium font-normal '>Hello {userInfo?.firstName} {userInfo?.lastName}</div>
+      <SidebarButton 
+      
+       to='/super-admin' label='Dashboard'  icon={<MdOutlineDashboard />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Profile'  icon={<FiUsers />}/>
       {/* <SidebarButton to='' label='Class Room' active="settings" icon={<LuUserPlus />}/> */}
-      <SidebarButton to='/dashboard/create-organization' label='Create Organization' active="settings" icon={<GrDocumentUpdate />}/>
-      <SidebarButton to='/dashboard/report' label='Report' active="Report" icon={<HiOutlineDocumentReport />}/>
-      <SidebarButton to='/dashboard/settings' label='Settings' active="settings" icon={<MdOutlineSettings />}/>
+      <SidebarButton to='/dashboard/create-organization' label='Create Organization'  icon={<GrDocumentUpdate />}/>
+      <SidebarButton click={()=> alert("Page is under Development")}  label='Report'  icon={<HiOutlineDocumentReport />}/>
+      <SidebarButton to='/dashboard/settings' label='Settings' icon={<MdOutlineSettings />}/>
       </ul>
 
       <div>

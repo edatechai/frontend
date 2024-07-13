@@ -75,6 +75,7 @@ import OrgSettings from '../src/pages/Org/Settings'
 import ClassRoom from '../src/pages/ClassRoom/Index'
 import SuperAdminSettings from '../src/pages/SuperAdmin/Settings'
 import Quiz from '../src/pages/Student/Quiz'
+import UnderDev from '../src/components/Error/UnderDev'
 
 
 const App = () => {
@@ -109,6 +110,7 @@ const App = () => {
           <Route path="/teacher" element={<Dashboard />} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/class-room" element={<ClassRoom/>} />
+          <Route path="/dashboard/under-development" element={<UnderDev/>} />
         </Route>
 
         {/* Super Admin layout */}
@@ -117,6 +119,7 @@ const App = () => {
           <Route path="/dashboard/create-organization" element={<CreateOrg/>} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/settings" element={<SuperAdminSettings />} />
+          <Route path="/dashboard/under-development" element={<UnderDev/>} />
         </Route>
 
         {/* Org layout */}
@@ -124,6 +127,7 @@ const App = () => {
           <Route path="/org-admin" element={<OrgDashboard />} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/org-settings" element={<OrgSettings />} />
+          <Route path="/dashboard/under-development" element={<UnderDev/>} />
         </Route>
 
          {/* Student layout */}
@@ -132,6 +136,7 @@ const App = () => {
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/class-room" element={<ClassRoom/>} />
           <Route path="/dashboard/quiz" element={<Quiz/>} />
+          <Route path="/dashboard/under-development" element={<UnderDev/>} />
 
 
         </Route>
@@ -140,6 +145,7 @@ const App = () => {
           <Route element={<ParentLayout/>}>
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard/under-development" element={<UnderDev/>} />
         </Route>
 
         {/* Default route */}

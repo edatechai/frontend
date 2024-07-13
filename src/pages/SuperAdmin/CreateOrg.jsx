@@ -31,13 +31,26 @@ const Index = () => {
     try {
       const response = await createAccount(payload);
       console.log("res", response);
-      if (response.data.status === true) {
-        console.log("account created");
+      // if (response.data.status === true) {
+      //   console.log("account created");
+      //   document.getElementById('my-drawer-4').checked = false; // Close the drawer
+      //   setShowToast(true); // Show toast message
+      //   setTimeout(() => {
+      //     setShowToast(false); // Hide toast message after 4 seconds
+      //   }, 40000);
+      // }else{
+      //   console.log("here",response.error.data.status)
+      // }
+
+      if(response.error){
+        alert(response.error.data.message)
+      }else{
         document.getElementById('my-drawer-4').checked = false; // Close the drawer
         setShowToast(true); // Show toast message
         setTimeout(() => {
           setShowToast(false); // Hide toast message after 4 seconds
         }, 40000);
+
       }
     } catch (error) {
       console.error("Error creating account", error);

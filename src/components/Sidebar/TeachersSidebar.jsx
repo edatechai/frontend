@@ -25,11 +25,11 @@ const Sidebar = () => {
     <div className='flex-col lg:min-h-screen lg:pl-5 pl-3 lg:pr-3 pr-3 border-r border-r-slate200 lg:min-w-[250px] justify-between flex '>
     <ul className='mt-5'>
       <SidebarButton to='/' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />}/>
-      <SidebarButton to='/dashboard/profile' label='Profile'  icon={<FiUsers />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Profile'  icon={<FiUsers />}/>
       <SidebarButton to='/dashboard/class-room' label='Class Room'  icon={<LuUserPlus />}/>
-      <SidebarButton to='/dashboard/update' label='Update'  icon={<GrDocumentUpdate />}/>
-      <SidebarButton to='/dashboard/report' label='Report' icon={<HiOutlineDocumentReport />}/>
-      <SidebarButton to='/dashboard/settings' label='Settings' icon={<MdOutlineSettings />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Update'  icon={<GrDocumentUpdate />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Report' icon={<HiOutlineDocumentReport />}/>
+      {/* <SidebarButton to='/dashboard/settings' label='Settings' icon={<MdOutlineSettings />}/> */}
       </ul>
 
       <div className='flex flex-col'>

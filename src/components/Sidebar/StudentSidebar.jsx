@@ -23,12 +23,12 @@ const Sidebar = () => {
    
     <div className='flex-col min-h-screen lg:min-h-screen lg:pl-5 pl-3 lg:pr-3 pr-3 border-r border-r-slate200 lg:min-w-[250px] justify-between flex '>
     <ul className='mt-5'>
-      <SidebarButton to='/dashboard' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />}/>
-      <SidebarButton to='/dashboard/customers' label='Profile' active="settings" icon={<FiUsers />}/>
-      <SidebarButton to='/dashboard/addcustomer' label='Class Room' active="settings" icon={<LuUserPlus />}/>
-      <SidebarButton to='/dashboard/update' label='Update' active="settings" icon={<GrDocumentUpdate />}/>
-      <SidebarButton to='/dashboard/report' label='Report' active="Report" icon={<HiOutlineDocumentReport />}/>
-      <SidebarButton to='/dashboard/settings' label='Settings' active="settings" icon={<MdOutlineSettings />}/>
+      <SidebarButton to='/' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Profile' active="settings" icon={<FiUsers />}/>
+      {/* <SidebarButton to='/dashboard/addcustomer' label='Class Room' active="settings" icon={<LuUserPlus />}/> */}
+      <SidebarButton click={()=> alert("Page is under Development")} label='Update' active="settings" icon={<GrDocumentUpdate />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Report' active="Report" icon={<HiOutlineDocumentReport />}/>
+      <SidebarButton click={()=> alert("Page is under Development")} label='Settings' active="settings" icon={<MdOutlineSettings />}/>
       </ul>
 
       <div className='flex flex-col'>

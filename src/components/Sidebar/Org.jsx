@@ -100,10 +100,10 @@ const Sidebar = () => {
     <div className='flex flex-col min-h-screen border-r border-r-slate-200 lg:pl-5 pl-3 lg:pr-3 pr-3 lg:min-w-[250px] justify-between'>
       <ul className='mt-5'>
         <SidebarButton to='/' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />} />
-        <SidebarButton to='/dashboard/profile' label='Profile' active="settings" icon={<FiUsers />} />
-        <SidebarButton to='/dashboard/addcustomer' label='Class Room' active="settings" icon={<LuUserPlus />} />
-        <SidebarButton to='/dashboard/update' label='Update' active="settings" icon={<GrDocumentUpdate />} />
-        <SidebarButton to='/dashboard/report' label='Report' active="Report" icon={<HiOutlineDocumentReport />} />
+        <SidebarButton click={()=> alert("Page is under Development")} label='Profile' active="settings" icon={<FiUsers />} />
+        {/* <SidebarButton to='/dashboard/class-room' label='Class Room' active="settings" icon={<LuUserPlus />} /> */}
+        <SidebarButton click={()=> alert("Page is under Development")} label='Update' active="settings" icon={<GrDocumentUpdate />} />
+        <SidebarButton click={()=> alert("Page is under Development")} label='Report' active="Report" icon={<HiOutlineDocumentReport />} />
         <SidebarButton to='dashboard/org-settings' label='Settings' active="settings" icon={<MdOutlineSettings />} />
       </ul>
       <div className='flex flex-col'>

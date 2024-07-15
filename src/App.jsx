@@ -128,6 +128,7 @@ const App = () => {
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/org-settings" element={<OrgSettings />} />
           <Route path="/dashboard/under-development" element={<UnderDev/>} />
+          <Route path="/dashboard/class-room" element={<ClassRoom/>} />
         </Route>
 
          {/* Student layout */}

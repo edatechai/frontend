@@ -101,7 +101,7 @@ const Sidebar = () => {
       <ul className='mt-5'>
         <SidebarButton to='/' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />} />
         <SidebarButton click={()=> alert("Page is under Development")} label='Profile' active="settings" icon={<FiUsers />} />
-        {/* <SidebarButton to='/dashboard/class-room' label='Class Room' active="settings" icon={<LuUserPlus />} /> */}
+        <SidebarButton to='dashboard/org-settings' label='Add Classroom' active="settings" icon={<LuUserPlus />} />
         <SidebarButton click={()=> alert("Page is under Development")} label='Update' active="settings" icon={<GrDocumentUpdate />} />
         <SidebarButton click={()=> alert("Page is under Development")} label='Report' active="Report" icon={<HiOutlineDocumentReport />} />
         <SidebarButton to='dashboard/org-settings' label='Settings' active="settings" icon={<MdOutlineSettings />} />

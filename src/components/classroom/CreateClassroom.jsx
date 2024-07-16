@@ -66,12 +66,12 @@ const Index = ()=>{
       {/* if there is a button in form, it will close the modal */}
       <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
-    <h3 className="font-bold text-lg">Create a new class</h3>
+    <h3 className="font-bold text-lg">Create a new Classroom</h3>
 
     <div className="mt-4">
        <label className="form-control w-full min-w-full">
         <div className="label">
-           <span className="label-text font-medium">Class Name</span>
+           <span className="label-text font-medium">Classroom Name</span>
         </div>
            <input 
            value={classRoomName}
@@ -115,7 +115,7 @@ const Index = ()=>{
 
          <div className="flex flex-row justify-end mb-5">
             <button onClick={()=>document.getElementById('my_modal_3').showModal()} className="btn ">
-                 Create Class Room
+                 Create Classroom
             </button>
             </div>
              {
@@ -126,7 +126,7 @@ const Index = ()=>{
     <thead>
       <tr>
        
-        <th>Class Name</th>
+        <th>Classroom Name</th>
         <th>Number of Students in class</th>
         <th>Number of Teachers in class</th>
         <th></th>
@@ -167,7 +167,7 @@ const Index = ()=>{
     </tbody>
   </table>
 </div>
-                ) : (<div className="flex justify-center items-center"> No classes created yet </div> )
+                ) : (<div className="flex justify-center items-center"> No Classroom created yet </div> )
              }
             
         </>

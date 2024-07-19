@@ -99,27 +99,29 @@ const Index = ()=>{
 
 
          <div className="flex flex-row justify-end mb-5">
-            <button onClick={()=>document.getElementById('my_modal_3').showModal()} className="btn ">
+            <button onClick={()=>document.getElementById('my_modal_3').showModal()} className="btn bg-blue-600 font-normal text-white hover:bg-black ">
                  Join a class
             </button>
             </div>
 
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7'>
+            <div className='flex flex-row justify-between'>
+                <div className='px-2 min-w-[70%]'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2'>
     {
         myClasses?.classes?.map((i, index) => {
             return (
                 <div key={index} className="">
-                    <div className="card bg-white border-2 border-slate-300 text-primary-content lg:w-96 lg:h-[200px]  ">
-                        <div className="card-body lg:px-10 px-3 ">
-                            <h2 className="card-title text-slate-950 text-sm lg:text-lg">{i?.classTitle}</h2>
+                    <div className="card bg-white border-2 border-slate-300 text-primary-content lg:w-[100%] lg:h-[250px] p-3  ">
+                        <div className="card-body lg:px-3 px-3  ">
+                            <h2 className="card-title text-green-700 p-2 bg-green-50 text-sm lg:text-lg rounded-sm font-normal">{i?.classTitle}</h2>
                             <p className='text-slate-800'>Welcome to {i?.classTitle}</p>
-                            <div className="card-actions justify-end">
+                            <div className="card-actions justify-end lg:justify-start  mt-3">
                             <Link
                                 to="/dashboard/class-room" 
                                 state={{ data: i?._id }} 
                                  >
-                                   <button className="btn">Enter Classroom</button> 
+                                   <button className="btn bg-blue-600 font-normal text-white hover:bg-black">Enter Classroom</button> 
                                 </Link>
                             </div>
                         </div>
@@ -130,6 +132,19 @@ const Index = ()=>{
     }
 </div>
      
+
+                </div>
+                <div className='lg:px-5 w-full'>
+                    <div className=''>
+                        <h1 className='text-xl font-[600] text-slate-800'>Over view</h1>
+                        
+                    </div>
+                </div>
+
+            </div>
+
+
+    
         </>
        
     )

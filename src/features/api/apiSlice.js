@@ -216,6 +216,17 @@ export const apiSlice = createApi({
     }),
 
 
+    // Analyze Result
+    AnalyzeResult: builder.mutation({
+      query: (payload) => ({
+        url: "/api/quiz/AnalyzeMistake",
+        method: "POST",
+        body: payload,
+      }),
+     // invalidatesTags: ["Quiz"],
+    }),
+
+
 
 
 
@@ -257,6 +268,8 @@ export const {
   useCreateQuizMutation,
   useFindAllQuizQuery,
   useFindAllQuizByIdQuery,
-  useQuizRandomSelectMutation
+  useQuizRandomSelectMutation,
+  useAnalyzeResultMutation
+  
   
 } = apiSlice;

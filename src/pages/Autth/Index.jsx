@@ -30,7 +30,7 @@ const Index = () => {
     if (!email) return alert("Email is required");
     if (!password) return alert("Password is required");
 
-    const payload = { email, password };
+    const payload = { loginIdentifier:email, password };
     try {
       const response = await Login(payload);
       if(response.error){

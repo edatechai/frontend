@@ -25,9 +25,12 @@ const Sidebar = () => {
     <ul className='mt-5'>
       <div className='mb-10 text-white ml-4'>Logo</div>
       <SidebarButton to='/' label='Dashboard' active="dashboard" icon={<MdOutlineDashboard />}/>
-      <SidebarButton click={()=> alert("Page is under Development")} label='Profile' active="settings" icon={<FiUsers />}/>
+      <SidebarButton 
+      to='/profile'
+      // click={()=> alert("Page is under Development")} 
+      label='Profile' active="settings" icon={<FiUsers />}/>
       {/* <SidebarButton to='/dashboard/addcustomer' label='Class Room' active="settings" icon={<LuUserPlus />}/> */}
-      <SidebarButton click={()=> alert("Page is under Development")} label='Update' active="settings" icon={<GrDocumentUpdate />}/>
+      <SidebarButton to='/recommendation' label='Recommendation' active="settings" icon={<GrDocumentUpdate />}/>
       <SidebarButton click={()=> alert("Page is under Development")} label='Report' active="Report" icon={<HiOutlineDocumentReport />}/>
       <SidebarButton click={()=> alert("Page is under Development")} label='Settings' active="settings" icon={<MdOutlineSettings />}/>
       </ul>

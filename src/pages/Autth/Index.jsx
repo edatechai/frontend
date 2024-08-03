@@ -11,7 +11,7 @@ const Index = () => {
   const [password, setPassword] = useState('')
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState("")
-  const [role, setRole] = useState("")
+  const [role, setRole] = useState()
   const [license, setLicense] = useState("")
   const [username, setUserName] = useState("")
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -70,8 +70,9 @@ const Index = () => {
   }
 
   return (
+
     <div className="min-w-screen min-h-screen bg-black flex flex-col lg:flex-row justify-between">
-     <div className="lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-white flex justify-center items-center p-4 lg:p-8">
+     <div className="lg:max-h-screen lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-white flex justify-center items-center p-4 lg:p-8">
         <div className=" w-full max-w-md">
           {!show ? (
             <>
@@ -82,7 +83,7 @@ const Index = () => {
                   <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
                   <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                 </svg>
-                <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" className="w-full" placeholder="Email" />
+                <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" className="w-full" placeholder="Email or username" />
               </label>
 
               <label className="mt-7 input input-bordered flex items-center gap-2">
@@ -174,19 +175,33 @@ const Index = () => {
               </label>
 
               <div className="font-medium py-2">Role</div>
-              <select
+              {/* <select
                 value={role}
                 disabled={signuploading}
                 onChange={(e) => setRole(e.target.value)}
                 className="select select-bordered w-full"
               >
-                <option disabled selected>
+                <option disabled>
                   Are you a student, teacher, or a parent?
                 </option>
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
                 <option value="parent">Parent</option>
-              </select>
+              </select> */}
+
+<select
+  value={role}
+  disabled={signuploading}
+  onChange={(e) => setRole(e.target.value)}
+  className="select select-bordered w-full"
+>
+  <option disabled selected>
+    Are you a student, teacher, or a parent?
+  </option>
+  <option value="student">Student</option>
+  <option value="teacher">Teacher</option>
+  <option value="parent">Parent</option>
+</select>
 
               {role === "parent" && (
                 <>
@@ -264,7 +279,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-blue-500 flex justify-center items-center p-8 lg:p-16">
+      <div className=" lg:max-h-screen lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-blue-500 flex justify-center items-center p-8 lg:p-16">
         <div className="text-center">
           <img src={One} alt="One" className="mx-auto" />
           <h2 className="text-xl font-medium text-white mt-8">

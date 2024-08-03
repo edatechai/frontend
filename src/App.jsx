@@ -71,11 +71,13 @@ import CreateOrg from '../src/pages/SuperAdmin/CreateOrg'
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";
 import Profile from '../src/pages/Profile/Index'
+import StudentProfile from '../src/pages/Student/Profile'
 import OrgSettings from '../src/pages/Org/Settings'
 import ClassRoom from '../src/pages/ClassRoom/Index'
 import SuperAdminSettings from '../src/pages/SuperAdmin/Settings'
 import Quiz from '../src/pages/Student/Quiz'
 import UnderDev from '../src/components/Error/UnderDev'
+import Recommendation from '../src/pages/Student/Recommendation'
 
 
 const App = () => {
@@ -134,10 +136,12 @@ const App = () => {
          {/* Student layout */}
          <Route element={<StudentLayout/>}>
           <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/dashboard/profile" element={<Profile />} />
+          <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/recommendation" element={<Recommendation/>} />
           <Route path="/dashboard/class-room" element={<ClassRoom/>} />
           <Route path="/dashboard/quiz" element={<Quiz/>} />
           <Route path="/dashboard/under-development" element={<UnderDev/>} />
+
 
 
         </Route>

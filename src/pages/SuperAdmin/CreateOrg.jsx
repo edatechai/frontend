@@ -487,7 +487,7 @@ const Index = () => {
                     value={contactFullName}
                     onChange={(e) => setContactFullName(e.target.value)}
                     type="text"
-                    placeholder="Organization Contact Full Name"
+                    placeholder="Organization contact full Name"
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>
@@ -498,7 +498,7 @@ const Index = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     type="text"
-                    placeholder="Organization Contact Email"
+                    placeholder="Organization contact email"
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>
@@ -509,17 +509,18 @@ const Index = () => {
                     <option disabled selected>Select Organization Category</option>
                     <option value="College">College</option>
                     <option value="High School">High School</option>
+                    <option value="High School">Primary School</option>
                     <option value="University">University</option>
                   </select>
                 </div>
 
                 <div className='mt-4'>
-                  <div className='text-md font-sm py-2'>Number of Licenses</div>
+                  <div className='text-md font-sm py-2'>Number of License</div>
                   <input
                     value={numberOfLicense}
                     onChange={(e) => setNumberOfLicense(e.target.value)}
                     type="number"
-                    placeholder="Number of Licenses"
+                    placeholder="Number of license"
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>

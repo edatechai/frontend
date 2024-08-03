@@ -28,7 +28,7 @@ const StudentRoom = (props) => {
   const [RandomSelect, {data}] = useQuizRandomSelectMutation()
   //const {data:AllQuiz } = useFindAllQuizQuery()
 
- // console.log("here me", AllQuiz)
+ console.log("here me", AllQuiz)
 
 
   const [joinClass, { isLoading }] = useJoinClassMutation();
@@ -161,7 +161,7 @@ const StudentRoom = (props) => {
                   <h2 className="card-title text-slate-950">{i?.subject}</h2>
                 </div>
                 <div>
-                   <p className="text-slate-950">{i?.questionsAndAnswers.length} questions</p>
+                   <p className="text-slate-950">{i?.numberOfQuestions} questions</p>
                 </div>
               </div>
               
@@ -178,7 +178,6 @@ const StudentRoom = (props) => {
                     >
                       <button className='btn'>Take Quiz</button>
                     </Link>
-                    
                   </div>
               </div>
             </div>

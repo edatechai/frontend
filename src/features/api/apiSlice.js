@@ -1,9 +1,7 @@
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 const getToken = () => {
-  return localStorage.getItem('Token');
+  return localStorage.getItem("Token");
 };
 
 // Define our single API slice object
@@ -12,6 +10,7 @@ const getToken = () => {
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
+    // baseUrl: "http://localhost:5000/",
     baseUrl: "https://edatbackend.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
@@ -20,7 +19,17 @@ export const apiSlice = createApi({
       }
     },
   }),
-  tagTypes: ["CurrentUser", "CreateAccount", "AllAccounts", "Account", "ClassRoom", "Objectives", "Question", "Quiz", "AddChild"],
+  tagTypes: [
+    "CurrentUser",
+    "CreateAccount",
+    "AllAccounts",
+    "Account",
+    "ClassRoom",
+    "Objectives",
+    "Question",
+    "Quiz",
+    "AddChild",
+  ],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (user) => ({
@@ -33,7 +42,9 @@ export const apiSlice = createApi({
     currentUser: builder.query({
       query: () => "/api/users/getCurrentUser",
       providesTags: (result) =>
-        result ? [{ type: "CurrentUser", id: result._id }] : ["CurrentUser", "CreateAccount"]
+        result
+          ? [{ type: "CurrentUser", id: result._id }]
+          : ["CurrentUser", "CreateAccount"],
     }),
 
     createUser: builder.mutation({
@@ -63,8 +74,6 @@ export const apiSlice = createApi({
       query: (id) => `/api/account/getAccountById/${id}`,
       providesTags: (result, error, id) => [{ type: "Account", id }],
     }),
-
-
 
     //classRoom endpoint
     createClassRoom: builder.mutation({
@@ -113,7 +122,7 @@ export const apiSlice = createApi({
       providesTags: ["ClassRoom"],
     }),
 
-    //objectives 
+    //objectives
     createObjective: builder.mutation({
       query: (payload) => ({
         url: "/api/objective/create",
@@ -126,15 +135,15 @@ export const apiSlice = createApi({
     UploadObjective: builder.mutation({
       query: (payload) => {
         const formData = new FormData();
-        formData.append('file', payload.file);
-    
+        formData.append("file", payload.file);
+
         return {
-          url: '/api/objective/uploadCsv', // Make sure this matches your backend endpoint
-          method: 'POST',
+          url: "/api/objective/uploadCsv", // Make sure this matches your backend endpoint
+          method: "POST",
           body: formData,
         };
       },
-      invalidatesTags: ['Objectives'],
+      invalidatesTags: ["Objectives"],
     }),
 
     findAllObjectives: builder.query({
@@ -150,8 +159,8 @@ export const apiSlice = createApi({
       invalidatesTags: ["Objectives"],
     }),
 
-     //Questions
-     createQuestion: builder.mutation({
+    //Questions
+    createQuestion: builder.mutation({
       query: (payload) => ({
         url: "/api/question/create",
         method: "POST",
@@ -175,15 +184,15 @@ export const apiSlice = createApi({
     UploadQuestion: builder.mutation({
       query: (payload) => {
         const formData = new FormData();
-        formData.append('file', payload.file);
-    
+        formData.append("file", payload.file);
+
         return {
-          url: '/api/question/uploadCsv', // Make sure this matches your backend endpoint
-          method: 'POST',
+          url: "/api/question/uploadCsv", // Make sure this matches your backend endpoint
+          method: "POST",
           body: formData,
         };
       },
-      invalidatesTags: ['Question'],
+      invalidatesTags: ["Question"],
     }),
 
     //Create Quiz
@@ -216,7 +225,6 @@ export const apiSlice = createApi({
       invalidatesTags: ["Quiz"],
     }),
 
-
     // Analyze Result
     AnalyzeResult: builder.mutation({
       query: (payload) => ({
@@ -224,29 +232,29 @@ export const apiSlice = createApi({
         method: "POST",
         body: payload,
       }),
-     // invalidatesTags: ["Quiz"],
+      // invalidatesTags: ["Quiz"],
     }),
 
-     // Analyze Result
-     createQuizResult: builder.mutation({
+    // Analyze Result
+    createQuizResult: builder.mutation({
       query: (payload) => ({
         url: "/api/quiz/createQuizResult",
         method: "POST",
         body: payload,
       }),
-     // invalidatesTags: ["Quiz"],
+      // invalidatesTags: ["Quiz"],
     }),
 
-     // Analyze Result
-     updateQuizResult: builder.mutation({
+    // Analyze Result
+    updateQuizResult: builder.mutation({
       query: (payload) => ({
         url: "/api/quiz/updateQuizResult",
         method: "POST",
         body: payload,
       }),
-     // invalidatesTags: ["Quiz"],
+      // invalidatesTags: ["Quiz"],
     }),
-  getQuizResultByUserId: builder.query({
+    getQuizResultByUserId: builder.query({
       query: (id) => `/api/quiz/getQuizResultByUserId/${id}`,
       providesTags: ["Quiz"],
     }),
@@ -257,7 +265,7 @@ export const apiSlice = createApi({
         method: "POST",
         body: payload,
       }),
-     // invalidatesTags: ["Quiz"],
+      // invalidatesTags: ["Quiz"],
     }),
 
     getAllQuiz: builder.mutation({
@@ -266,11 +274,11 @@ export const apiSlice = createApi({
         method: "POST",
         body: payload,
       }),
-     // invalidatesTags: ["Quiz"],
+      // invalidatesTags: ["Quiz"],
     }),
 
     getAllChildren: builder.query({
-      query: (ids) => `/api/users/getAllChildren?ids=${ids.join(',')}`,
+      query: (ids) => `/api/users/getAllChildren?ids=${ids.join(",")}`,
       providesTags: ["AddChild"],
     }),
 
@@ -280,33 +288,26 @@ export const apiSlice = createApi({
         method: "POST",
         body: payload,
       }),
-     invalidatesTags: ["AddChild"],
+      invalidatesTags: ["AddChild"],
     }),
 
     updatePassScore: builder.mutation({
       query: ({ id, passScore }) => ({
         url: `/api/users/updateScore/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: { passScore },
       }),
-      invalidatesTags: ['AddChild'],
+      invalidatesTags: ["AddChild"],
     }),
 
     updateBio: builder.mutation({
       query: ({ id, bio }) => ({
         url: `/api/users/updateBio/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: { bio },
       }),
-      invalidatesTags: ['User'],
+      invalidatesTags: ["User"],
     }),
-
-
-
-
-
-
-
   }),
 });
 
@@ -317,7 +318,6 @@ export const {
   useGetAllAccountsQuery,
   useGetAccountByIdQuery,
   useCreateUserMutation,
- 
 
   //classRoom
   useCreateClassRoomMutation,
@@ -354,8 +354,5 @@ export const {
   useUpdateQuizResultMutation,
   useGetQuizResultByUserIdQuery,
   useGetStrengthsAndweaknessesMutation,
-  useGetAllQuizMutation
-
-  
-  
+  useGetAllQuizMutation,
 } = apiSlice;

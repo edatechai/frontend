@@ -1,21 +1,21 @@
-;
-
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import One from "../../assets/one.png";
-import { useLoginMutation, useCreateUserMutation } from "../../features/api/apiSlice";
+import {
+  useLoginMutation,
+  useCreateUserMutation,
+} from "../../features/api/apiSlice";
 
 const Index = () => {
   const [show, setShow] = useState(false);
-  const [password, setPassword] = useState('')
-  const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState("")
-  const [role, setRole] = useState()
-  const [license, setLicense] = useState("")
-  const [username, setUserName] = useState("")
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState();
+  const [license, setLicense] = useState("");
+  const [username, setUserName] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [neurodiversity, setNeurodiversity] = useState("")
+  const [neurodiversity, setNeurodiversity] = useState("");
 
   const toggle = () => setShow(!show);
 
@@ -23,32 +23,41 @@ const Index = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const [Login, { isLoading , isError:LoginError}] = useLoginMutation();
-  const [CreateUser, { isSuccess, isLoading: signuploading, isError }] = useCreateUserMutation();
+  const [Login, { isLoading, isError: LoginError }] = useLoginMutation();
+  const [CreateUser, { isSuccess, isLoading: signuploading, isError }] =
+    useCreateUserMutation();
 
   const handleLogin = async () => {
     if (!email) return alert("Email is required");
     if (!password) return alert("Password is required");
 
-    const payload = { loginIdentifier:email, password };
+    const payload = { loginIdentifier: email, password };
     try {
       const response = await Login(payload);
-      if(response.error){
-       return alert(response.error.data.message)
+      if (response.error) {
+        return alert(response.error.data.message);
       }
       if (response.data.token) {
         const Token = response.data.token;
-        localStorage.setItem('Token', Token);
+        localStorage.setItem("Token", Token);
         window.location.reload();
       }
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
 
   const handleCreateAccount = async () => {
-    const payload = { email, fullName, role, license, username, password, neurodiversity };
-    // validation 
+    const payload = {
+      email,
+      fullName,
+      role,
+      license,
+      username,
+      password,
+      neurodiversity,
+    };
+    // validation
     if (!email) return alert("Email is required");
     if (!password) return alert("Password is required");
     if (!fullName) return alert("Full Name is required");
@@ -62,33 +71,54 @@ const Index = () => {
         alert(response.error.data.message);
       } else {
         alert(response.data.message);
-        window.location.href = '/';
+        window.location.href = "/";
       }
     } catch (error) {
       console.log("error", error);
     }
-  }
+  };
 
   return (
-
     <div className="min-w-screen min-h-screen bg-black flex flex-col lg:flex-row justify-between">
-     <div className="lg:max-h-screen lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-white flex justify-center items-center p-4 lg:p-8">
+      <div className="lg:max-h-screen lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-white flex justify-center items-center p-4 lg:p-8">
         <div className=" w-full max-w-md">
           {!show ? (
             <>
-              <div className="text-3xl font-semibold">Log in to your Account</div>
+              <div className="text-3xl font-semibold">
+                Log in to your Account
+              </div>
               <div className="font-semibold py-4">Welcome back!</div>
               <label className="input input-bordered flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="w-4 h-4 opacity-70"
+                >
                   <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
                   <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
                 </svg>
-                <input value={email} onChange={(e) => setEmail(e.target.value)} type="text" className="w-full" placeholder="Email or username" />
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  className="w-full"
+                  placeholder="Email or username"
+                />
               </label>
 
               <label className="mt-7 input input-bordered flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70">
-                  <path fillRule="evenodd" d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  className="w-4 h-4 opacity-70"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 <input
                   value={password}
@@ -122,12 +152,19 @@ const Index = () => {
 
               <div className="flex justify-between mt-7 items-center">
                 <div className="flex items-center">
-                  <input type="checkbox" defaultChecked className="checkbox mr-2" />
+                  <input
+                    type="checkbox"
+                    defaultChecked
+                    className="checkbox mr-2"
+                  />
                   <div>Remember me</div>
                 </div>
                 <div className="text-blue-500">Forgot Password?</div>
               </div>
-              <button onClick={handleLogin} className="btn text-white w-full mt-7 bg-blue-500">
+              <button
+                onClick={handleLogin}
+                className="btn text-white w-full mt-7 bg-blue-500"
+              >
                 {isLoading ? "Please wait" : "Login"}
               </button>
 
@@ -189,19 +226,19 @@ const Index = () => {
                 <option value="parent">Parent</option>
               </select> */}
 
-<select
-  value={role}
-  disabled={signuploading}
-  onChange={(e) => setRole(e.target.value)}
-  className="select select-bordered w-full"
->
-  <option disabled selected>
-    Are you a student, teacher, or a parent?
-  </option>
-  <option value="student">Student</option>
-  <option value="teacher">Teacher</option>
-  <option value="parent">Parent</option>
-</select>
+              <select
+                value={role}
+                disabled={signuploading}
+                onChange={(e) => setRole(e.target.value)}
+                className="select select-bordered w-full"
+              >
+                <option disabled selected>
+                  Are you a student, teacher, or a parent?
+                </option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="parent">Parent</option>
+              </select>
 
               {role === "parent" && (
                 <>
@@ -215,10 +252,14 @@ const Index = () => {
                       Does your child belong to any of the below
                     </option>
                     <option value="Autism">Autism</option>
-                    <option value="ADHD">Attention Deficit Hyperactivity Disorder (ADHD)</option>
+                    <option value="ADHD">
+                      Attention Deficit Hyperactivity Disorder (ADHD)
+                    </option>
                     <option value="Dyscalculia">Dyscalculia</option>
                     <option value="Dyslexia">Dyslexia</option>
-                    <option value="Dyspraxia">Dyspraxia, or Developmental Coordination Disorder (DCD)</option>
+                    <option value="Dyspraxia">
+                      Dyspraxia, or Developmental Coordination Disorder (DCD)
+                    </option>
                   </select>
                 </>
               )}
@@ -268,7 +309,11 @@ const Index = () => {
                 </svg>
               </label>
 
-              <button onClick={handleCreateAccount} disabled={signuploading} className="btn text-white w-full mt-7 bg-blue-500">
+              <button
+                onClick={handleCreateAccount}
+                disabled={signuploading}
+                className="btn text-white w-full mt-7 bg-blue-500"
+              >
                 {signuploading ? "Loading..." : "Create Account"}
               </button>
               <div className="mt-3 text-center">
@@ -286,7 +331,8 @@ const Index = () => {
             Leveraging data to improve school children's academic ability
           </h2>
           <h6 className="font-light text-white mt-4">
-            Our passion is fuelled by the unwavering belief that personalised education is the catalyst for transforming futures
+            Our passion is fuelled by the unwavering belief that personalised
+            education is the catalyst for transforming futures
           </h6>
         </div>
       </div>
@@ -295,5 +341,3 @@ const Index = () => {
 };
 
 export default Index;
-
-

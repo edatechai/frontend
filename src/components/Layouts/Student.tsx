@@ -2,43 +2,43 @@ import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   Settings,
-  CircleUser,
   Home,
   User,
   ListPlus,
   LineChart,
   Menu,
   Circle,
+  StickyNote,
+  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import Header from "../others/Header";
+import { useSelector } from "react-redux";
+import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
-export function SuperAdminLayout() {
+export function StudentLayout() {
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-primary md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2 fixed text-primary-foreground w-[220px] lg:w-[280px]">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <div className="flex items-center gap-2 font-semibold">
-              {/* <Circle className="h-6 w-6" /> */}
-              <img className="h-8" src="edat_logo.png" />
-            </div>
+        <div className="flex h-full max-h-screen flex-col gap-2 fixed text-primary-foreground w-[220px] lg:w-[280px] text-primary-foreground w-[220px] lg:w-[280px]">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 border-muted-foreground">
+            <span className="flex items-center gap-2 font-semibold">
+              <Circle className="h-6 w-6" />
+              {/* <img className="h-8" src="edat_logo.png" /> */}
+              <span>{data?.accountName}</span>
+            </span>
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <NavLink
                 end
-                to="/super-admin"
+                to="/student"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -51,7 +51,33 @@ export function SuperAdminLayout() {
                 Dashboard
               </NavLink>
               <NavLink
-                to="/super-admin/under-development"
+                to="/student/result"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
+                  }`
+                }
+              >
+                <StickyNote className="h-4 w-4" />
+                Result
+              </NavLink>
+              <NavLink
+                to="/student/classrooms"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
+                  }`
+                }
+              >
+                <Users className="h-4 w-4" />
+                Classrooms
+              </NavLink>
+              <NavLink
+                to="/profile"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -64,7 +90,7 @@ export function SuperAdminLayout() {
                 Profile
               </NavLink>
               <NavLink
-                to="/super-admin/create-organization"
+                to="/recommendation"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -74,10 +100,10 @@ export function SuperAdminLayout() {
                 }
               >
                 <ListPlus className="h-4 w-4" />
-                Create Organisation
+                Recommendation
               </NavLink>
               <NavLink
-                to="/super-admin/under-development"
+                to="/student/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -89,15 +115,8 @@ export function SuperAdminLayout() {
                 <LineChart className="h-4 w-4" />
                 Report
               </NavLink>
-              {/* <NavLink
-                to="/super-admin/under-development"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
-              >
-                <LineChart className="h-4 w-4" />
-                Report
-              </NavLink> */}
               <NavLink
-                to="/super-admin/settings"
+                to="/student/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -109,6 +128,27 @@ export function SuperAdminLayout() {
                 <Settings className="h-4 w-4" />
                 Settings
               </NavLink>
+              <NavLink
+                to="/dash-test"
+                // className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary-foreground transition-all active:!bg-white active:!text-primary"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
+                  }`
+                }
+              >
+                <Settings className="h-4 w-4" />
+                Dashboard-2
+              </NavLink>
+              {/* <NavLink
+                to="/student/under-development"
+                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+              >
+                <LineChart className="h-4 w-4" />
+                Report
+              </NavLink> */}
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
@@ -119,7 +159,7 @@ export function SuperAdminLayout() {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-          <Sheet>
+          <Sheet className="bg-primary">
             <SheetTrigger asChild>
               <Button
                 variant="outline"
@@ -130,10 +170,13 @@ export function SuperAdminLayout() {
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
+            <SheetContent
+              side="left"
+              className="flex flex-col bg-primary text-primary-foreground"
+            >
               <nav className="grid gap-2 text-lg font-medium">
                 <NavLink
-                  to="/super-admin/under-development"
+                  to="/student/under-development"
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
                   <Circle className="h-6 w-6" />
@@ -141,7 +184,7 @@ export function SuperAdminLayout() {
                 </NavLink>
                 <NavLink
                   end
-                  to="/super-admin"
+                  to="/student"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
                       isActive
@@ -154,14 +197,40 @@ export function SuperAdminLayout() {
                   Dashboard
                 </NavLink>
                 <NavLink
-                  to="/super-admin/under-development"
+                  to="/student/result"
+                  className={({ isActive }) =>
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                      isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
+                    }`
+                  }
+                >
+                  <StickyNote className="h-5 w-5" />
+                  Result
+                </NavLink>
+                <NavLink
+                  to="/student/classrooms"
+                  className={({ isActive }) =>
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                      isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
+                    }`
+                  }
+                >
+                  <Users className="h-5 w-5" />
+                  Classrooms
+                </NavLink>
+                <NavLink
+                  to="/profile"
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
                 >
                   <User className="h-5 w-5" />
                   Profile
                 </NavLink>
                 <NavLink
-                  to="/super-admin/create-organization"
+                  to="/recommendation"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
                       isActive
@@ -171,10 +240,10 @@ export function SuperAdminLayout() {
                   }
                 >
                   <ListPlus className="h-5 w-5" />
-                  Create Organisation
+                  Recommendation
                 </NavLink>
                 <NavLink
-                  to="/super-admin/under-development"
+                  to="/student/under-development"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
                       isActive
@@ -187,7 +256,7 @@ export function SuperAdminLayout() {
                   Report
                 </NavLink>
                 <NavLink
-                  to="/super-admin/settings"
+                  to="/student/under-development"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
                       isActive
@@ -206,60 +275,9 @@ export function SuperAdminLayout() {
               </div>
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1">
-            {/* <form>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                />
-              </div>
-            </form> */}
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" className="rounded-full">
-                <CircleUser className="h-5 w-5" />
-                <span className="sr-only">Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  localStorage.removeItem("Token");
-                  window.location.href = "/";
-                }}
-              >
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Header />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 overflow-y-auto">
-          {/* <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-          </div>
-          <div
-            className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-            x-chunk="dashboard-02-chunk-1"
-          >
-            <div className="flex flex-col items-center gap-1 text-center">
-              <h3 className="text-2xl font-bold tracking-tight">
-                You have no products
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                You can start selling as soon as you add a product.
-              </p>
-              <Button className="mt-4">Add Product</Button>
-            </div>
-          </div> */}
+        <main className="flex-1 p-4 lg:gap-6 lg:p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

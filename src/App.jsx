@@ -1,69 +1,15 @@
-// import One from '../src/assets/one.png'
-// import { Link, Route, Routes, Navigate } from "react-router-dom";
-// import Index from './pages/Autth/Index';
-// import TeachersLayout from './components/Layouts/Teacher';
-// import Dashboard from './pages/Teacher/Index';
-// import SuperAdminLayout from '../src/components/Layouts/SuperAdmin'
-// import SuperAdminDashboard from './pages/SuperAdmin/SuperAdmin';
-// import OrgLayout from '../src/components/Layouts/Org'
-// import OrgDashboard from './pages/Org/Org';
-// import StudentLayout from '../src/components/Layouts/Student'
-// import StudentDashboard from './pages/Student/Student'
-// import ParentLayout from '../src/components/Layouts/Parent'
-// import ParentDashboard from './pages/Parent/Parent'
-
-// const  App =()=> {
-//   return (
-//     <div>
-//       <Routes>
-
-//       {/* Teachers layout */}
-//       <Route element={<TeachersLayout/>}>
-//          <Route path="/teacher" element={<Dashboard />} />
-//        </Route>
-
-//        {/* Super Admin layout */}
-//        <Route element={<SuperAdminLayout/>}>
-
-//          <Route path="/super-admin" element={<SuperAdminDashboard />} />
-//        </Route>
-
-//        {/* Org layout */}
-//        <Route element={<OrgLayout/>}>
-//          <Route path="/org-admin" element={<OrgDashboard />} />
-//        </Route>
-
-//         {/* Student layout */}
-//         <Route element={<StudentLayout/>}>
-//          <Route path="/student" element={<StudentDashboard />} />
-//        </Route>
-
-//          {/* Parent layout */}
-//          <Route element={<ParentLayout/>}>
-//          <Route path="/parent" element={<ParentDashboard />} />
-//        </Route>
-
-//       <Route path="/" element={<Index />} />
-//     </Routes>
-//     </div>
-
-//   )
-// }
-
-// export default App
-
-import PrivateRoute from "./PrivateRoute";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Index from "./pages/Autth/Index";
-import TeachersLayout from "./components/Layouts/Teacher";
+import Index from "./pages/Auth/Index";
+import { TeachersLayout } from "./components/Layouts/Teacher";
+import { StudentLayout } from "./components/Layouts/Student";
 import Dashboard from "./pages/Teacher/Index";
 import { SuperAdminLayout } from "../src/components/Layouts/SuperAdmin";
 import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdmin";
-import OrgLayout from "../src/components/Layouts/Org";
+import { OrgLayout } from "../src/components/Layouts/Org";
 import OrgDashboard from "./pages/Org/Org";
-import StudentLayout from "../src/components/Layouts/Student";
 import StudentDashboard from "./pages/Student/Student";
-import ParentLayout from "../src/components/Layouts/Parent";
+import { StudentDash } from "./pages/Student/Student-dashboard";
+import { ParentsLayout } from "../src/components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
 import { useCurrentUserQuery } from "./features/api/apiSlice";
 import CreateOrg from "../src/pages/SuperAdmin/CreateOrg";
@@ -78,6 +24,10 @@ import Quiz from "../src/pages/Student/Quiz";
 import UnderDev from "../src/components/Error/UnderDev";
 import Recommendation from "../src/pages/Student/Recommendation";
 import Theory from "./components/Quiz/Exam";
+import { ThemeProvider } from "./components/Layouts/theme-provider";
+import { Result } from "./pages/Student/result";
+import { StudentClassrooms } from "./pages/Student/Classrooms";
+import StudentQiuzzes from "./pages/Student/classrooms/quizzes";
 
 const App = () => {
   const { data: user, error, isLoading } = useCurrentUserQuery();
@@ -103,50 +53,61 @@ const App = () => {
   const userRole = user?.role;
 
   return (
-    <div>
+    // <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <div className="overflow-x-hidden">
       <Routes>
         {/* Teachers layout */}
         <Route element={<TeachersLayout />}>
           <Route path="/teacher" element={<Dashboard />} />
-          <Route path="/dashboard/profile" element={<Profile />} />
-          <Route path="/dashboard/class-room" element={<ClassRoom />} />
-          <Route path="/dashboard/under-development" element={<UnderDev />} />
+          <Route path="/teacher/profile" element={<Profile />} />
+          <Route path="/teacher/class-room" element={<ClassRoom />} />
+          <Route path="/teacher/under-development" element={<UnderDev />} />
         </Route>
 
         {/* Super Admin layout */}
         <Route element={<SuperAdminLayout />}>
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
           <Route
-            path="/dashboard/create-organization"
+            path="/super-admin/create-organization"
             element={<CreateOrg />}
           />
-          <Route path="/dashboard/profile" element={<Profile />} />
-          <Route path="/dashboard/settings" element={<SuperAdminSettings />} />
-          <Route path="/dashboard/under-development" element={<UnderDev />} />
+          <Route path="/super-admin/profile" element={<Profile />} />
+          <Route
+            path="/super-admin/settings"
+            element={<SuperAdminSettings />}
+          />
+          <Route path="/super-admin/under-development" element={<UnderDev />} />
         </Route>
 
         {/* Org layout */}
         <Route element={<OrgLayout />}>
           <Route path="/org-admin" element={<OrgDashboard />} />
-          <Route path="/dashboard/profile" element={<Profile />} />
-          <Route path="/dashboard/org-settings" element={<OrgSettings />} />
-          <Route path="/dashboard/under-development" element={<UnderDev />} />
-          <Route path="/dashboard/class-room" element={<ClassRoom />} />
+          <Route path="/org-admin/profile" element={<Profile />} />
+          <Route path="/org-admin/org-settings" element={<OrgSettings />} />
+          <Route path="/org-admin/under-development" element={<UnderDev />} />
+          <Route path="/org-admin/class-room" element={<ClassRoom />} />
         </Route>
 
         {/* Student layout */}
         <Route element={<StudentLayout />}>
-          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student" element={<StudentDash />} />
+          <Route path="/dash-test" element={<StudentDashboard />} />
           <Route path="/profile" element={<StudentProfile />} />
+          <Route path="/student/classrooms" element={<StudentClassrooms />} />
           <Route path="/recommendation" element={<Recommendation />} />
           <Route path="/dashboard/class-room" element={<ClassRoom />} />
+          <Route
+            path="/student/classrooms/quizzies"
+            element={<StudentQiuzzes />}
+          />
           <Route path="/dashboard/quiz" element={<Quiz />} />
           <Route path="/dashboard/exam" element={<Theory />} />
-          <Route path="/dashboard/under-development" element={<UnderDev />} />
+          <Route path="/student/result" element={<Result />} />
+          <Route path="/student/under-development" element={<UnderDev />} />
         </Route>
 
         {/* Parent layout */}
-        <Route element={<ParentLayout />}>
+        <Route element={<ParentsLayout />}>
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard/under-development" element={<UnderDev />} />
@@ -160,77 +121,8 @@ const App = () => {
         )}
       </Routes>
     </div>
+    // </ThemeProvider>
   );
 };
 
 export default App;
-
-// const App = () => {
-
-//   return (
-//     <div>
-//       <Routes>
-//         {/* Teachers layout */}
-//         <Route
-//           element={
-//             <PrivateRoute roles={['teacher']}>
-//               <TeachersLayout />
-//             </PrivateRoute>
-//           }
-//         >
-//           <Route path="/teacher" element={<Dashboard />} />
-//         </Route>
-
-//         {/* Super Admin layout */}
-//         <Route
-//           element={
-//             <PrivateRoute roles={['superAdmin']}>
-//               <SuperAdminLayout />
-//             </PrivateRoute>
-//           }
-//         >
-//           <Route path="/super-admin" element={<SuperAdminDashboard />} />
-//         </Route>
-
-//         {/* Org layout */}
-//         <Route
-//           element={
-//             <PrivateRoute roles={['org-admin']}>
-//               <OrgLayout />
-//             </PrivateRoute>
-//           }
-//         >
-//           <Route path="/org-admin" element={<OrgDashboard />} />
-//         </Route>
-
-//         {/* Student layout */}
-//         <Route
-//           element={
-//             <PrivateRoute roles={['student']}>
-//               <StudentLayout />
-//             </PrivateRoute>
-//           }
-//         >
-//           <Route path="/student" element={<StudentDashboard />} />
-//         </Route>
-
-//         {/* Parent layout */}
-//         <Route
-//           element={
-//             <PrivateRoute roles={['parent']}>
-//               <ParentLayout />
-//             </PrivateRoute>
-//           }
-//         >
-//           <Route path="/parent" element={<ParentDashboard />} />
-//         </Route>
-
-//         {/* Default route */}
-
-//         <Route path="/" element={<Index />} />
-//       </Routes>
-//     </div>
-//   );
-// };
-
-// export default App;

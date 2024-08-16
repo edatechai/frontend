@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import One from "../../assets/one.png";
-import {
-  useLoginMutation,
-  useCreateUserMutation,
-} from "../../features/api/apiSlice";
+import { useCreateUserMutation } from "../../features/api/apiSlice";
+import { LoginForm } from "../../components/auth/login";
+import { RegisterForm } from "../../components/auth/register";
 
 const Index = () => {
   const [show, setShow] = useState(false);
@@ -23,29 +22,8 @@ const Index = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const [Login, { isLoading, isError: LoginError }] = useLoginMutation();
   const [CreateUser, { isSuccess, isLoading: signuploading, isError }] =
     useCreateUserMutation();
-
-  const handleLogin = async () => {
-    if (!email) return alert("Email is required");
-    if (!password) return alert("Password is required");
-
-    const payload = { loginIdentifier: email, password };
-    try {
-      const response = await Login(payload);
-      if (response.error) {
-        return alert(response.error.data.message);
-      }
-      if (response.data.token) {
-        const Token = response.data.token;
-        localStorage.setItem("Token", Token);
-        window.location.reload();
-      }
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
 
   const handleCreateAccount = async () => {
     const payload = {
@@ -88,85 +66,7 @@ const Index = () => {
                 Log in to your Account
               </div>
               <div className="font-semibold py-4">Welcome back!</div>
-              <label className="input input-bordered flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="w-4 h-4 opacity-70"
-                >
-                  <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-                  <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-                </svg>
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="text"
-                  className="w-full"
-                  placeholder="Email or username"
-                />
-              </label>
-
-              <label className="mt-7 input input-bordered flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="w-4 h-4 opacity-70"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  type={passwordVisible ? "text" : "password"}
-                  className="w-full"
-                  placeholder="Password"
-                />
-                <svg
-                  onClick={togglePasswordVisibility}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className="w-4 h-4 opacity-70 cursor-pointer"
-                >
-                  {passwordVisible ? (
-                    <path
-                      fillRule="evenodd"
-                      d="M13.593 9.106l1.414 1.414-1.414-1.414Zm.707 5.657a1 1 0 0 0 1.414-1.414L1.415 1.415A1 1 0 0 0 .001 2.828l2.877 2.877A7.985 7.985 0 0 0 0 8c1.5 2.5 4 4 8 4 1.107 0 2.086-.162 2.931-.432l2.875 2.875a1 1 0 0 0 1.414-1.414ZM8 10c-1.657 0-3-1.343-3-3 0-.264.053-.516.13-.758l1.528 1.528c.078.078.166.153.262.224-.224.277-.376.61-.376.996 0 1.104.896 2 2 2 .386 0 .72-.152.996-.376.071.096.146.184.224.262L8.758 9.87c-.242.077-.494.13-.758.13Zm-3.586-6L3 4.414A8.035 8.035 0 0 1 8 2c4 0 6.5 1.5 8 4-.21.35-.48.675-.79.97L8.414 2.414A1 1 0 0 0 6.586 3.586L8.414 5.414A1 1 0 0 0 6.586 4.586L4.414 6.414A1 1 0 0 0 6.414 8.586l2-2Z"
-                      clipRule="evenodd"
-                    />
-                  ) : (
-                    <path
-                      fillRule="evenodd"
-                      d="M8 1a7 7 0 0 1 7 7c-1.5 2.5-4 4-8 4s-6.5-1.5-8-4a7 7 0 0 1 7-7Zm0 12c2.8 0 5-1.1 6-3-1-1.9-3.2-3-6-3s-5 1.1-6 3c1 1.9 3.2 3 6 3Zm0-1c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3Zm0-1a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"
-                      clipRule="evenodd"
-                    />
-                  )}
-                </svg>
-              </label>
-
-              <div className="flex justify-between mt-7 items-center">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="checkbox mr-2"
-                  />
-                  <div>Remember me</div>
-                </div>
-                <div className="text-blue-500">Forgot Password?</div>
-              </div>
-              <button
-                onClick={handleLogin}
-                className="btn text-white w-full mt-7 bg-blue-500"
-              >
-                {isLoading ? "Please wait" : "Login"}
-              </button>
+              <LoginForm />
 
               <div className="mt-3 text-center">
                 <Link onClick={toggle}>Do you have an account? Create one</Link>
@@ -324,9 +224,9 @@ const Index = () => {
         </div>
       </div>
 
-      <div className=" lg:max-h-screen lg:min-h-screen min-h-screen w-full lg:w-1/2 bg-blue-500 flex justify-center items-center p-8 lg:p-16">
+      <div className="hidden lg:max-h-screen lg:min-h-screen w-full lg:w-1/2 bg-blue-500 lg:flex justify-center items-center p-8 lg:p-16">
         <div className="text-center">
-          <img src={One} alt="One" className="mx-auto" />
+          <img src={One} alt="One" className="mx-auto w-[35vw]" />
           <h2 className="text-xl font-medium text-white mt-8">
             Leveraging data to improve school children's academic ability
           </h2>
@@ -337,6 +237,66 @@ const Index = () => {
         </div>
       </div>
     </div>
+
+    // <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
+    //   <div className="flex items-center justify-center py-12">
+    //     {!show ? (
+    //       <div className="mx-auto grid w-[350px] gap-6">
+    //         <div className="grid gap-2">
+    //           <h1 className="text-3xl font-bold text-center">Login</h1>
+    //           <p className="text-muted-foreground">
+    //             Enter your credentials below to login to your account
+    //           </p>
+    //         </div>
+    //         <LoginForm />
+    //         <div className="mt-4 text-center text-sm">
+    //           Don&apos;t have an account?{" "}
+    //           <Button
+    //             variant="link"
+    //             onClick={toggle}
+    //             className="underline px-0"
+    //           >
+    //             Sign up
+    //           </Button>
+    //         </div>
+    //       </div>
+    //     ) : (
+    //       <div className="mx-auto grid w-[350px] gap-6">
+    //         <div className="grid gap-2">
+    //           <h1 className="text-3xl font-bold text-center">Sign Up</h1>
+    //           <p className="text-muted-foreground">
+    //             Enter your information to create an account
+    //           </p>
+    //         </div>
+    //         <RegisterForm />
+    //         <div className="mt-4 text-center text-sm">
+    //           Already have an account?{" "}
+    //           <Button
+    //             variant="link"
+    //             onClick={toggle}
+    //             className="underline px-0"
+    //           >
+    //             Sign in
+    //           </Button>
+    //         </div>
+    //       </div>
+    //     )}
+    //   </div>
+    //   <div className="hidden lg:flex bg-primary p-6 min-h-screen items-center flex-col justify-center">
+    //     <img
+    //       alt="Image"
+    //       src={One}
+    //       className="w-[35vw] dark:brightness-[0.2] dark:grayscale"
+    //     />
+    //     <h2 className="text-xl font-medium text-white mt-8 w-full">
+    //       Leveraging data to improve school children's academic ability
+    //     </h2>
+    //     <h6 className="font-light text-white mt-4">
+    //       Our passion is fuelled by the unwavering belief that personalised
+    //       education is the catalyst for transforming futures
+    //     </h6>
+    //   </div>
+    // </div>
   );
 };
 

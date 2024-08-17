@@ -179,7 +179,7 @@ export function DataTable<TData, TValue>({
             </strong>
           </span>
           {pageSize > 6 && (
-            <span>
+            <span className="hidden sm:block">
               Rows per page:
               <select
                 className="p-2 mx-2 rounded bg-white border border-border hover:bg-accent"

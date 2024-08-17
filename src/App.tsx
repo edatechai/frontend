@@ -3,26 +3,26 @@ import Index from "./pages/Auth/Index";
 import { TeachersLayout } from "./components/Layouts/Teacher";
 import { StudentLayout } from "./components/Layouts/Student";
 import Dashboard from "./pages/Teacher/Index";
-import { SuperAdminLayout } from "../src/components/Layouts/SuperAdmin";
+import { SuperAdminLayout } from "./components/Layouts/SuperAdmin";
 import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdmin";
-import { OrgLayout } from "../src/components/Layouts/Org";
+import { OrgLayout } from "./components/Layouts/Org";
 import OrgDashboard from "./pages/Org/Org";
 import StudentDashboard from "./pages/Student/Student";
 import { StudentDash } from "./pages/Student/Student-dashboard";
-import { ParentsLayout } from "../src/components/Layouts/Parent";
+import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
 import { useCurrentUserQuery } from "./features/api/apiSlice";
-import CreateOrg from "../src/pages/SuperAdmin/CreateOrg";
+import CreateOrg from "./pages/SuperAdmin/CreateOrg";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";
-import Profile from "../src/pages/Profile/Index";
-import StudentProfile from "../src/pages/Student/Profile";
-import OrgSettings from "../src/pages/Org/Settings";
-import ClassRoom from "../src/pages/ClassRoom/Index";
-import SuperAdminSettings from "../src/pages/SuperAdmin/Settings";
-import Quiz from "../src/pages/Student/Quiz";
-import UnderDev from "../src/components/Error/UnderDev";
-import Recommendation from "../src/pages/Student/Recommendation";
+import Profile from "./pages/Profile/Index";
+import StudentProfile from "./pages/Student/Profile";
+import OrgSettings from "./pages/Org/Settings";
+import ClassRoom from "./pages/ClassRoom/Index";
+import SuperAdminSettings from "./pages/SuperAdmin/Settings";
+import Quiz from "./pages/Student/Quiz";
+import UnderDev from "./components/Error/UnderDev";
+import Recommendation from "./pages/Student/Recommendation";
 import Theory from "./components/Quiz/Exam";
 import { ThemeProvider } from "./components/Layouts/theme-provider";
 import { Result } from "./pages/Student/result";
@@ -101,7 +101,7 @@ const App = () => {
             element={<StudentQiuzzes />}
           />
           <Route path="/dashboard/quiz" element={<Quiz />} />
-          <Route path="/dashboard/exam" element={<Theory />} />
+          <Route path="/dashboard/exam" element={<Theory lo={""} />} />
           <Route path="/student/result" element={<Result />} />
           <Route path="/student/under-development" element={<UnderDev />} />
         </Route>
@@ -121,7 +121,6 @@ const App = () => {
         )}
       </Routes>
     </div>
-    // </ThemeProvider>
   );
 };
 

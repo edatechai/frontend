@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useGetStrengthsAndweaknessesMutation } from "../../features/api/apiSlice";
-import { BadgeCheck, OctagonAlert } from "lucide-react";
+import { Dumbbell, OctagonAlert } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -52,15 +52,15 @@ const cData = [
 
 const chartConfig = {
   country: {
-    label: "Country",
+    label: "National Average",
     color: "hsl(var(--chart-1))",
   },
   class: {
-    label: "Class",
+    label: "Class Average",
     color: "hsl(var(--chart-2))",
   },
   student: {
-    label: "Student",
+    label: "Student Score",
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig;
@@ -115,7 +115,7 @@ export function SandW({
 
   return (
     <>
-      {data?.SW?.strengths.length || data?.SW?.weaknesses.length ? (
+      {/* {data?.SW?.strengths.length || data?.SW?.weaknesses.length ? (
         <Card x-chunk="dashboard-01-chunk-5">
           <CardHeader className="px-6 py-3">
             <CardTitle className="text-lg">{classTitle}</CardTitle>
@@ -192,7 +192,7 @@ export function SandW({
         </Card>
       ) : (
         <p>No Strenths or area of improvement</p>
-      )}
+      )} */}
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
         <Card>
           <CardHeader>
@@ -214,10 +214,25 @@ export function SandW({
                   cursor={false}
                   content={<ChartTooltipContent indicator="dashed" />}
                 />
-                <Legend />
-                <Bar dataKey="country" fill="var(--color-country)" radius={4} />
-                <Bar dataKey="class" fill="var(--color-class)" radius={4} />
-                <Bar dataKey="student" fill="var(--color-student)" radius={4} />
+                <Legend className="mt-4" />
+                <Bar
+                  dataKey="country"
+                  fill="var(--color-country)"
+                  radius={4}
+                  name="Country Average"
+                />
+                <Bar
+                  dataKey="class"
+                  fill="var(--color-class)"
+                  radius={4}
+                  name="Class Average"
+                />
+                <Bar
+                  dataKey="student"
+                  fill="var(--color-student)"
+                  radius={4}
+                  name="Student Score"
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -230,7 +245,59 @@ export function SandW({
             </div>
           </CardFooter> */}
         </Card>
-        <Card>
+        <Card className="bg-slate-50">
+          <CardHeader className="pb-4">
+            <CardTitle>{classTitle}</CardTitle>
+            <CardDescription>
+              More infomation about this topic on the curriculum.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto grid sm:grid-cols-2 gap-6 sm:gap-3 pt-8">
+            <div className="">
+              <span className="flex items-center gap-2">
+                <span className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
+                  <Dumbbell />
+                </span>
+                <h4 className="text-xl font-medium">Strengths</h4>
+              </span>
+              <div className="space-y-3 mt-3">
+                {data?.SW?.strengths.map((i, index: number) => (
+                  <div key={index}>
+                    <ul className="list-disc ml-8 font-medium">
+                      <li>{i?.objective_name}</li>
+                      <p className="text-sm font-light">
+                        National Percentile Rank -{" "}
+                        {Math.round(i?.national_percentile_rank)}%
+                      </p>
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="">
+              <span className="flex items-center gap-2">
+                <span className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center">
+                  <OctagonAlert />
+                </span>
+                <h4 className="text-xl font-medium">Areas of Improvements</h4>
+              </span>
+              <div className="space-y-3 mt-3">
+                {data?.SW?.weaknesses.map((i, index: number) => (
+                  <div key={index}>
+                    <ul className="list-disc ml-8 font-medium">
+                      <li>{i?.objective_name}</li>
+                      <p className="text-sm font-light">
+                        National Percentile Rank -{" "}
+                        {Math.round(i?.national_percentile_rank)}%
+                      </p>
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        {/* <Card>
           <CardHeader className="items-center pb-4">
             <CardTitle>Radar Chart</CardTitle>
             <CardDescription>2024</CardDescription>
@@ -258,7 +325,7 @@ export function SandW({
               </RadarChart>
             </ChartContainer>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </>
   );

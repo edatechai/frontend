@@ -306,7 +306,7 @@ export const apiSlice = createApi({
         method: "PUT",
         body: { bio },
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["CurrentUser"],
     }),
   }),
 });

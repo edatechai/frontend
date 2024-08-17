@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   Settings,
@@ -11,9 +10,7 @@ import {
   StickyNote,
   Users,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
 import { useSelector } from "react-redux";
@@ -21,12 +18,12 @@ import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
 export function StudentLayout() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
+  const { data } = useGetAccountByIdQuery(userInfo.accountId);
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-primary md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2 fixed text-primary-foreground w-[220px] lg:w-[280px] text-primary-foreground w-[220px] lg:w-[280px]">
+        <div className="flex h-full max-h-screen flex-col gap-2 fixed text-primary-foreground w-[220px] lg:w-[280px]">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 border-muted-foreground">
             <span className="flex items-center gap-2 font-semibold">
               <Circle className="h-6 w-6" />
@@ -142,13 +139,6 @@ export function StudentLayout() {
                 <Settings className="h-4 w-4" />
                 Dashboard-2
               </NavLink>
-              {/* <NavLink
-                to="/student/under-development"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
-              >
-                <LineChart className="h-4 w-4" />
-                Report
-              </NavLink> */}
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
@@ -159,7 +149,7 @@ export function StudentLayout() {
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-          <Sheet className="bg-primary">
+          <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="outline"

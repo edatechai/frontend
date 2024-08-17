@@ -1,10 +1,5 @@
-import { Link } from "react-router-dom";
-import React, { useRef, useState } from "react";
-import { Users } from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState } from "react";
 // import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -16,11 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  useGetAllClassRoomByAccountIdQuery,
-  useJoinClassMutation,
   useFindMyClassesQuery,
   useGetQuizResultByUserIdQuery,
-  useGetStrengthsAndweaknessesMutation,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
 import { SandW } from "../../components/Analysis/SandW";
@@ -49,7 +41,7 @@ export function StudentDash() {
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">
       <div className="w-full flex justify-end">
         <Select onValueChange={setClassId}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] bg-orange-500 text-white">
             <SelectValue placeholder="Select a subject" />
           </SelectTrigger>
           <SelectContent>

@@ -216,10 +216,10 @@ export function SandW({
                 />
                 <Legend className="mt-4" />
                 <Bar
-                  dataKey="country"
-                  fill="var(--color-country)"
+                  dataKey="student"
+                  fill="var(--color-student)"
                   radius={4}
-                  name="Country Average"
+                  name="Student Score"
                 />
                 <Bar
                   dataKey="class"
@@ -228,10 +228,10 @@ export function SandW({
                   name="Class Average"
                 />
                 <Bar
-                  dataKey="student"
-                  fill="var(--color-student)"
+                  dataKey="country"
+                  fill="var(--color-country)"
                   radius={4}
-                  name="Student Score"
+                  name="Country Average"
                 />
               </BarChart>
             </ChartContainer>
@@ -264,7 +264,7 @@ export function SandW({
                 {data?.SW?.strengths.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li>{i?.objective_name}</li>
+                      <li className="truncate">{i?.objective_name}</li>
                       <p className="text-sm font-light">
                         National Percentile Rank -{" "}
                         {Math.round(i?.national_percentile_rank)}%
@@ -275,17 +275,19 @@ export function SandW({
               </div>
             </div>
             <div className="">
-              <span className="flex items-center gap-2">
+              <span className="grid grid-flow-col justify-start items-center gap-2">
                 <span className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center">
                   <OctagonAlert />
                 </span>
-                <h4 className="text-xl font-medium">Areas of Improvements</h4>
+                <h4 className="text-xl font-medium truncate">
+                  Areas of Improvements
+                </h4>
               </span>
               <div className="space-y-3 mt-3">
                 {data?.SW?.weaknesses.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li>{i?.objective_name}</li>
+                      <li className="truncate">{i?.objective_name}</li>
                       <p className="text-sm font-light">
                         National Percentile Rank -{" "}
                         {Math.round(i?.national_percentile_rank)}%

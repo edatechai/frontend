@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-import React from "react";
 import { Users } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFindMyClassesQuery } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";

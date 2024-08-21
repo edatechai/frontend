@@ -52,3 +52,20 @@ export const RegisterSchema = z
       });
     }
   });
+
+export const AITaskSchema = z.object({
+  // learning_outcomes: z.string().min(1, { message: "Can not be empty" }).array(),
+  estimated_time: z.coerce
+    .number()
+    .min(1, { message: "Can not be less than 1" }),
+  total_score: z.coerce.number().min(1, { message: "Can not be less than 1" }),
+  total_questions: z.coerce
+    .number()
+    .min(1, { message: "Can not be less than 1" }),
+  question_type: z.string().min(1, { message: "Can not be empty" }),
+  exam_board: z.string().min(1, { message: "Can not be empty" }),
+  user_country: z.string().min(1, { message: "Can not be empty" }),
+  points_per_question: z.coerce
+    .number()
+    .min(1, { message: "Can not be less than 1" }),
+});

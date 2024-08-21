@@ -31,7 +31,7 @@ export function StudentLayout() {
               <span>{data?.accountName}</span>
             </span>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 mt-4">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <NavLink
                 end
@@ -176,7 +176,7 @@ export function StudentLayout() {
                   end
                   to="/student"
                   className={({ isActive }) =>
-                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 mt-4 ${
                       isActive
                         ? "bg-muted text-foreground hover:bg-slate-200"
                         : "text-primary-foreground hover:bg-blue-500"

@@ -1,9 +1,68 @@
+import { columns } from "@/components/table/columns";
 import { useSelector } from "react-redux";
 
-import { columns } from "../../components/table/columns";
 import { DataTable } from "../../components/table/data-table";
 import { useGetQuizResultByUserIdQuery } from "../../features/api/apiSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+// export type Results = {
+//   category: string;
+//   classRoomName: string;
+//   updatedAt: string;
+//   objective: string;
+//   scorePercentage: string;
+//   subject: string;
+//   topic: string;
+// };
+
+// export const columns: ColumnDef<Results>[] = [
+//   {
+//     accessorKey: "classRoomName",
+//     header: "Classroom",
+//   },
+//   {
+//     accessorKey: "topic",
+//     header: "Topic",
+//   },
+//   {
+//     accessorKey: "subject",
+//     header: "Subject",
+//   },
+//   //   {
+//   //     accessorKey: "updatedAt",
+//   //     header: "Date Taken",
+//   //     columnFormatting: {
+//   //       type: "date",
+//   //       format: "MM/DD/YYYY",
+//   //     },
+//   //   },
+//   {
+//     accessorKey: "objective",
+//     header: "Objective",
+//   },
+//   {
+//     accessorKey: "scorePercentage",
+//     header: ({ column }) => {
+//       return (
+//         <Button
+//           variant="ghost"
+//           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+//           className="hover:bg-primary hover:text-primary-foreground"
+//         >
+//           Score Percentage
+//           <ArrowUpDown className="ml-2 h-4 w-4" />
+//         </Button>
+//       );
+//     },
+//     cell: ({ row }) => {
+//       return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
+//     },
+//   },
+//   {
+//     id: "actions",
+//     enableHiding: false,
+//     cell: ({ row }) => <Button variant="outline">View Score</Button>,
+//   },
+// ];
 
 export const Result = () => {
   const userInfo = useSelector((state) => state.user.userInfo);

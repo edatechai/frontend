@@ -28,6 +28,8 @@ import { ThemeProvider } from "./components/Layouts/theme-provider";
 import { Result } from "./pages/Student/result";
 import { StudentClassrooms } from "./pages/Student/Classrooms";
 import StudentQiuzzes from "./pages/Student/classrooms/quizzes";
+import Report from "./pages/Student/report";
+import TeacherRoom from "./components/classroom/TeacherRoom";
 
 const App = () => {
   const { data: user, error, isLoading } = useCurrentUserQuery();
@@ -60,8 +62,10 @@ const App = () => {
         <Route element={<TeachersLayout />}>
           <Route path="/teacher" element={<Dashboard />} />
           <Route path="/teacher/profile" element={<Profile />} />
-          <Route path="/teacher/class-room" element={<ClassRoom />} />
+          <Route path="/teacher/class-room" element={<Dashboard />} />
+          <Route path="/teacher/class-room/class" element={<TeacherRoom />} />
           <Route path="/teacher/under-development" element={<UnderDev />} />
+          {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
         </Route>
 
         {/* Super Admin layout */}
@@ -95,11 +99,12 @@ const App = () => {
           <Route path="/profile" element={<StudentProfile />} />
           <Route path="/student/classrooms" element={<StudentClassrooms />} />
           <Route path="/recommendation" element={<Recommendation />} />
-          <Route path="/dashboard/class-room" element={<ClassRoom />} />
           <Route
             path="/student/classrooms/quizzies"
             element={<StudentQiuzzes />}
           />
+          {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
+          <Route path="/student/report" element={<Report />} />
           <Route path="/dashboard/quiz" element={<Quiz />} />
           <Route path="/dashboard/exam" element={<Theory lo={""} />} />
           <Route path="/student/result" element={<Result />} />

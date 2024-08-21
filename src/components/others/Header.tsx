@@ -14,17 +14,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { apiSlice, useGetAccountByIdQuery } from "../../features/api/apiSlice";
 import { ModeToggle } from "./mode-toggle";
+import { getInitialsFromFullName } from "@/lib/utils";
 
 const Header = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const initials = (name: string) => {
-    const rgx = new RegExp(/(\p{L}{1})\p{L}+/, "gu");
-    let initials = [...name.matchAll(rgx)] || [];
-    return (initials.shift()?.[1] || "") + (initials.pop()?.[1] || "");
-  };
 
   return (
     <>
@@ -48,7 +43,7 @@ const Header = () => {
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar> */}
-            {initials(userInfo?.fullName)}
+            {getInitialsFromFullName(userInfo?.fullName)}
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>

@@ -1,16 +1,15 @@
-import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 
 import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -71,9 +70,18 @@ export const columns: ColumnDef<Results>[] = [
       return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
     },
   },
-  //   {
-  //     id: "actions",
-  //     enableHiding: false,
-  //     cell: ({ row }) => <Button variant="outline">View Score</Button>,
-  //   },
+  // {
+  //   id: "actions",
+  //   enableHiding: false,
+  //   cell: ({ row }) => (
+  //     <Button
+  //       variant="outline"
+  //       onClick={() => {
+  //         console.log(row.original);
+  //       }}
+  //     >
+  //       View Score
+  //     </Button>
+  //   ),
+  // },
 ];

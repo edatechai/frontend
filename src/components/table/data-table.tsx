@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
+  // ColumnFiltersState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -41,18 +41,16 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  isLoading = false,
   pageSize = 10,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize,
   });
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  // const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -66,7 +64,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    // onRowSelectionChange: setRowSelection,
     state: {
       columnFilters,
       sorting,
@@ -79,7 +77,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full">
       {pageSize > 6 && (
         <div className="flex items-center py-4 gap-4">
-          <Input
+          {/* <Input
             placeholder="Filter objectives..."
             value={
               (table.getColumn("objective")?.getFilterValue() as string) ?? ""
@@ -88,7 +86,7 @@ export function DataTable<TData, TValue>({
               table.getColumn("objective")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
-          />
+          /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -109,7 +107,7 @@ export function DataTable<TData, TValue>({
                         column.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {column?.columnDef?.header as string}
                     </DropdownMenuCheckboxItem>
                   );
                 })}

@@ -1,4 +1,4 @@
-import { columns } from "@/components/table/columns";
+import { resultColumns } from "@/components/table/columns";
 import { useSelector } from "react-redux";
 
 import { DataTable } from "../../components/table/data-table";
@@ -74,7 +74,7 @@ export const Result = () => {
       <h1>Results</h1>
       <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc(100vw-328px)] overflow-x-auto">
         <DataTable
-          columns={columns}
+          columns={resultColumns}
           data={quizResult?.data || []}
           isLoading={quizResultLoading}
         />

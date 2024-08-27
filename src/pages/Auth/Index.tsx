@@ -4,6 +4,8 @@ import One from "../../assets/one.png";
 import { useCreateUserMutation } from "../../features/api/apiSlice";
 import { LoginForm } from "../../components/auth/login";
 import { RegisterForm } from "../../components/auth/register";
+import { Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [show, setShow] = useState(false);
@@ -296,6 +298,14 @@ const Index = () => {
     //       education is the catalyst for transforming futures
     //     </h6>
     //   </div>
+    // </div>
+
+    // <div className="flex items-center flex-col bg-primary text-white">
+    //   <p className="text-4xl">QUIZ</p>
+    //   <Brain className="size-32 opacity-70" />
+    //   <Button className="text-xl px-14 rounded-xl bg-white text-primary">
+    //     Start
+    //   </Button>
     // </div>
   );
 };

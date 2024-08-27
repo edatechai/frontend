@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { Bell, BookText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -12,7 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { apiSlice, useGetAccountByIdQuery } from "../../features/api/apiSlice";
+import {
+  apiSlice,
+  useGetAllNotificationsByUserIdQuery,
+  useLazyMarkNotificationAsReadQuery,
+} from "../../features/api/apiSlice";
 import { ModeToggle } from "./mode-toggle";
 import { getInitialsFromFullName } from "@/lib/utils";
 
@@ -20,6 +24,9 @@ const Header = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { data } = useGetAllNotificationsByUserIdQuery(userInfo?._id);
+  // const {} = useLazyMarkNotificationAsReadQuery(),
+  console.log({ data });
 
   return (
     <>
@@ -28,17 +35,53 @@ const Header = () => {
       </span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
+          <span className="relative">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="rounded-full uppercase text-muted-foreground"
+            >
+              <Bell className="size-5" />
+              <span className="sr-only">Toggle user menu</span>
+            </Button>
+            {data?.length ? (
+              <span className="size-4 bg-destructive text-destructive-foreground rounded-full absolute flex items-center justify-center top-0 left-7 text-xs">
+                {data?.length}
+              </span>
+            ) : (
+              ""
+            )}
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {data?.map((val, index: number) => (
+            <DropdownMenuItem key={index}>
+              <button
+                className="items-center gap-2 grid grid-flow-col justify-start text-left"
+                // onClick={() => useLazyMarkNotificationAsReadQuery(userInfo._id, val.id)}
+              >
+                <span className="size-8 rounded-full border border-border flex items-center justify-center">
+                  <BookText className="size-5 text-muted-foreground" />
+                </span>
+                <span>
+                  <p className="font-medium">{val?.title}</p>
+                  <p>{val?.message}</p>
+                </span>
+              </button>
+              {/* <p className="self-end ml-2 !justify-self-end">View Quiz</p> */}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="secondary"
             size="icon"
             className="rounded-full uppercase text-muted-foreground"
           >
-            {/* <User className="h-5 w-5" /> */}
-            {/* <img
-              alt="Tailwind CSS Navbar component"
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-              className="h-5 w-5"
-            /> */}
             {/* <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>

@@ -1,7 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const getToken = () => {
-  return localStorage.getItem("Token");
+  const token = localStorage.getItem("Token");
+  if (!token) {
+    console.log({ token });
+  }
+  return token;
 };
 
 // Define our single API slice object
@@ -10,8 +14,8 @@ const getToken = () => {
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "http://localhost:5000/",
-    baseUrl: "https://edatbackend.azurewebsites.net/",
+    baseUrl: "http://localhost:5000/",
+    // baseUrl: "https://edatbackend.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -268,6 +272,15 @@ export const apiSlice = createApi({
       // invalidatesTags: ["Quiz"],
     }),
 
+    generateStudentReport: builder.mutation({
+      query: (payload) => ({
+        url: "/api/report/generateStudentReport",
+        method: "POST",
+        body: payload,
+      }),
+      // invalidatesTags: ["Quiz"],
+    }),
+
     getAllQuiz: builder.mutation({
       query: (payload) => ({
         url: "/api/quiz/getMean",
@@ -308,6 +321,18 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["CurrentUser"],
     }),
+
+    // Notifications
+    getAllNotificationsByUserId: builder.query({
+      query: (id) => `/api/users/getAllNotificationsByUserId/${id}`,
+      // providesTags: ["Quiz"],
+    }),
+
+    markNotificationAsRead: builder.query({
+      query: (userId: number, notificationId: number) =>
+        `/api/users/markNotificationAsRead/${userId}/${notificationId}`,
+      // providesTags: ["Quiz"],
+    }),
   }),
 });
 
@@ -331,6 +356,7 @@ export const {
   useAddChildMutation,
   useUpdatePassScoreMutation,
   useUpdateBioMutation,
+  useGenerateStudentReportMutation,
 
   //objectives
   useCreateObjectiveMutation,
@@ -355,4 +381,8 @@ export const {
   useGetQuizResultByUserIdQuery,
   useGetStrengthsAndweaknessesMutation,
   useGetAllQuizMutation,
+
+  // notification
+  useGetAllNotificationsByUserIdQuery,
+  useLazyMarkNotificationAsReadQuery,
 } = apiSlice;

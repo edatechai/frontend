@@ -1,28 +1,18 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   useGetAllClassRoomByAccountIdQuery,
   useJoinClassMutation,
   useFindMyClassesTeacherQuery,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LuUserPlus } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
 
-const Index = () => {
+const TeachersClassroom = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data: classes } = useGetAllClassRoomByAccountIdQuery(
     userInfo?.accountId
@@ -30,7 +20,6 @@ const Index = () => {
   const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo._id);
   const [joinClass, { isLoading }] = useJoinClassMutation();
   const dialogRef = useRef(null);
-  const [classesData, setClassesData] = useState([]);
 
   console.log("my classes", myClasses);
 
@@ -150,14 +139,14 @@ const Index = () => {
                       <div>{i?.numberOfStudents.length}</div>
                     </span>
                     {/* <Link
-                  to="/student/classrooms/quizzies"
+                  to="/student/classrooms/quizzes"
                   state={{ data: i?._id }}
                   className="text-primary hover:underline text-sm font-semibold"
                 >
                   View Class
                 </Link> */}
                     <Link
-                      to="/teacher/class-room/class"
+                      to="/teacher/class"
                       state={{ data: i }}
                       className="text-primary hover:underline text-sm font-semibold"
                     >
@@ -214,4 +203,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default TeachersClassroom;

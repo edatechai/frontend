@@ -253,9 +253,17 @@ const TeacherRoom = () => {
         </CardContent>
       </Card>
 
-      <Card x-chunk="dashboard-01-chunk-5">
+      <Link
+        to="/teacher/class/create-report"
+        state={{ studentData: state.data.numberOfStudents }}
+        className="hover:underline text-primary w-fit"
+      >
+        Create Report
+      </Link>
+
+      {/* <Card x-chunk="dashboard-01-chunk-5">
         <CardHeader className="px-6 py-3">
-          <CardTitle className="text-lg">Quizzies</CardTitle>
+          <CardTitle className="text-lg">quizzes</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
           {AllQuiz?.map((i, index) => {
@@ -290,7 +298,7 @@ const TeacherRoom = () => {
             );
           })}
         </CardContent>
-      </Card>
+      </Card> */}
       <Dialog open={openExamTypeDialog} onOpenChange={setOpenExamTypeDialog}>
         <DialogContent>
           <DialogHeader>

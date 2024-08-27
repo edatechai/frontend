@@ -1,7 +1,5 @@
-import React from "react";
 import { useFindAllQuizByIdQuery } from "../../../features/api/apiSlice";
-import Books from "../../../assets/books.jpg";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import {
@@ -12,10 +10,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const StudentQiuzzes = () => {
-  let { state } = useLocation();
-  const { data: AllQuiz } = useFindAllQuizByIdQuery(state?.data);
+  const { classId } = useParams();
+  const { data: AllQuiz } = useFindAllQuizByIdQuery(classId);
 
   return (
     <>
@@ -34,45 +33,46 @@ const StudentQiuzzes = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Quizzies</BreadcrumbPage>
+            <BreadcrumbPage>Quizzes</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <h3 className="my-4 text-lg font-medium">
+        {AllQuiz?.[0]?.classRoomName}
+      </h3>
+      <div className="">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Quizzes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+            {AllQuiz?.map((val, i: number) => (
+              <Card key={i} className="flex flex-col justify-between">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium line-clamp-2">
+                    {/* {val?.subject} */}
+                    {val?.topic}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between gap-5">
+                  <p className="text-slate-950 truncate text-xs">
+                    {val?.numberOfQuestions} questions
+                  </p>
+                  {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
+                  <Link
+                    to="/dashboard/quiz"
+                    state={{ data: val }}
+                    className="text-primary hover:underline text-sm font-semibold"
+                  >
+                    Take Quiz
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
-        {AllQuiz?.map((i, index) => {
-          return (
-            <div key={index} className="">
-              <div className="card bg-white border-2 border-slate-300 text-primary-content">
-                <div className="card-body px-3 py-3">
-                  <img src={Books} className=" h-[200px] rounded-md" />
-                  <div className="flex justify-between items-center w-full overflow-hidden">
-                    <div>
-                      <h2 className="card-title text-slate-950">
-                        {i?.subject}
-                      </h2>
-                    </div>
-                    <div>
-                      <p className="text-slate-950 truncate">
-                        {i?.numberOfQuestions} questions
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="text-slate-800">Topic: {i?.topic}</p>
-                  <div className="text-slate-950"></div>
-                  <div className="card-actions justify-end">
-                    <div className="px-3 justify-center">
-                      <Link to="/dashboard/quiz" state={{ data: i }}>
-                        <button className="btn">Take Quiz</button>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
         {AllQuiz?.length === 0 && (
           <div className="text-center">No Quiz Found</div>
         )}

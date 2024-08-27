@@ -41,7 +41,7 @@ export function TeachersLayout() {
                 }
               >
                 <Home className="h-4 w-4" />
-                Dashboard
+                Classroom
               </NavLink>
               <NavLink
                 to="/teacher/under-development"
@@ -55,19 +55,6 @@ export function TeachersLayout() {
               >
                 <User className="h-4 w-4" />
                 Profile
-              </NavLink>
-              <NavLink
-                to="/teacher/class-room"
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                    isActive
-                      ? "bg-muted text-foreground hover:bg-slate-200"
-                      : "text-primary-foreground hover:bg-blue-500"
-                  }`
-                }
-              >
-                <Users className="h-4 w-4" />
-                Classroom
               </NavLink>
               <NavLink
                 to="/teacher/under-development"

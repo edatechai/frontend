@@ -33,8 +33,7 @@ export function StudentClassrooms() {
                   <div>{val.numberOfStudents.length}</div>
                 </span>
                 <Link
-                  to="/student/classrooms/quizzies"
-                  state={{ data: val?._id }}
+                  to={`/student/classrooms/${val._id}`}
                   className="text-primary hover:underline text-sm font-semibold"
                 >
                   View Class

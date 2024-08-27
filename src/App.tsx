@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Auth/Index";
 import { TeachersLayout } from "./components/Layouts/Teacher";
 import { StudentLayout } from "./components/Layouts/Student";
-import Dashboard from "./pages/Teacher/Index";
 import { SuperAdminLayout } from "./components/Layouts/SuperAdmin";
 import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdmin";
 import { OrgLayout } from "./components/Layouts/Org";
@@ -11,7 +10,10 @@ import StudentDashboard from "./pages/Student/Student";
 import { StudentDash } from "./pages/Student/Student-dashboard";
 import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
-import { useCurrentUserQuery } from "./features/api/apiSlice";
+import {
+  useCurrentUserQuery,
+  useFindAllQuizByIdQuery,
+} from "./features/api/apiSlice";
 import CreateOrg from "./pages/SuperAdmin/CreateOrg";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";
@@ -30,6 +32,8 @@ import { StudentClassrooms } from "./pages/Student/Classrooms";
 import StudentQiuzzes from "./pages/Student/classrooms/quizzes";
 import Report from "./pages/Student/report";
 import TeacherRoom from "./components/classroom/TeacherRoom";
+import CreateReport from "./components/classroom/CreateReport";
+import TeachersClassroom from "./components/classroom/JoinClassByTeacher";
 
 const App = () => {
   const { data: user, error, isLoading } = useCurrentUserQuery();
@@ -60,11 +64,14 @@ const App = () => {
       <Routes>
         {/* Teachers layout */}
         <Route element={<TeachersLayout />}>
-          <Route path="/teacher" element={<Dashboard />} />
           <Route path="/teacher/profile" element={<Profile />} />
-          <Route path="/teacher/class-room" element={<Dashboard />} />
-          <Route path="/teacher/class-room/class" element={<TeacherRoom />} />
+          <Route path="/teacher" element={<TeachersClassroom />} />
+          <Route path="/teacher/class" element={<TeacherRoom />} />
           <Route path="/teacher/under-development" element={<UnderDev />} />
+          <Route
+            path="/teacher/class/create-report"
+            element={<CreateReport />}
+          />
           {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
         </Route>
 
@@ -100,7 +107,10 @@ const App = () => {
           <Route path="/student/classrooms" element={<StudentClassrooms />} />
           <Route path="/recommendation" element={<Recommendation />} />
           <Route
-            path="/student/classrooms/quizzies"
+            path="/student/classrooms/:classId"
+            // loader={async ({ params }) => {
+            //   return useFindAllQuizByIdQuery(params.classId);
+            // }}
             element={<StudentQiuzzes />}
           />
           {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}

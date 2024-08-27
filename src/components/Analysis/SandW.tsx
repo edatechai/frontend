@@ -194,57 +194,6 @@ export function SandW({
         <p>No Strenths or area of improvement</p>
       )} */}
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Bar Chart</CardTitle>
-            <CardDescription>2024</CardDescription>
-          </CardHeader>
-          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto">
-            <ChartContainer config={chartConfig}>
-              <BarChart accessibilityLayer data={chartDatas}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  //   tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dashed" />}
-                />
-                <Legend className="mt-4" />
-                <Bar
-                  dataKey="student"
-                  fill="var(--color-student)"
-                  radius={4}
-                  name="Student Score"
-                />
-                <Bar
-                  dataKey="class"
-                  fill="var(--color-class)"
-                  radius={4}
-                  name="Class Average"
-                />
-                <Bar
-                  dataKey="country"
-                  fill="var(--color-country)"
-                  radius={4}
-                  name="Country Average"
-                />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-          {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-            <div className="flex gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </CardFooter> */}
-        </Card>
         <Card className="bg-slate-50">
           <CardHeader className="pb-4">
             <CardTitle>{classTitle}</CardTitle>
@@ -298,6 +247,57 @@ export function SandW({
               </div>
             </div>
           </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Bar Chart</CardTitle>
+            <CardDescription>2024</CardDescription>
+          </CardHeader>
+          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto">
+            <ChartContainer config={chartConfig}>
+              <BarChart accessibilityLayer data={chartDatas}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  //   tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                <Legend className="mt-4" />
+                <Bar
+                  dataKey="student"
+                  fill="var(--color-student)"
+                  radius={4}
+                  name="Student Score"
+                />
+                <Bar
+                  dataKey="class"
+                  fill="var(--color-class)"
+                  radius={4}
+                  name="Class Average"
+                />
+                <Bar
+                  dataKey="country"
+                  fill="var(--color-country)"
+                  radius={4}
+                  name="Country Average"
+                />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+          {/* <CardFooter className="flex-col items-start gap-2 text-sm">
+            <div className="flex gap-2 font-medium leading-none">
+              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+            </div>
+            <div className="leading-none text-muted-foreground">
+              Showing total visitors for the last 6 months
+            </div>
+          </CardFooter> */}
         </Card>
         {/* <Card>
           <CardHeader className="items-center pb-4">

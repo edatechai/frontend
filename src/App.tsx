@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 import Index from "./pages/Auth/Index";
 import { TeachersLayout } from "./components/Layouts/Teacher";
 import { StudentLayout } from "./components/Layouts/Student";
@@ -135,6 +136,7 @@ const App = () => {
           <Route path="/" element={<Navigate to={`/${userRole}`} replace />} />
         )}
       </Routes>
+      <Toaster />
     </div>
   );
 };

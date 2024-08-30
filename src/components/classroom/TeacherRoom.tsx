@@ -1,17 +1,11 @@
 import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-import { AITaskSchema } from "@/lib/schema";
 import {
   useFindAllQuizQuery,
   useFindAllObjectivesQuery,
   useCreateQuizMutation,
 } from "../../features/api/apiSlice";
-import Books from "../../assets/books.jpg";
 import {
   Dialog,
   DialogContent,
@@ -19,25 +13,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "../ui/button";
-import { Loader, SearchIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { getInitialsFromFullName } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import Examstyled from "./Examstyled";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
@@ -51,41 +32,13 @@ const TeacherRoom = () => {
   const [openExamTypeDialog, setOpenExamTypeDialog] = useState(false);
   const [openQuizDialog, setOpenQuizDialog] = useState(false);
 
-  console.log("here me", AllQuiz);
-
-  const isLoading = false;
-
-  const {
-    register,
-    handleSubmit: tyui,
-    formState: { errors },
-  } = useForm<z.infer<typeof AITaskSchema>>({
-    mode: "onChange",
-    resolver: zodResolver(AITaskSchema),
-  });
-
   const dialogRef = useRef(null);
   const [numberOfQuestions, setNumberOfQuestions] = useState("");
   const [search, setSearch] = useState("");
   const [filteredObjectives, setFilteredObjectives] = useState([]);
   const [selectedObjective, setSelectedObjective] = useState(null);
   const [followUp, setFollowUp] = useState("");
-  const [classRoomName, setClassRoomName] = useState();
 
-  // const handleSearchChange = (e) => {
-  //   const value = e.target.value;
-  //   setSearch(value);
-  //   if (value.trim() === '') {
-  //     setFilteredObjectives([]);
-  //   } else {
-  //     const filtered = allObjectives?.filter((objective) =>
-  //       objective?.objective?.toLowerCase().includes(value.toLowerCase())
-  //     );
-  //     setFilteredObjectives(filtered);
-  //   }
-  // };
-
-  console.log(classRoomName);
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -328,141 +281,14 @@ const TeacherRoom = () => {
         </DialogContent>
       </Dialog>
       <Dialog open={openQuizDialog} onOpenChange={setOpenQuizDialog}>
-        <DialogContent className="h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create Exam Style Questions</DialogTitle>
-            <DialogDescription className="flex gap-3 pt-5 flex-col">
-              <Label className="input input-bordered flex items-center gap-2 relative">
-                <Input
-                  value={search}
-                  onChange={handleSearchChange}
-                  type="text"
-                  className="w-full"
-                  placeholder="Search"
-                />
-                {filteredObjectives.length > 0 && (
-                  <ul className="absolute left-0 top-full bg-white border border-gray-300 w-full  overflow-y-auto">
-                    {filteredObjectives.map((objective, index) => (
-                      <li
-                        key={index}
-                        className="p-4 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleObjectiveSelect(objective)}
-                      >
-                        {objective?.objective}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Label>
-
-              <Label>
-                Estimated Time (In Minutes)
-                <Input
-                  type="text"
-                  {...register("estimated_time")}
-                  className="mt-1"
-                />
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.estimated_time?.message}</i>
-                </span>
-              </Label>
-              <Label>
-                Total Questions
-                <Input
-                  type="number"
-                  {...register("total_questions")}
-                  className="mt-1"
-                />
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.total_questions?.message}</i>
-                </span>
-              </Label>
-              <Label>
-                Total Score
-                <Input
-                  type="number"
-                  {...register("total_score")}
-                  className="mt-1"
-                />
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.total_score?.message}</i>
-                </span>
-              </Label>
-              <Label>
-                Points Per Question
-                <Input
-                  type="number"
-                  {...register("points_per_question")}
-                  className="mt-1"
-                />
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.points_per_question?.message}</i>
-                </span>
-              </Label>
-              <Label className="relative text-slate-900">
-                Question Type
-                <select
-                  className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
-                  {...register("question_type")}
-                >
-                  <option value="">--Select Question Type--</option>
-                  {["multiple_choice", "exam"].map((style, index) => (
-                    <option key={index} value={style}>
-                      {style.charAt(0).toLocaleUpperCase() + style.slice(1)}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.question_type?.message}</i>
-                </span>
-              </Label>
-              <Label className="relative text-slate-900">
-                Select Country
-                <select
-                  className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
-                  {...register("user_country")}
-                >
-                  <option value="">--Select Country--</option>
-                  {["India", "Nigeria"].map((style, index) => (
-                    <option key={index} value={style}>
-                      {style.charAt(0).toLocaleUpperCase() + style.slice(1)}
-                    </option>
-                  ))}
-                  <span className="text-red-400 text-xs">
-                    <i>{errors?.user_country?.message}</i>
-                  </span>
-                </select>
-              </Label>
-              <Label className="relative text-slate-900">
-                Exam Board
-                <select
-                  className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
-                  {...register("exam_board")}
-                >
-                  <option value="">--Exam Board--</option>
-                  {["WAEC", "JAMB", "CBSE"].map((style, index) => (
-                    <option key={index} value={style}>
-                      {style.charAt(0).toLocaleUpperCase() + style.slice(1)}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-red-400 text-xs">
-                  <i>{errors?.exam_board?.message}</i>
-                </span>
-              </Label>
-              <div className="w-full flex justify-center mt-5">
-                <Button disabled={isLoading}>
-                  {isLoading && (
-                    <span className="mr-2 animate-spin">
-                      <Loader />
-                    </span>
-                  )}
-                  Generate Task
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
+        <Examstyled
+          filteredObjectives={filteredObjectives}
+          handleObjectiveSelect={handleObjectiveSelect}
+          handleSearchChange={handleSearchChange}
+          search={search}
+          classId={state?.data?._id}
+          openDialog={setOpenQuizDialog}
+        />
       </Dialog>
     </>
   );

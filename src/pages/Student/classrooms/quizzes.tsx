@@ -1,5 +1,5 @@
 import { useFindAllQuizByIdQuery } from "../../../features/api/apiSlice";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 import {
@@ -11,10 +11,30 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect } from "react";
 
 const StudentQiuzzes = () => {
   const { classId } = useParams();
   const { data: AllQuiz } = useFindAllQuizByIdQuery(classId);
+
+  const getExamTasks = async () => {
+    try {
+      const res = await fetch(
+        `https://edat-examstyle-backend.onrender.com/get_exam_questions?role=teacher&class_id=${classId}`
+      );
+      const tasks = await res.json();
+      console.log({ tasks });
+      // if (res.ok) {
+      //   console.log
+      // }
+    } catch (err) {
+      console.log({ err });
+    }
+  };
+
+  useEffect(() => {
+    getExamTasks();
+  }, []);
 
   return (
     <>
@@ -62,7 +82,7 @@ const StudentQiuzzes = () => {
                   <Link
                     to="/dashboard/quiz"
                     state={{ data: val }}
-                    className="text-primary hover:underline text-sm font-semibold"
+                    className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
                   >
                     Take Quiz
                   </Link>

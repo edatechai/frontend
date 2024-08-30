@@ -33,6 +33,7 @@ export const apiSlice = createApi({
     "Question",
     "Quiz",
     "AddChild",
+    "Notification",
   ],
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -325,13 +326,15 @@ export const apiSlice = createApi({
     // Notifications
     getAllNotificationsByUserId: builder.query({
       query: (id) => `/api/users/getAllNotificationsByUserId/${id}`,
-      // providesTags: ["Quiz"],
+      providesTags: ["Notification"],
     }),
 
-    markNotificationAsRead: builder.query({
-      query: (userId: number, notificationId: number) =>
-        `/api/users/markNotificationAsRead/${userId}/${notificationId}`,
-      // providesTags: ["Quiz"],
+    markNotificationAsRead: builder.mutation({
+      query: ({ userId, notificationId }) => ({
+        url: `/api/users/markNotificationAsRead/${userId}/${notificationId}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Notification"],
     }),
   }),
 });
@@ -384,5 +387,5 @@ export const {
 
   // notification
   useGetAllNotificationsByUserIdQuery,
-  useLazyMarkNotificationAsReadQuery,
+  useMarkNotificationAsReadMutation,
 } = apiSlice;

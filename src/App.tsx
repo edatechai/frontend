@@ -22,6 +22,7 @@ import Profile from "./pages/Profile/Index";
 import StudentProfile from "./pages/Student/Profile";
 import OrgSettings from "./pages/Org/Settings";
 import ClassRoom from "./pages/ClassRoom/Index";
+import Exams from "./pages/Student/classrooms/exams";
 import SuperAdminSettings from "./pages/SuperAdmin/Settings";
 import Quiz from "./pages/Student/Quiz";
 import UnderDev from "./components/Error/UnderDev";
@@ -113,6 +114,15 @@ const App = () => {
             //   return useFindAllQuizByIdQuery(params.classId);
             // }}
             element={<StudentQiuzzes />}
+          />
+          <Route
+            path="/student/classrooms/exam/:examId"
+            // loader={async ({ params }) => {
+            //   return fetch(
+            //     `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${params.examId}`
+            //   );
+            // }}
+            element={<Exams />}
           />
           {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
           <Route path="/student/report" element={<Report />} />

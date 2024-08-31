@@ -1,26 +1,67 @@
-// import { useSubmitQuizMutation } from "@/services/studentApi";
-// import { useAppSelector } from "@/store/hooks";
-// import { useRouter } from "next/router";
-import React, { createElement, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import { toast } from "sonner";
 import { FaSpinner } from "react-icons/fa";
+import { ExamQuestions } from "@/pages/Student/classrooms/exams";
 import { Button } from "../ui/button";
-import { useToast } from "../ui/use-toast";
-import { questions } from "@/lib/jsons";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-function Theory({ lo }) {
-  //   const user = useAppSelector((state) => state.auth);
-  const [answers, setAnswers] = useState([]);
-  //   const router = useRouter();
-  const { toast } = useToast();
-  const isLoading = false;
-  //   const [quizSubmit, { data, isLoading, isError }] = useSubmitQuizMutation();
+function Theory({ exam }: { exam: ExamQuestions }) {
+  const userInfo = useSelector((state) => state?.user.userInfo);
 
-  const handleInput = (e) => {
-    // setAnswers({ ...answers, [e.target.name]: e.target.value });
-  };
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    // e.preventDefault();
+  // const handleInput = (e: ChangeEvent<HTMLTextAreaElement>, i: number) => {
+  //   setAnswers({ ...answers, [e.target.name]: e.target.value });
+  // };
+
+  console.log({ userInfo });
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const answers = Object.values(
+      Object.fromEntries(new FormData(e.target).entries())
+    );
+
+    try {
+      const res = await fetch(
+        "https://edat-microservice-v1.onrender.com/student/process_exam_responses",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("edat_token"),
+          },
+          body: JSON.stringify({
+            exam_questions: exam,
+            student_responses: answers,
+            student_name: userInfo?.fullName,
+            student_id: userInfo?._id,
+            class_id: exam?.exam_question?.class_id,
+          }),
+        }
+      );
+      const data = res.json();
+      console.log({ examData: data });
+      setIsLoading(false);
+      if (res.ok) {
+        toast("Submitted successfully");
+        navigate("/student/classrooms");
+      } else {
+        toast("Request failed.", {
+          description: "Something went wrong",
+          style: { color: "red" },
+        });
+      }
+    } catch (err) {
+      toast("Request failed.", {
+        description: "Something went wrong",
+        style: { color: "red" },
+      });
+    }
+
     // const v = Object.keys(answers).map((e) => {
     //   return { question_code: e, answer: answers[e] };
     // });
@@ -55,45 +96,30 @@ function Theory({ lo }) {
     // }
   };
 
-  //   useEffect(() => {
-  //     if (data) {
-  //       console.log({ submitted: data });
-  //       toast({
-  //         description: "Task summitted successfully",
-  //       });
-  //     }
-  //     if (isError) {
-  //       toast({
-  //         variant: "destructive",
-  //         description: "Unable to submit! Something went wrong",
-  //       });
-  //     }
-  //   }, [data, isError]);
-
   return (
     <div className="my-8 w-full px-28">
-      <h2 className="text-3xl font-medium text-center mb-10">
-        Basic Mathematics Test (10 Minutes)
-        {/* {lo} */}
+      <h2 className="text-3xl font-medium text-center mb-10 capitalize">
+        {exam?.exam_question?.questions[0].learning_objectives[0]} Test (10
+        Minutes)
       </h2>
       <p className="font-medium">
         Instructions: Answer all questions. Show all Workings for full marks
       </p>
       <form className="flex gap-10 mt-8 flex-col" onSubmit={handleSubmit}>
-        {questions.map((value, index) => (
+        {exam?.exam_question?.questions?.map((value, index) => (
           <div key={index} className="space-y-2">
             <h5 className="px-3 py-2 rounded bg-primary text-white w-fit">
-              Question {index + 1}
+              Question {value?.number}
             </h5>
-            <p>{value}</p>
+            <p>{value.text}</p>
             <label className="mt-7 block">
               <p>Answer:</p>
               <textarea
-                // name={value.question_code}
+                name={value.text}
                 className="w-full rounded-md p-2 h-36 border border-solid border-primary"
                 placeholder="Input your answer (show your workings)"
                 required
-                onChange={handleInput}
+                // onChange={(e) => handleInput(e, index)}
               ></textarea>
             </label>
           </div>

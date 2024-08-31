@@ -33,6 +33,7 @@ export const apiSlice = createApi({
     "Question",
     "Quiz",
     "AddChild",
+    "User",
     "Notification",
   ],
   endpoints: (builder) => ({
@@ -336,6 +337,22 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Notification"],
     }),
+    //recommendObjectives
+    recommendObjectives: builder.query({
+      query: () => `/api/users/recommendObjectives`,
+      // invalidatesTags: ["User"],
+      providesTags: ["User"],
+    }),
+
+    /// get student recommendation
+    studentRecommendation: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/studentRecommendation",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -346,6 +363,8 @@ export const {
   useGetAllAccountsQuery,
   useGetAccountByIdQuery,
   useCreateUserMutation,
+  useStudentRecommendationMutation,
+  useRecommendObjectivesQuery,
 
   //classRoom
   useCreateClassRoomMutation,

@@ -4,13 +4,12 @@ import { BiSolidSend } from "react-icons/bi";
 import { useChatMutation } from "../api/apiSlice";
 
 function ChatBot({ userInfo, rec }) {
-  const [chat, setChat] = useState<Record<string, string>[]>([]);
   const [question, setQuestion] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   console.log({ rec });
 
-  const [chatBot, { data }] = useChatMutation();
+  const [chatBot, { data, isLoading }] = useChatMutation();
 
   console.log({ chatRes: data });
 
@@ -20,8 +19,6 @@ function ChatBot({ userInfo, rec }) {
   //     const maxScrollTop = scrollHeight + clientHeight;
   //     bottomRef.current.scrollTop = 30;
   //   }
-
-  const isLoading = true;
 
   useEffect(() => {
     chatBot({
@@ -40,9 +37,17 @@ function ChatBot({ userInfo, rec }) {
 
   function handleQuestionSubmit() {
     if (question.length > 0) {
-      const q = question;
-      setQuestion("");
-      setChat((prev) => [...prev, { you: q }]);
+      //   setQuestion("")
+      const payload = {
+        conversation: data?.conversation,
+        userInput: question,
+        askedQuestions: [
+          "Now, let me present you with a challenging question to explore: Can you derive the quadratic formula x = [-b ± sqrt(b² - 4ac)] / (2a) from the general form of a quadratic equation? This question will not only test your understanding of quadratic equations but also your ability to apply algebraic concepts",
+          "Can you factor the quadratic equation x² - 5x - 16 = 0? This question will test your understanding of factoring and how it can be applied to quadratic equations",
+        ],
+      };
+
+      chatBot(payload);
 
       bottomRef.current?.scrollIntoView({
         behavior: "smooth",
@@ -63,20 +68,22 @@ function ChatBot({ userInfo, rec }) {
   //   }, [data, isLoading, isSuccess]);
 
   return (
-    <div className="relative h-72 p-3 rounded-md bg-yellow-500 flex flex-col">
-      <div className="flex flex-col gap-2 mx-3 h-64 overflow-y-auto">
-        {data?.conversation?.map((e, i) => {
-          return (
+    <div className="h-full w-full p-3 rounded-md bg-yellow-500 flex flex-col">
+      <div className="flex flex-col gap-2 mx-3 h-[calc(90vh-40px)] overflow-y-auto">
+        {data?.conversation?.map((e, i) =>
+          e.content ? (
             <p
               className={`bg-white px-4 py-1 w-fit rounded-lg max-w-[90%] ${
-                e.you && "self-end"
+                e.role == "user" && "self-end"
               }`}
               key={i}
             >
               {e.content}
             </p>
-          );
-        })}
+          ) : (
+            ""
+          )
+        )}
         {!!isLoading && (
           <div className="bg-white px-4 py-1 w-fit rounded-lg max-w-[90%]">
             <p className="animate-bounce text-lg">...</p>

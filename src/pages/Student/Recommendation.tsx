@@ -356,7 +356,7 @@ const Recommedation = () => {
       )}
 
       <Dialog open={showChatBot} onOpenChange={setShowChatBot}>
-        <DialogContent className="sm:max-w-[425px] p-0">
+        <DialogContent className="h-[90vh] w-[70vw] p-0">
           {/* <DialogTitle>hello</DialogTitle> */}
           <ChatBot userInfo={userInfo} rec={data} />
         </DialogContent>

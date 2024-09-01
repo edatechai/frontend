@@ -6,16 +6,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import ChatBot from "@/features/chatbot/chatbot";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import {
   useRecommendObjectivesQuery,
   useStudentRecommendationMutation,
@@ -24,6 +18,7 @@ import {
 const Recommedation = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data } = useRecommendObjectivesQuery();
+  const [showChatBot, setShowChatBot] = useState(false);
   const [getRec, { isLoading, data: recData }] =
     useStudentRecommendationMutation();
   const [preview, setPreview] = useState("");
@@ -359,6 +354,15 @@ const Recommedation = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      <Dialog open={showChatBot} onOpenChange={setShowChatBot}>
+        <DialogContent className="sm:max-w-[425px]">
+          <ChatBot name={userInfo?.fullName} />
+        </DialogContent>
+      </Dialog>
+
+      {/* <button onClick={() => setShowChatBot(true)}>show chat bot</button> */}
+
       {quizAttempted && quizPassed && (
         <div className="mt-7 bg-white p-6 rounded-lg shadow-md">
           <div className="text-slate-700">

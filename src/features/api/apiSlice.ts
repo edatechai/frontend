@@ -337,6 +337,26 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Notification"],
     }),
+
+    updateNumberOfLearningObjective: builder.mutation({
+      query: ({ id, numberOfLearningObjectives }) => ({
+        url: `/api/users/updateNumberOfLearningObjective/${id}`,
+        method: "PUT",
+        body: { numberOfLearningObjectives },
+      }),
+      invalidatesTags: ["AddChild"],
+    }),
+
+    //classRoom endpoint
+    addSubjectPriority: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/addSubjectPriority",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["AddChild"],
+    }),
+
     //recommendObjectives
     recommendObjectives: builder.query({
       query: () => `/api/users/recommendObjectives`,
@@ -365,6 +385,7 @@ export const {
   useCreateUserMutation,
   useStudentRecommendationMutation,
   useRecommendObjectivesQuery,
+  useUpdateNumberOfLearningObjectiveMutation,
 
   //classRoom
   useCreateClassRoomMutation,
@@ -379,6 +400,7 @@ export const {
   useUpdatePassScoreMutation,
   useUpdateBioMutation,
   useGenerateStudentReportMutation,
+  useAddSubjectPriorityMutation,
 
   //objectives
   useCreateObjectiveMutation,

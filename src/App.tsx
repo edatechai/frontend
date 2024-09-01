@@ -11,10 +11,7 @@ import StudentDashboard from "./pages/Student/Student";
 import { StudentDash } from "./pages/Student/Student-dashboard";
 import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
-import {
-  useCurrentUserQuery,
-  useFindAllQuizByIdQuery,
-} from "./features/api/apiSlice";
+import { useCurrentUserQuery } from "./features/api/apiSlice";
 import CreateOrg from "./pages/SuperAdmin/CreateOrg";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";

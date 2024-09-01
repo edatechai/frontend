@@ -24,6 +24,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
     const answers = Object.values(
       Object.fromEntries(new FormData(e.target).entries())
     );
+    const prependAnswers = answers.map((e) => `The answer is ${e}`);
 
     try {
       const res = await fetch(
@@ -36,7 +37,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
           },
           body: JSON.stringify({
             exam_questions: exam,
-            student_responses: answers,
+            student_responses: prependAnswers,
             student_name: userInfo?.fullName,
             student_id: userInfo?._id,
             class_id: exam?.exam_question?.class_id,

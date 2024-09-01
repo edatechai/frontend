@@ -356,12 +356,11 @@ const Recommedation = () => {
       )}
 
       <Dialog open={showChatBot} onOpenChange={setShowChatBot}>
-        <DialogContent className="sm:max-w-[425px]">
-          <ChatBot name={userInfo?.fullName} />
+        <DialogContent className="sm:max-w-[425px] p-0">
+          {/* <DialogTitle>hello</DialogTitle> */}
+          <ChatBot userInfo={userInfo} rec={data} />
         </DialogContent>
       </Dialog>
-
-      {/* <button onClick={() => setShowChatBot(true)}>show chat bot</button> */}
 
       {quizAttempted && quizPassed && (
         <div className="mt-7 bg-white p-6 rounded-lg shadow-md">
@@ -379,7 +378,7 @@ const Recommedation = () => {
             teacher for further instructions or chat with Eddy, our AI
             assistant.
           </div>
-          <Button onClick={getRecommendation} className="ml-[80%]">
+          <Button onClick={() => setShowChatBot(true)} className="ml-[80%]">
             Chat with Eddy
           </Button>
         </div>

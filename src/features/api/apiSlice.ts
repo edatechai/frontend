@@ -35,6 +35,7 @@ export const apiSlice = createApi({
     "AddChild",
     "User",
     "Notification",
+    "Chat",
   ],
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -373,6 +374,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    chat: builder.mutation({
+      query: (payload) => ({
+        url: "/api/chat/chat",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Chat"],
+    }),
   }),
 });
 
@@ -429,4 +438,7 @@ export const {
   // notification
   useGetAllNotificationsByUserIdQuery,
   useMarkNotificationAsReadMutation,
+
+  // chat
+  useChatMutation,
 } = apiSlice;

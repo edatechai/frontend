@@ -1,12 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidSend } from "react-icons/bi";
+import { useChatMutation } from "../api/apiSlice";
 
-function ChatBot({ name }: { name: string }) {
+function ChatBot({ userInfo, rec }) {
   const [chat, setChat] = useState<Record<string, string>[]>([]);
-  const [showDiv, setShowDiv] = useState("ask edat");
-  const [question, setQuestion] = useState("edat bot");
+  const [question, setQuestion] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  console.log({ rec });
+
+  const [chatBot, { data }] = useChatMutation();
+
+  console.log({ chatRes: data });
 
   //   function scrollToBottom() {
   //     const scrollHeight = bottomRef.current?.scrollHeight;
@@ -15,17 +21,22 @@ function ChatBot({ name }: { name: string }) {
   //     bottomRef.current.scrollTop = 30;
   //   }
 
-  const isLoading = false;
+  const isLoading = true;
 
   useEffect(() => {
-    setChat([
-      { bot: `Hello ${name}` },
-      { bot: "How can I help you?" },
-      // {
-      //   you: "Just for test Just for test Just for test Just for test Just for Just for test Just for test Just for test Just for test Just for",
-      // },
-    ]);
-  }, [name]);
+    chatBot({
+      name: userInfo.fullName,
+      country: "Nigeria",
+      //   learningObjective: rec.objectives[0].objective,
+      aspiration: userInfo.bioData[0].age_or_grade_level,
+      interests: userInfo.bioData[0].subjects_of_interest + "",
+      strengths: "Problem-solving",
+      learningStyle: userInfo.bioData[0].learning_style_preferences + "",
+      strugglingTopic: "Quadratic equations",
+      neurodiversity:
+        userInfo.bioData[0].special_educational_needs_or_accommodations + "",
+    });
+  }, []);
 
   function handleQuestionSubmit() {
     if (question.length > 0) {
@@ -52,58 +63,50 @@ function ChatBot({ name }: { name: string }) {
   //   }, [data, isLoading, isSuccess]);
 
   return (
-    <div className="w-full h-full">
-      <div className="relative h-72 w-80 rounded-md bg-[#7cc5b9] flex flex-col">
-        <div className="h-8 w-full relative z-50">
-          <button
-            className="absolute size-6 top-1 bg-[#00327f] text-white rounded-full z-40 right-3"
-            onClick={() => setShowDiv("ask edat")}
-          >
-            X
-          </button>
-        </div>
-        <div className="flex flex-col gap-2 mx-3 h-64 overflow-y-auto">
-          {chat.map((e, i) => (
+    <div className="relative h-72 p-3 rounded-md bg-yellow-500 flex flex-col">
+      <div className="flex flex-col gap-2 mx-3 h-64 overflow-y-auto">
+        {data?.conversation?.map((e, i) => {
+          return (
             <p
               className={`bg-white px-4 py-1 w-fit rounded-lg max-w-[90%] ${
                 e.you && "self-end"
               }`}
               key={i}
             >
-              {e.bot || e.you}
+              {e.content}
             </p>
-          ))}
-          {!!isLoading && (
-            <div className="bg-white px-4 py-1 w-fit rounded-lg max-w-[90%]">
-              <p className="animate-bounce text-lg">...</p>
-            </div>
-          )}
-          <div className="bg-fuchsia-700 px-4 py-1 rounded-lg max-w-[90%] h-6 opacity-0"></div>
-          <div
-            className="bg-fuchsia-700 px-4 py-1 rounded-lg max-w-[90%] h-6 opacity-0"
-            ref={bottomRef}
-          >
-            <p>Ref</p>
+          );
+        })}
+        {!!isLoading && (
+          <div className="bg-white px-4 py-1 w-fit rounded-lg max-w-[90%]">
+            <p className="animate-bounce text-lg">...</p>
           </div>
+        )}
+        <div className="bg-fuchsia-700 px-4 py-1 rounded-lg max-w-[90%] h-6 opacity-0"></div>
+        <div
+          className="bg-fuchsia-700 px-4 py-1 rounded-lg max-w-[90%] h-6 opacity-0"
+          ref={bottomRef}
+        >
+          <p>Ref</p>
         </div>
-        <div className="w-80 h-12 bg-slate-200 flex gap-2 px-4 items-center">
-          <input
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="h-8 !rounded-xl w-64 px-2"
-          />
-          <button
-            disabled={isLoading}
-            className={`size-8 rounded-full text-white bg-[#00327f] flex items-center justify-center ${
-              isLoading && "opacity-50"
-            }`}
-            onClick={() => {
-              handleQuestionSubmit();
-            }}
-          >
-            <BiSolidSend />
-          </button>
-        </div>
+      </div>
+      <div className="w-full h-12 bg-slate-200 flex gap-2 px-4 items-center rounded">
+        <input
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          className="h-8 !rounded-xl w-full px-2"
+        />
+        <button
+          disabled={isLoading}
+          className={`size-8 rounded-full text-white bg-[#00327f] flex items-center justify-center ${
+            isLoading && "opacity-50"
+          }`}
+          onClick={() => {
+            handleQuestionSubmit();
+          }}
+        >
+          <BiSolidSend />
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Ellipsis } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "../ui/button";
@@ -27,6 +27,21 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { useState } from "react";
+import {
+  useUpdateNumberOfLearningObjectiveMutation,
+  useUpdatePassScoreMutation,
+} from "@/features/api/apiSlice";
+import { Input } from "../ui/input";
+import { Label } from "recharts";
 
 export type licenses = {
   email: string;
@@ -53,6 +68,19 @@ export type Results = {
     isCorrect: boolean;
     wrongOption: string;
   }[];
+};
+
+export type Child = {
+  user: {
+    _id: string;
+    fullName: string;
+    email: string;
+    license: string;
+    role: string;
+    username: string;
+    passScore: number;
+    numberOfLearningObjectives: number;
+  };
 };
 
 export const columns: ColumnDef<Results>[] = [
@@ -282,6 +310,159 @@ export const licenseColumns: ColumnDef<licenses>[] = [
             >
               Copy parent's license code
             </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const childColumns: ColumnDef<Child>[] = [
+  {
+    header: "Name",
+    cell: ({ row }) => row.original.user.fullName,
+  },
+  {
+    header: "License code",
+    cell: ({ row }) => row.original.user.license,
+  },
+  {
+    header: "Quiz taken",
+    cell: ({ row }) => row.original.user.passScore,
+  },
+  {
+    // accessorKey: "passScore",
+    header: "Minimum score",
+    cell: ({ row }) => row.original.user.passScore,
+  },
+  {
+    // accessorKey: "numberOfLearningObjectives",
+    header: "Learning objectives",
+    cell: ({ row }) => row.original.user.numberOfLearningObjectives,
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Actions",
+    cell: ({ row }) => {
+      const { _id } = row.original.user;
+      const [updatePassScore, { isLoading: sisloading }] =
+        useUpdatePassScoreMutation();
+      const [updateNumberOfLearningObjective, { isLoading: sisloading2 }] =
+        useUpdateNumberOfLearningObjectiveMutation();
+      const [passScore, setPassScore] = useState("");
+      const [numberOfLearningObjectives, setNumberOfLearningObjectives] =
+        useState("");
+
+      const handleUpdateNumberOfLearningObjective = async () => {
+        try {
+          const res = await updateNumberOfLearningObjective({
+            id: _id,
+            numberOfLearningObjectives: numberOfLearningObjectives,
+          }).unwrap();
+          console.log(res);
+          if (res.status === true) {
+            alert("pass score updated successfully");
+          }
+        } catch (error) {
+          console.error("Error updating pass score:", error);
+          alert(error);
+        }
+      };
+
+      const handleUpdate = async () => {
+        try {
+          const res = await updatePassScore({
+            id: _id,
+            passScore: passScore,
+          }).unwrap();
+          console.log(res);
+          if (res.status === true) {
+            alert("pass score updated successfully");
+          }
+        } catch (error) {
+          console.error("Error updating pass score:", error);
+          alert(error);
+        }
+      };
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <Ellipsis className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-border w-full">
+                  Update minimum score
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Update child minimum score</DialogTitle>
+                  <DialogDescription>
+                    <div className="mt-4">
+                      <Label>Minimum score</Label>
+                      <Input
+                        value={passScore}
+                        disabled={sisloading}
+                        onChange={(e) => setPassScore(e.target.value)}
+                        type="text"
+                        className="w-full"
+                        placeholder="Enter license code"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleUpdate}
+                      disabled={sisloading}
+                      className="mx-auto block mt-4"
+                    >
+                      Submit
+                    </Button>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+            <DropdownMenuSeparator />
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-border w-full">
+                  Update number of objectives
+                </button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Update Number of learning objective</DialogTitle>
+                  <DialogDescription>
+                    <div className="mt-4">
+                      <Label>Number</Label>
+                      <Input
+                        value={numberOfLearningObjectives}
+                        disabled={sisloading}
+                        onChange={(e) =>
+                          setNumberOfLearningObjectives(e.target.value)
+                        }
+                        type="text"
+                        className="w-full"
+                        placeholder="Enter a number"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleUpdateNumberOfLearningObjective}
+                      disabled={sisloading2}
+                      className="mx-auto block mt-4"
+                    >
+                      Submit
+                    </Button>
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </DropdownMenuContent>
         </DropdownMenu>
       );

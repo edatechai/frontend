@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useChatMutation } from "../api/apiSlice";

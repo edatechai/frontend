@@ -32,6 +32,7 @@ const StudentQiuzzes = () => {
   const { classId } = useParams();
   const { data: AllQuiz } = useFindAllQuizByIdQuery(classId);
   const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
+  console.log({ AllQuiz });
 
   const getExamTasks = async () => {
     try {

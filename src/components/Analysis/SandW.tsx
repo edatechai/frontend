@@ -40,6 +40,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "../ui/button";
+import { toTitleCase } from "@/lib/utils";
 
 const cData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -213,7 +214,9 @@ export function SandW({
                 {data?.SW?.strengths.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li className="truncate">{i?.objective_name}</li>
+                      <li className="truncate">
+                        {toTitleCase(i?.objective_name || "")}
+                      </li>
                       <p className="text-sm font-light">
                         National Percentile Rank -{" "}
                         {Math.round(i?.national_percentile_rank)}%
@@ -236,7 +239,9 @@ export function SandW({
                 {data?.SW?.weaknesses.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li className="truncate">{i?.objective_name}</li>
+                      <li className="truncate">
+                        {toTitleCase(i?.objective_name || "")}
+                      </li>
                       <p className="text-sm font-light">
                         National Percentile Rank -{" "}
                         {Math.round(i?.national_percentile_rank)}%
@@ -250,7 +255,7 @@ export function SandW({
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Bar Chart</CardTitle>
+            <CardTitle>Performance Chart</CardTitle>
             <CardDescription>2024</CardDescription>
           </CardHeader>
           <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto">

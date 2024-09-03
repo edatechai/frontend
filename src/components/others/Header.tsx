@@ -46,7 +46,7 @@ const Header = () => {
               <Bell className="size-5" />
               <span className="sr-only">Toggle user menu</span>
             </Button>
-            {data?.length ? (
+            {unreadNotifications?.length ? (
               <span className="size-4 bg-destructive text-destructive-foreground rounded-full absolute flex items-center justify-center top-0 left-7 text-xs">
                 {unreadNotifications?.length}
               </span>
@@ -56,9 +56,13 @@ const Header = () => {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {unreadNotifications?.length ? (
+          <DropdownMenuLabel>
+            {unreadNotifications?.length
+              ? "Notifications"
+              : "No new notification"}
+          </DropdownMenuLabel>
+          {!!unreadNotifications?.length && <DropdownMenuSeparator />}
+          {!!unreadNotifications?.length &&
             unreadNotifications?.map((val, index: number) => (
               <DropdownMenu key={index}>
                 <button
@@ -80,10 +84,7 @@ const Header = () => {
                 </button>
                 {/* <p className="self-end ml-2 !justify-self-end">View Quiz</p> */}
               </DropdownMenu>
-            ))
-          ) : (
-            <DropdownMenuItem>No notification</DropdownMenuItem>
-          )}
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
       <DropdownMenu>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import {
   useAnalyzeResultMutation,
@@ -8,6 +8,25 @@ import {
 } from "../../features/api/apiSlice";
 import { Button } from "../ui/button";
 import { FaRegCirclePlay, FaRegCircleStop } from "react-icons/fa6";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { Progress } from "../ui/progress";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../ui/breadcrumb";
+import { Link } from "react-router-dom";
+import TextWithLineBreaks from "../others/textWithLineBreaks";
 
 const Index = (props) => {
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -16,7 +35,6 @@ const Index = (props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showGrade, setShowGrade] = useState(false);
   const [quizResults, setQuizResults] = useState([]);
-  const [correctOption, setCorrectOption] = useState("");
   const userInfo = useSelector((state) => state.user.userInfo);
   const [analyzedData, setAnalyzedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -30,21 +48,16 @@ const Index = (props) => {
   const [quizResultId, setQuizResultId] = useState();
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [doneAnalysing, setDoneAnalysing] = useState(false);
-  const [NewScore, setNewScore] = useState("");
   let score = "";
 
   const data = props?.data?.data;
-  console.log("find ddata", currentQuiz);
+  console.log("find ddata", data);
   useEffect(() => {
     setIsQuizCompleted(false);
   });
 
-  const [quizRandomSelect, { isLoading: quizLoading, isSuccess: quizSuccess }] =
-    useQuizRandomSelectMutation();
-  const [
-    updateQuizResult,
-    { isLoading: updateLoading, isSuccess: updateSuccess },
-  ] = useUpdateQuizResultMutation();
+  const [quizRandomSelect] = useQuizRandomSelectMutation();
+  const [updateQuizResult] = useUpdateQuizResultMutation();
 
   const getQuiz = async () => {
     if (data) {
@@ -64,48 +77,6 @@ const Index = (props) => {
     getQuiz();
   }, [data]);
 
-  const [minutes, setMinutes] = useState(59);
-  const [seconds, setSeconds] = useState(32);
-
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     if (seconds > 0) {
-  //       setSeconds(seconds - 1);
-  //     } else if (minutes > 0) {
-  //       setMinutes(minutes - 1);
-  //       setSeconds(59);
-  //     }
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, [minutes, seconds]);
-
-  // const isQuizComplete = () => {
-  //   // Check if all questions have been answered
-  //   const allAnswered = quizResults.every(result => result.selectedAnswer !== null);
-  //   console.log("here",allAnswered)
-
-  //   // Check if no more questions to answer
-  //   const noMoreQuestions = currentPage * itemsPerPage >= quizResults.length;
-  //   console.log("no more",noMoreQuestions)
-
-  //   // Check if time's up (if timed quiz)
-  //   // const timeExpired = timedQuiz && Date.now() >= quizStartTime + quizDuration;
-
-  //   return allAnswered && (noMoreQuestions);
-  // };
-
-  // const isQuizComplete = () => {
-  //   // Check if all questions have been answered
-  //   const allAnswered = data?.questionsAndAnswers.length === quizResults.length;
-  //   console.log("All questions answered:", allAnswered);
-
-  //   // Check if there are no more questions to answer
-  //   const noMoreQuestions = currentIndex >= data?.questionsAndAnswers.length;
-  //   console.log("No more questions to answer:", noMoreQuestions);
-
-  //   return allAnswered && noMoreQuestions;
-  // };
-
   const handleAnswerSelect = (answer) => {
     // console.log(isQuizCompleted)
     setSelectedAnswer(answer);
@@ -113,23 +84,12 @@ const Index = (props) => {
     //   setIsQuizCompleted(true);
     // }
   };
-  // const handleAnswerSelect = (answer) => {
-  //   setSelectedAnswer(answer);
-  //   const updatedQuizResults = [...quizResults];
-  //   updatedQuizResults[currentIndex].selectedAnswer = answer;
-  //   setQuizResults(updatedQuizResults);
 
-  //   // Now check if the quiz is complete
-  //   if (isQuizComplete()) {
+  // const handleTimeExpired = () => {
+  //   if (timedQuiz) {
   //     setIsQuizCompleted(true);
   //   }
   // };
-
-  const handleTimeExpired = () => {
-    if (timedQuiz) {
-      setIsQuizCompleted(true);
-    }
-  };
 
   const handleNextQuestion = () => {
     const isCorrect =
@@ -299,10 +259,11 @@ const Index = (props) => {
   const QuizContent = () => {
     return (
       <div className="border-slate-300 border-[1px] rounded-lg p-6 space-y-6">
+        <h3 className="text-2xl font-medium capitalize">{data?.objective}</h3>
         <div className="flex items-center">
           <hr className="w-8 h-0.5 bg-primary" />
           <div className="border-x-2 border-primary rounded-full p-3 w-full">
-            <div className="text-lg text-center border-2 border-primary rounded-full font-semibold mb-2 p-3">
+            <div className="text-lg text-center border-2 border-primary rounded-full font-semibold mb-2 p-3 first-letter:capitalize">
               {currentQuiz?.question}
             </div>
           </div>
@@ -314,7 +275,7 @@ const Index = (props) => {
               <hr className="bg-primary w-10 h-0.5" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
-                  className={`w-full py-4 rounded-full text-foreground hover:bg-yellow-50 ${
+                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
                     selectedAnswer === "a" && "bg-primary/20"
                   } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
                   onClick={() => handleAnswerSelect("a")}
@@ -334,7 +295,7 @@ const Index = (props) => {
               <hr className="bg-primary w-10 h-0.5" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
-                  className={`w-full py-4 rounded-full text-foreground hover:bg-yellow-50 ${
+                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
                     selectedAnswer === "b" && "bg-primary/20"
                   } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
                   onClick={() => handleAnswerSelect("b")}
@@ -358,7 +319,7 @@ const Index = (props) => {
               <hr className="bg-primary w-10 h-0.5" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
-                  className={`w-full py-4 rounded-full text-foreground hover:bg-yellow-50 ${
+                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
                     selectedAnswer === "c" && "bg-primary/20"
                   } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
                   onClick={() => handleAnswerSelect("c")}
@@ -378,7 +339,7 @@ const Index = (props) => {
               <hr className="bg-primary w-10 h-0.5" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
-                  className={`w-full py-4 rounded-full text-foreground hover:bg-yellow-50 ${
+                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
                     selectedAnswer === "d" && "bg-primary/20"
                   } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
                   onClick={() => handleAnswerSelect("d")}
@@ -463,6 +424,7 @@ const Index = (props) => {
       setQuizResultId(response?.data.quizResultId);
     }
   };
+  const [quizScoreDIalogOpen, setQuizScoreDialogOpen] = useState(true);
 
   useEffect(() => {
     if (isQuizCompleted) {
@@ -501,7 +463,7 @@ const Index = (props) => {
 
     const handleAnalyzeResult = async () => {
       document.getElementById("my_modal_3").showModal();
-      const failedResults = quizResults
+      const failedResults = await quizResults
         .filter((result) => !result.isCorrect)
         .map((result) => ({
           question: result.question,
@@ -535,6 +497,7 @@ const Index = (props) => {
       setQuizResults(updatedQuizResults);
       setDoneAnalysing(true);
       console.log("all good", quizResults);
+      setQuizScoreDialogOpen(false);
 
       document.getElementById("my_modal_3").close();
     };
@@ -559,164 +522,71 @@ const Index = (props) => {
     }, [doneAnalysing]);
 
     return (
-      // <div className="text-2xl text-white">
-      //   <div className='card card-body border-[1px] border-slate-300 rounded-md '>
-      //     <div className='text-[18px] text-slate-800'>You got {correctAnswers} out of {data?.questionsAndAnswers.length} correct.</div>
-      //     <div className='w-full flex items-center gap-4'>
-      //       <div className='text-slate-800 text-[16px]'>Score: </div>
-      //       <progress className="progress progress-primary text-slate-800" value={scorePercentage} max="100"></progress>
-      //       <div className='text-slate-800 text-[16px]'>
-      //         {scorePercentage}%
-      //       </div>
-      //     </div>
-      //     {scorePercentage < 80 && (
-      //       <div>
-      //         <p className="text-red-600 text-[16px] ">You scored less than 80%. Do you want to retake the quiz?</p>
-      //         <button className="btn mt-4" onClick={handleRetakeQuiz}>Retake Quiz</button>
-      //         <button className="btn mt-4 ml-4" onClick={handleAnalyzeResult}>
-      //           {isLoading ? "Analyzing your mistakes ..." : "Analyze Mistake(s)"}
-      //         </button>
-      //       </div>
-      //     )}
-      //   </div>
-
-      <div className="text-2xl text-white">
-        <div className="card card-body border-[1px] border-slate-300 rounded-md ">
-          <div className="text-[18px] text-slate-800">
-            You got {correctAnswers} out of {data?.questionsAndAnswers.length}{" "}
-            correct.
-          </div>
-          <div className="w-full flex items-center gap-4">
-            <div className="text-slate-800 text-[16px]">Score: </div>
-            <progress
-              className="progress progress-primary text-slate-800"
-              value={scorePercentage}
-              max="100"
-            ></progress>
-            <div className="text-slate-800 text-[16px]">{scorePercentage}%</div>
-          </div>
-          {scorePercentage < 80 && (
-            <div>
-              <p className="text-red-600 text-[16px] ">
-                You scored less than 80%. Do you want to retake the quiz?
-              </p>
-              <button className="btn mt-4" onClick={handleRetakeQuiz}>
-                Retake Quiz
-              </button>
-              <button className="btn mt-4 ml-4" onClick={handleAnalyzeResult}>
-                {isLoading
-                  ? "Analyzing your mistakes ..."
-                  : "Analyze Mistake(s)"}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* {analyzedData.length > 0 && (
-          <>
-            <div className='mt-4 text-slate-800'>Result Analysis </div>
-            <div className='px-2 border-slate-300 border-[1px] mt-2 rounded-md text-slate-800 text-[16px] min-w-full '>
-              {analyzedData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map((i, index) => (
-                <div key={index} className="px-4">
-                  <div className='text-[18px] font-bold mt-4'>{i?.question}</div>
-                  <div className='text-[16px] mt-2'>
-                    {i?.analysis.split(' ').map((word, idx) => (
-                      <span key={idx} className={idx === currentWordIndex ? 'bg-yellow-300' : ''}>{word} </span>
-                    ))}
-                  </div>
-                  <button onClick={() => speak(i?.analysis)} className="btn bg-blue-700 mt-2 text-white"><FaRegCirclePlay /> Play</button>
-                  <button onClick={stopSpeech} className="btn bg-red-700 text-white mt-2 ml-2"><FaRegCircleStop /> Stop</button>
-                </div>
-              ))}
-              <div className="flex justify-between mt-4 px-4 py-4">
-                <button onClick={handlePrevPage} disabled={currentPage === 0} className="btn btn-secondary">Previous</button>
-                <button onClick={handleNextPage} disabled={currentPage === Math.ceil(analyzedData.length / itemsPerPage) - 1} className="btn btn-secondary">Next</button>
-              </div>
-            </div>
-          </>
-        )}
-        <div className="mt-8 text-black">
-          <h2 className="text-xl font-semibold mb-4">Quiz Results</h2>
-          {quizResults.map((result, index) => (
-            <div key={index} className={`p-4 mb-4 rounded-lg ${result.isCorrect ? 'bg-green-200' : 'bg-red-200'}`}>
-              <div className="font-semibold text-[18px]">Question: {result.question}</div>
-              <div className="text-sm">Your answer: {result.selectedAnswer.toUpperCase()}</div>
-              <div className="text-sm">Correct answer: {result.correctAnswer.toUpperCase()}</div>
-              <div className="text-sm">Correct option: {result.correctOption}</div>
-              <div className="text-sm font-bold">{result.isCorrect ? 'Correct' : 'Wrong'}</div>
-              {result?.analysis && (
-                <div className="text-sm">Analysis: {result?.analysis}</div>
+      <div className="text-2xl text-white w-full">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                <Link to="/student">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                <Link to="/student/classrooms">Classrooms</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink>
+                <Link to={`/student/classrooms/${data.classId}`}>Quizzes</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Result Analysis</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Dialog
+          open={quizScoreDIalogOpen}
+          onOpenChange={setQuizScoreDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                You got {correctAnswers} out of{" "}
+                {data?.questionsAndAnswers.length} correct.
+              </DialogTitle>
+              <DialogDescription className="flex gap-3 pt-5 items-center">
+                <div className="">Score: </div>
+                <Progress value={scorePercentage} className="w-full h-2" />
+                <div>{scorePercentage}%</div>
+              </DialogDescription>
+              {scorePercentage < 80 && (
+                <p className="text-red-600 py-3">
+                  You scored less than 80%. Do you want to retake the quiz?
+                </p>
               )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }; */}
-
-        {/* {analyzedData.length > 0 && (
-        <>
-          <div className='mt-4 text-slate-800'>Result Analysis </div>
-          <div className='px-2 border-slate-300 border-[1px] mt-2 rounded-md text-slate-800 text-[16px] min-w-full '>
-            {analyzedData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map((i, index) => (
-              <div key={index} className="px-4">
-                <div className='text-[18px] font-bold mt-4'>{i?.question}</div>
-                <div className='text-[16px] mt-2'>
-                  {i?.analysis.split(' ').map((word, idx) => (
-                    <span key={idx} className={idx === currentWordIndex ? 'bg-yellow-300' : ''}>{word} </span>
-                  ))}
-                </div>
-                <button onClick={() => speak(i?.analysis)} className="btn bg-blue-700 mt-2 text-white"><FaRegCirclePlay /> Play</button>
-                <button onClick={stopSpeech} className="btn bg-red-700 text-white mt-2 ml-2"><FaRegCircleStop /> Stop</button>
-              </div>
-            ))}
-            <div className="flex justify-between mt-4 px-4 py-4">
-              <button onClick={handlePrevPage} disabled={currentPage === 0} className="btn btn-secondary">Previous</button>
-              <button onClick={handleNextPage} disabled={currentPage === Math.ceil(analyzedData.length / itemsPerPage) - 1} className="btn btn-secondary">Next</button>
-            </div>
-          </div>
-        </>
-      )} */}
-
-        {/* {analyzedData.length > 0 && (
-  <>
-    <div className='mt-4 text-slate-800 text-xl font-semibold'>Result Analysis</div>
-    <div className='px-4 py-6 border-slate-300 border-[1px] mt-2 rounded-md text-slate-800 text-[16px] w-full'>
-      {analyzedData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage).map((i, index) => (
-        <div key={index} className="px-4 py-4 border-b border-slate-300">
-          <div className='text-[18px] font-bold mb-2'>{i?.question}</div>
-          <div className='text-[16px] leading-6'>
-            {i?.analysis.split('<p>').map((paragraph, idx) => (
-              <p key={idx} className='mb-4'>
-                {paragraph.split(' ').map((word, idx2) => (
-                  <span key={idx2} className={idx2 === currentWordIndex ? 'bg-yellow-300' : ''}>
-                    {word}{' '}
-                  </span>
-                ))}
-              </p>
-            ))}
-          </div>
-          <div className="flex gap-4 mt-4">
-            <button onClick={() => speak(i?.analysis)} className="btn bg-blue-700 text-white">
-              <FaRegCirclePlay /> Play
-            </button>
-            <button onClick={stopSpeech} className="btn bg-red-700 text-white">
-              <FaRegCircleStop /> Stop
-            </button>
-          </div>
-        </div>
-      ))}
-      <div className="flex justify-between mt-4 px-4 py-4">
-        <button onClick={handlePrevPage} disabled={currentPage === 0} className="btn btn-secondary">
-          Previous
-        </button>
-        <button onClick={handleNextPage} disabled={currentPage === Math.ceil(analyzedData.length / itemsPerPage) - 1} className="btn btn-secondary">
-          Next
-        </button>
-      </div>
-    </div>
-  </>
-)} */}
+              {scorePercentage < 80 && (
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={handleAnalyzeResult}
+                    disabled={isLoading}
+                  >
+                    {isLoading
+                      ? "Analyzing your mistakes ..."
+                      : "Analyze Mistake(s)"}
+                  </Button>
+                  <Button onClick={handleRetakeQuiz} type="submit">
+                    Retake Quiz
+                  </Button>
+                </DialogFooter>
+              )}
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
 
         {analyzedData.length > 0 && (
           <>
@@ -730,14 +600,13 @@ const Index = (props) => {
                 .map((i, index) => (
                   <div key={index} className="px-4">
                     <div className="text-[18px] font-bold mt-4">
-                      {i?.question}
+                      Question {index + 1}:{" "}
+                      <span className="first-letter:capitalize font-normal">
+                        {i?.question}
+                      </span>
                     </div>
-                    <div
-                      className="text-[16px] mt-2"
-                      dangerouslySetInnerHTML={{
-                        __html: i?.analysis.replace(/\\/g, ""),
-                      }}
-                    />
+                    <div className="text-[16px] mt-2" />
+                    <TextWithLineBreaks texts={i?.analysis} />
                     <button
                       onClick={() => speak(i?.analysis)}
                       className="btn bg-blue-700 mt-2 text-white"
@@ -774,12 +643,12 @@ const Index = (props) => {
             </div>
           </>
         )}
-        <div className="mt-8 text-black">
+        <div className="mt-8 text-black w-full">
           <h2 className="text-xl font-semibold mb-4">Quiz Results</h2>
           {quizResults.map((result, index) => (
             <div
               key={index}
-              className={`p-4 mb-4 rounded-lg ${
+              className={`p-4 mb-4 rounded-lg w-full ${
                 result.isCorrect ? "bg-green-200" : "bg-red-200"
               }`}
             >
@@ -799,12 +668,9 @@ const Index = (props) => {
                 {result.isCorrect ? "Correct" : "Wrong"}
               </div>
               {result?.analysis && (
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: result?.analysis.replace(/\\/g, ""),
-                  }}
-                />
+                <div className="text-sm">
+                  <TextWithLineBreaks texts={results?.analysis} />
+                </div>
               )}
             </div>
           ))}

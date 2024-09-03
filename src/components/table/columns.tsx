@@ -42,6 +42,7 @@ import {
 } from "@/features/api/apiSlice";
 import { Input } from "../ui/input";
 import { Label } from "recharts";
+import { toTitleCase } from "@/lib/utils";
 
 export type licenses = {
   email: string;
@@ -95,6 +96,9 @@ export const columns: ColumnDef<Results>[] = [
   {
     accessorKey: "topic",
     header: "Topic",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("topic"))}</div>;
+    },
   },
   {
     accessorKey: "subject",
@@ -111,6 +115,9 @@ export const columns: ColumnDef<Results>[] = [
   {
     accessorKey: "objective",
     header: "Objective",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("objective"))}</div>;
+    },
   },
   {
     accessorKey: "scorePercentage",
@@ -158,37 +165,58 @@ export const resultColumns: ColumnDef<Results>[] = [
   {
     accessorKey: "topic",
     header: "Topic",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("topic"))}</div>;
+    },
   },
   {
     accessorKey: "subject",
     header: "Subject",
   },
-  //   {
-  //     accessorKey: "updatedAt",
-  //     header: "Date Taken",
-  //     columnFormatting: {
-  //       type: "date",
-  //       format: "MM/DD/YYYY",
-  //     },
-  //   },
   {
-    accessorKey: "objective",
-    header: "Objective",
-  },
-  {
-    accessorKey: "scorePercentage",
+    accessorKey: "updatedAt",
+    // header: "Date",
+    sortingFn: "datetime",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          // onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
           className="hover:bg-primary hover:text-primary-foreground"
         >
-          Score Percentage
+          Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      date.toISOString().substring(0, 10);
+      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+    },
+  },
+  {
+    accessorKey: "objective",
+    header: "Objective",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("objective"))}</div>;
+    },
+  },
+  {
+    accessorKey: "scorePercentage",
+    header: "Score Percentage",
+    // header: ({ column }) => {
+    //   return (
+    //     <Button
+    //       variant="ghost"
+    //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //       className="hover:bg-primary hover:text-primary-foreground"
+    //     >
+    //       Score Percentage
+    //       <ArrowUpDown className="ml-2 h-4 w-4" />
+    //     </Button>
+    //   );
+    // },
     cell: ({ row }) => {
       return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
     },

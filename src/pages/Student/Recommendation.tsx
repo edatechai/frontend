@@ -1,4 +1,7 @@
+
+
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -14,32 +17,55 @@ import {
   useRecommendObjectivesQuery,
   useStudentRecommendationMutation,
 } from "../../features/api/apiSlice";
+import { RootState } from "../../app/store";
+import ChatBotWrapper from "@/components/ChatBotWrapper";
+
+type Objective = {
+  objective_id: string;
+  objcode: string;
+  scores: number;
+};
+
+type RecData = {
+  objectives: Objective[];
+  questions: {
+    question: string;
+    answer: string;
+    optionA: string;
+    optionB: string;
+    optionC: string;
+    optionD: string;
+  }[];
+};
 
 const Recommedation = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { data } = useRecommendObjectivesQuery();
   const [showChatBot, setShowChatBot] = useState(false);
   const [getRec, { isLoading, data: recData }] =
     useStudentRecommendationMutation();
-  const [preview, setPreview] = useState("");
+  const [preview, setPreview] = useState<Objective | null>(null);
   const [showNoObjectMsg, setShowNoObjectMsg] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
+  const [showCon, setShowCon] = useState(false);
   const [currentStepPage, setCurrentStepPage] = useState(0);
   const [currentQuestionPage, setCurrentQuestionPage] = useState(0);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(
+    new Array(recData?.questions?.length).fill("")
+  );
   const [quizPassed, setQuizPassed] = useState(false);
   const [quizAttempted, setQuizAttempted] = useState(false);
+  const [quizPassedCount, setQuizPassedCount] = useState(0);
   const stepsPerPage = 1;
   const questionsPerPage = 1;
 
   useEffect(() => {
     if (recData?.objectives?.length === 0) {
-      setPreview("");
+      setPreview(null);
       setShowNoObjectMsg(true);
-    }
-    if (recData?.objectives?.length > 0) {
+    } else if (recData?.objectives?.length > 0) {
       setShowSteps(true);
-      setPreview("");
+      setPreview(null);
       setShowNoObjectMsg(false);
     }
   }, [recData]);
@@ -81,49 +107,92 @@ const Recommedation = () => {
     }
   };
 
-  const handleOptionSelect = (option) => {
+  const handleOptionSelect = (option: string, questionIndex: number) => {
     if (currentStepPage >= 4) {
-      setSelectedOption(option);
+      setSelectedOptions((prevOptions) => {
+        const updatedOptions = [...prevOptions];
+        updatedOptions[questionIndex] = option;
+        return updatedOptions;
+      });
     }
   };
 
   const evaluateQuiz = () => {
-    let correctAnswers = 0;
+    const correctAnswers = recData.questions.reduce((acc, question, index) => {
+      const isCorrect = selectedOptions[index] === question.answer;
+      console.log(`Question ${index + 1}: ${isCorrect ? 'Correct' : 'Incorrect'}`);
+      console.log(`Selected Option: ${selectedOptions[index]}`);
+      return isCorrect ? acc + 1 : acc;
+    }, 0);
 
-    recData.questions.forEach((question, index) => {
-      if (selectedOption === question.answer) {
-        correctAnswers++;
-      }
-    });
+    console.log(`Total correct answers: ${correctAnswers}`);
 
-    if (correctAnswers > 0) {
+    if (correctAnswers === recData.questions.length) {
+      setQuizPassedCount((prevCount) => prevCount + 1);
       setQuizPassed(true);
-      setCurrentStepPage(5);
+      console.log('Quiz passed');
     } else {
       setQuizPassed(false);
+      console.log('Quiz failed');
     }
 
     setQuizAttempted(true);
 
-    // If the quiz is failed, reset the currentStepPage to avoid showing the 5th step
-    if (!quizPassed) {
-      setCurrentStepPage(3);
-    } else {
+    if (quizPassedCount + 1 >= 2) {
+     // setShowChatBot(false);
       setCurrentStepPage(5);
+      console.log('Moving to step 5');
+    } else {
+      //setShowChatBot(true);
+      console.log('Opening chat with Eddy');
     }
   };
 
   const continueSteps = () => {
+    // Reset all relevant state variables
     setCurrentQuestionPage(0);
     setQuizAttempted(false);
-    setSelectedOption("");
+    setSelectedOptions(new Array(recData?.questions?.length).fill(""));
     setQuizPassed(false);
-    setCurrentStepPage(5); // Allow continuation to 5th step only if quiz is passed
+    setQuizPassedCount(0);
+    setCurrentStepPage(0); // Reset to the first step
+    //setShowChatBot(false);
+    setShowCon(false);
   };
 
+  const handleDialogClose = () => {
+    setShowSteps(false);
+    setShowChatBot(false);
+  };
+
+
+
+
+
+
+
+
+
   return (
-    <div className="flex justify-center">
-      {!showSteps && (
+    <>
+    {/* You can open the modal using document.getElementById('ID').showModal() method */}
+
+<dialog id="my_modal_4" className="modal">
+  <div className="modal-box min-h-[90vh] max-w-5xl">
+    <h3 className="font-bold text-lg">Hello!</h3>
+    <p className="py-4">Click the button below to close</p>
+    <div className="modal-action">
+      <ChatBot  userInfo={userInfo} rec={recData} onClose={() => document.getElementById('my_modal_4').close()} />
+      <form method="dialog">
+        <button className="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+
+     <div className="flex justify-center">
+      {!showSteps && !showCon && (
         <div className="rounded-lg border border-slate-300 py-5 px-7 bg-white shadow-md">
           <div className="mt-7">
             <div className="text-slate-800 font-medium">
@@ -156,7 +225,7 @@ const Recommedation = () => {
         </div>
       )}
 
-      <Dialog open={!!preview} onOpenChange={setPreview}>
+      <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="capitalize">
@@ -187,7 +256,7 @@ const Recommedation = () => {
               assistant, about this learning objective.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          {/* <DialogFooter>
             <Button
               onClick={() => {
                 setShowNoObjectMsg(false);
@@ -196,194 +265,272 @@ const Recommedation = () => {
             >
               Chat with Eddy
             </Button>
-          </DialogFooter>
+          </DialogFooter> */}
         </DialogContent>
       </Dialog>
 
       {!(quizAttempted && !quizPassed) && (
-        <Dialog open={showSteps} onOpenChange={setShowSteps}>
-          <DialogContent className="max-w-[90vw]">
+        <Dialog open={showSteps} onOpenChange={handleDialogClose}>
+          <DialogContent className="max-w-[70vw]">
             <DialogHeader>
               <DialogTitle>{recData?.objectives?.[0]?.objective}</DialogTitle>
-              <DialogDescription>
-                {quizAttempted && !quizPassed ? null : (
+              
+              <DialogDescription className="flex flex-row gap-5">
+                {currentStepPage === 4 ? (
+                  <div className="bg-white p-6 rounded-lg">
+                    <p className="text-lg font-medium mb-4">It's time to test your knowledge!</p>
+                    <p>Answer the questions on the right to proceed to the next step.</p>
+                  </div>
+                ) : (
                   <div className="bg-white p-6 rounded-lg grid grid-flow-col gap-10 max-w-[90vw] min-w-[60%]">
-                    {!showNoObjectMsg && (
+                    {!showNoObjectMsg && currentStepPage !== recData?.objectives[0]?.learningSteps?.length && (
                       <div className="shadow-md p-6 grow flex flex-col justify-between">
-                        {!(currentStepPage === 4) &&
-                          recData?.objectives?.[0]?.learningSteps
-                            .slice(
-                              currentStepPage,
-                              currentStepPage + stepsPerPage
-                            )
-                            .map((step, index) => (
-                              <div key={index} className="mt-7">
-                                {currentStepPage === 4 ? null : (
-                                  <>
-                                    {" "}
-                                    <span className="text-green-500 text-lg font-medium px-1">
-                                      Step {step.stepNumber}
-                                    </span>
-                                    <div className="mt-3 text-slate-800">
-                                      {step.instruction}
-                                    </div>
-                                  </>
-                                )}
+                        {recData?.objectives?.[0]?.learningSteps
+                          .slice(
+                            quizPassedCount >= 2 ? currentStepPage : currentStepPage,
+                            quizPassedCount >= 2 ? currentStepPage + 1 : currentStepPage + stepsPerPage
+                          )
+                          .map((step, index) => (
+                            <div key={index} className="mt-7">
+                              <span className="text-green-500 text-lg font-medium px-1">
+                                {/* Step {step.stepNumber} */}
+                              </span>
+                              <div className="mt-3 text-slate-800">
+                                {step.instruction.charAt(0).toUpperCase() + step.instruction.slice(1)}
                               </div>
-                            ))}
-                        {currentStepPage === 4 && !quizAttempted && (
-                          <div className="mt-7">
-                            <div className="text-slate-800 font-medium">
-                              Let's test your understanding. Please try the quiz
-                              on your right.
                             </div>
-                          </div>
-                        )}
-                        {currentStepPage === 4 && !quizAttempted ? null : (
-                          <div className="flex justify-between items-center mt-4 gap-11">
+                          ))}
+                        <div className="flex justify-between mt-10">
+                          <Button
+                            onClick={handleStepPrev}
+                            className="text-sm"
+                            variant="outline"
+                            disabled={currentStepPage === (quizPassedCount >= 2 ? 4 : 0)}
+                          >
+                            Previous
+                          </Button>
+                          {currentStepPage === recData?.objectives[0]?.learningSteps?.length - 1 ? (
                             <Button
-                              onClick={handleStepPrev}
-                              disabled={
-                                currentStepPage === 0 ||
-                                (currentStepPage === 4 && !quizAttempted)
-                              }
+                              onClick={() =>{setShowSteps(false), setShowCon(true)} }
+                              className="text-sm"
                             >
-                              Previous Step
+                              Next
                             </Button>
+                          ) : (
                             <Button
                               onClick={handleStepNext}
-                              disabled={
-                                currentStepPage ===
-                                  recData?.objectives[0]?.learningSteps
-                                    ?.length -
-                                    1 ||
-                                (currentStepPage === 4 && !quizAttempted)
-                              }
+                              className="text-sm"
                             >
-                              Next Step
+                              Next
                             </Button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
-                    {!showNoObjectMsg && !quizAttempted && (
-                      <div className="bg-white p-6 rounded-lg shadow-md grow">
-                        <div className="mt-7 ">
-                          {recData?.questions
-                            .slice(
-                              currentQuestionPage,
-                              currentQuestionPage + questionsPerPage
-                            )
-                            .map((question, index) => (
-                              <div key={index} className="text-slate-800">
-                                <div className="py-3 px-2 rounded bg-green-700/70 text-primary-foreground text-center mb-3">
-                                  {question.question}
-                                </div>
-
-                                <div
-                                  onClick={() => handleOptionSelect("A")}
-                                  className={`cursor-pointer p-2 rounded mb-2 border border-primary/50 ${
-                                    selectedOption === "A" ? "bg-blue-100" : ""
-                                  }`}
-                                >
-                                  <span className="font-semibold mr-2">A</span>{" "}
-                                  {question.optionA}
-                                </div>
-                                <div
-                                  onClick={() => handleOptionSelect("B")}
-                                  className={`cursor-pointer p-2 rounded mb-2 border border-primary/50 ${
-                                    selectedOption === "B" ? "bg-blue-100" : ""
-                                  }`}
-                                >
-                                  <span className="font-semibold mr-2">B</span>{" "}
-                                  {question.optionB}
-                                </div>
-                                <div
-                                  onClick={() => handleOptionSelect("C")}
-                                  className={`cursor-pointer p-2 rounded mb-2 border border-primary/50 ${
-                                    selectedOption === "C" ? "bg-blue-100" : ""
-                                  }`}
-                                >
-                                  <span className="font-semibold mr-2">C</span>{" "}
-                                  {question.optionC}
-                                </div>
-                                <div
-                                  onClick={() => handleOptionSelect("D")}
-                                  className={`cursor-pointer p-2 rounded mb-2 border border-primary/50 ${
-                                    selectedOption === "D" ? "bg-blue-100" : ""
-                                  }`}
-                                >
-                                  <span className="font-semibold mr-2">D</span>{" "}
-                                  {question.optionD}
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                        <div className="flex flex-col gap-5 items-center mt-4">
-                          <div className="flex justify-between w-full gap-11">
-                            <Button
-                              onClick={handleQuestionPrev}
-                              disabled={currentQuestionPage === 0}
-                            >
-                              Previous Question
-                            </Button>
-                            <Button
-                              onClick={handleQuestionNext}
-                              disabled={
-                                currentQuestionPage ===
-                                recData?.questions?.length - 1
-                              }
-                            >
-                              Next Question
-                            </Button>
+                    
+                    {currentStepPage === recData?.objectives[0]?.learningSteps?.length && (
+                      <div className="shadow-md p-6 grow flex flex-col justify-between">
+                        <div className="mt-7">
+                          <div className="text-slate-800">
+                            Congratulations! You have completed all the learning steps for this objective.
                           </div>
-                          <Button
-                            onClick={evaluateQuiz}
-                            disabled={!selectedOption}
-                            className="btn bg-green-600 hover:bg-green-700"
-                          >
-                            Submit Quiz
+                        </div>
+                        <div className="flex justify-end mt-10">
+                          <Button onClick={() => setShowSteps(false)} className="text-sm">
+                            Exit
                           </Button>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
+
+                {currentStepPage <= 4 && (
+                  <div className="shadow-md p-6 grow flex flex-col justify-between">
+                    <div className="mt-7">
+                      {recData?.questions
+                        .slice(
+                          currentQuestionPage,
+                          currentQuestionPage + questionsPerPage
+                        )
+                        .map((question, index) => (
+                          <div key={index}>
+                            <div className="text-slate-800 first-letter:uppercase">
+                              {question.question.charAt(0).toUpperCase() + question.question.slice(1)}
+                            </div>
+                            <div className="mt-2 flex items-center">
+                              <span className="mr-2 text-gray-700">A</span>
+                              <label className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  className="form-radio h-5 w-5 text-gray-600"
+                                  value="A"
+                                  checked={selectedOptions[currentQuestionPage + index] === "A"}
+                                  onChange={() => handleOptionSelect("A", currentQuestionPage + index)}
+                                />
+                                <span className="ml-2 text-gray-700">
+                                  {question.optionA}
+                                </span>
+                              </label>
+                            </div>
+                            <div className="mt-2 flex items-center">
+                              <span className="mr-2 text-gray-700">B</span>
+                              <label className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  className="form-radio h-5 w-5 text-gray-600"
+                                  value="B"
+                                  checked={selectedOptions[currentQuestionPage + index] === "B"}
+                                  onChange={() => handleOptionSelect("B", currentQuestionPage + index)}
+                                />
+                                <span className="ml-2 text-gray-700">
+                                  {question.optionB}
+                                </span>
+                              </label>
+                            </div>
+                            <div className="mt-2 flex items-center">
+                              <span className="mr-2 text-gray-700">C</span>
+                              <label className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  className="form-radio h-5 w-5 text-gray-600"
+                                  value="C"
+                                  checked={selectedOptions[currentQuestionPage + index] === "C"}
+                                  onChange={() => handleOptionSelect("C", currentQuestionPage + index)}
+                                />
+                                <span className="ml-2 text-gray-700">
+                                  {question.optionC}
+                                </span>
+                              </label>
+                            </div>
+                            <div className="mt-2 flex items-center">
+                              <span className="mr-2 text-gray-700">D</span>
+                              <label className="inline-flex items-center">
+                                <input
+                                  type="radio"
+                                  className="form-radio h-5 w-5 text-gray-600"
+                                  value="D"
+                                  checked={selectedOptions[currentQuestionPage + index] === "D"}
+                                  onChange={() => handleOptionSelect("D", currentQuestionPage + index)}
+                                />
+                                <span className="ml-2 text-gray-700">
+                                  {question.optionD}
+                                </span>
+                              </label>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between mt-10">
+                      <Button
+                      // disable if currentStepPage is not grater or === 4
+                      disabled={currentStepPage !== 4}
+                        onClick={handleQuestionPrev}
+                        className="text-sm"
+                        variant="outline"
+                      >
+                        Previous
+                      </Button>
+                      {currentQuestionPage ===
+                      recData?.questions.length - 1 ? (
+                        <Button
+                        disabled={currentStepPage !== 4}
+                         onClick={evaluateQuiz} className="text-sm">
+                          Submit
+                        </Button>
+                      ) : (
+                        <Button
+                        disabled={currentStepPage !== 4}
+                          onClick={handleQuestionNext}
+                          className="text-sm"
+                        >
+                          Next
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* {quizPassed && currentStepPage === 5 && (
+                  <div className="shadow-md p-6 grow flex flex-col justify-between">
+                    <div className="mt-7">
+                      
+                      {recData?.objectives?.[0]?.learningSteps[4] && (
+                        <div className="mt-5">
+                          <span className="text-green-500 text-lg font-medium px-1">
+                            Step {recData.objectives[0].learningSteps[4].stepNumber}
+                          </span>
+                          <div className="mt-3 text-slate-800">
+                            {recData.objectives[0].learningSteps[4].instruction}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-end mt-10">
+                      <Button onClick={() => setCurrentStepPage(5)} className="text-sm">
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                )} */}
               </DialogDescription>
             </DialogHeader>
+
+            {/* <DialogFooter> */}
+              <div className="text-sm text-slate-500 font-bold bg-yellow-100 p-2 rounded-md border border-yellow-300 shadow-sm">
+                Remember: You can ask Eddy for help at any point!
+              </div>
+              <button className="btn text-sm flex items-center gap-2" onClick={()=>document.getElementById('my_modal_4').showModal()}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Chat with Eddy
+                </button>
+              
+              {/* {showChatBot && (
+                <div className="mt-4 w-full">
+                  <ChatBot userInfo={userInfo} rec={recData} />
+                </div>
+              )} */}
+            {/* </DialogFooter> */}
+
+
+
           </DialogContent>
         </Dialog>
       )}
 
-      <Dialog open={showChatBot} onOpenChange={setShowChatBot}>
-        <DialogContent className="h-[90vh] w-[70vw] p-0">
-          {/* <DialogTitle>hello</DialogTitle> */}
-          <ChatBot userInfo={userInfo} rec={data} />
-        </DialogContent>
-      </Dialog>
-
-      {quizAttempted && quizPassed && (
+      {quizAttempted && quizPassed && quizPassedCount >= 2 && (
         <div className="mt-7 bg-white p-6 rounded-lg shadow-md">
           <div className="text-slate-700">
-            Congratulations! You got the correct answers. Continue with the
-            learning steps.
+            Congratulations! You have passed the quizzes. Proceed to the next learning step.
           </div>
-          <Button onClick={continueSteps}>Continue Steps</Button>
+          <Button onClick={continueSteps}>Continue</Button>
         </div>
       )}
+
       {quizAttempted && !quizPassed && (
         <div className="mt-7 bg-white p-6 rounded-lg shadow-md">
           <div className="text-slate-700 mb-6">
-            It seems you didn't get the correct answers. Please contact your
-            teacher for further instructions or chat with Eddy, our AI
-            assistant.
+            It seems you didn't get the correct answers. Please try again or chat with Eddy for assistance.
           </div>
-          <Button onClick={() => setShowChatBot(true)} className="ml-[80%]">
-            Chat with Eddy
-          </Button>
+          <div className="flex gap-5">
+            <Button onClick={()=>document.getElementById('my_modal_4').showModal()}>Chat with Eddy</Button>
+            <Button  onClick={() => {setShowSteps(false), continueSteps()}}>Try again</Button>
+          </div>
+          {/* {showChatBot && (
+            <div className="mt-4 w-full">
+              <ChatBot userInfo={userInfo} rec={recData} />
+            </div>
+          )} */}
         </div>
       )}
+
+    
     </div>
+    </>
+
+   
   );
 };
 

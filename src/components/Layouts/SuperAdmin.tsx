@@ -50,7 +50,7 @@ export function SuperAdminLayout() {
                 <Home className="h-4 w-4" />
                 Dashboard
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/super-admin/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -62,7 +62,7 @@ export function SuperAdminLayout() {
               >
                 <User className="h-4 w-4" />
                 Profile
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/super-admin/create-organization"
                 className={({ isActive }) =>
@@ -76,7 +76,7 @@ export function SuperAdminLayout() {
                 <ListPlus className="h-4 w-4" />
                 Create Organisation
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/super-admin/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -88,7 +88,7 @@ export function SuperAdminLayout() {
               >
                 <LineChart className="h-4 w-4" />
                 Report
-              </NavLink>
+              </NavLink> */}
               {/* <NavLink
                 to="/super-admin/under-development"
                 className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"

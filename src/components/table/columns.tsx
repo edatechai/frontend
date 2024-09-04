@@ -173,28 +173,28 @@ export const resultColumns: ColumnDef<Results>[] = [
     accessorKey: "subject",
     header: "Subject",
   },
-  {
-    accessorKey: "updatedAt",
-    // header: "Date",
-    sortingFn: "datetime",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          // onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
-          className="hover:bg-primary hover:text-primary-foreground"
-        >
-          Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("updatedAt"));
-      date.toISOString().substring(0, 10);
-      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
-    },
-  },
+  // {
+  //   accessorKey: "updatedAt",
+  //   // header: "Date",
+  //   sortingFn: "datetime",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         // onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
+  //         className="hover:bg-primary hover:text-primary-foreground"
+  //       >
+  //         Date
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     const date = new Date(row.getValue("updatedAt"));
+  //     date.toISOString().substring(0, 10);
+  //     return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+  //   },
+  // },
   {
     accessorKey: "objective",
     header: "Objective",

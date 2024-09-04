@@ -14,8 +14,8 @@ const getToken = () => {
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    //baseUrl: "http://localhost:5000/",
     baseUrl: "http://localhost:5000/",
+    // baseUrl: "https://edatbackend.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -442,13 +442,3 @@ export const {
   // chat
   useChatMutation,
 } = apiSlice;
-
-
-
-
-
-
-
-
-
-

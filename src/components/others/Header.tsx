@@ -32,9 +32,7 @@ const Header = () => {
 
   return (
     <>
-      <span className="w-full flex-1">
-        <ModeToggle />
-      </span>
+      <span className="w-full flex-1">{/* <ModeToggle /> */}</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <span className="relative">
@@ -106,11 +104,8 @@ const Header = () => {
           <DropdownMenuLabel>{userInfo?.fullName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>{userInfo.email}</DropdownMenuItem>
-          <DropdownMenuItem className="justify-between">
-            Profile
-            <span className="badge">New</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
+          {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {

@@ -8,6 +8,7 @@ export const Result = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data: quizResult, isLoading: quizResultLoading } =
     useGetQuizResultByUserIdQuery(userInfo._id);
+  console.log({ q: quizResult?.data });
 
   return (
     <main>

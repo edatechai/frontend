@@ -19,6 +19,20 @@ import { Label } from "../ui/label";
 import { getInitialsFromFullName } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Examstyled from "./Examstyled";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
@@ -175,9 +189,36 @@ const TeacherRoom = () => {
       </dialog>
 
       <div className="flex flex-row justify-end mb-5">
-        <Button onClick={() => setOpenExamTypeDialog(true)}>
-          Create a quiz
-        </Button>
+        {/* <Button onClick={() => setOpenExamTypeDialog(true)}>Set task</Button> */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">Set a new task for students</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Select task type</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => {
+                  // setOpenQuizDialog(true);
+                  document.getElementById("my_modal_3").showModal();
+                  setOpenExamTypeDialog(false);
+                }}
+              >
+                Multiple choice questions
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setOpenQuizDialog(true);
+                  setOpenExamTypeDialog(false);
+                }}
+              >
+                Exam styled questions
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            {/* <DropdownMenuSeparator /> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Card x-chunk="dashboard-01-chunk-5">
@@ -187,10 +228,9 @@ const TeacherRoom = () => {
         <CardContent className="grid gap-2 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {state?.data?.numberOfStudents &&
             state?.data?.numberOfStudents.map((student, index: number) => (
-              <Link
+              <p
                 key={index}
-                to=""
-                className="flex gap-2 items-center p-3 rounded-lg border bg-card text-card-foreground shadow-sm hover:bg-slate-50"
+                className="flex cursor-pointer gap-2 items-center p-3 rounded-lg border bg-card text-card-foreground shadow-sm hover:bg-slate-50"
               >
                 <span
                   className="text-white flex items-center justify-center size-11 rounded-full text-xl bg-lime-700 uppercase"
@@ -201,18 +241,20 @@ const TeacherRoom = () => {
                 <span className="flex flex-col">
                   <p className="text-lg capitalize">{student.fullName}</p>
                 </span>
-              </Link>
+              </p>
             ))}
         </CardContent>
       </Card>
 
-      <Link
-        to="/teacher/class/create-report"
-        state={{ studentData: state.data.numberOfStudents }}
-        className="hover:underline text-primary w-fit"
-      >
-        Create Report
-      </Link>
+      <div className="flex justify-end w-full">
+        <Link
+          to="/teacher/class/create-report"
+          state={{ studentData: state.data.numberOfStudents }}
+          className="rounded bg-primary text-primary-foreground px-2 py-1.5"
+        >
+          Create Report
+        </Link>
+      </div>
 
       {/* <Card x-chunk="dashboard-01-chunk-5">
         <CardHeader className="px-6 py-3">
@@ -252,34 +294,7 @@ const TeacherRoom = () => {
           })}
         </CardContent>
       </Card> */}
-      <Dialog open={openExamTypeDialog} onOpenChange={setOpenExamTypeDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Select Quiz Type</DialogTitle>
-            <DialogDescription className="flex gap-3 pt-5 flex-col">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setOpenQuizDialog(true);
-                  setOpenExamTypeDialog(false);
-                }}
-              >
-                Exam Style Questions (summative assesment)
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  // setOpenQuizDialog(true);
-                  document.getElementById("my_modal_3").showModal();
-                  setOpenExamTypeDialog(false);
-                }}
-              >
-                Learning Outcome Quizzes (formative assessment)
-              </Button>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+
       <Dialog open={openQuizDialog} onOpenChange={setOpenQuizDialog}>
         <Examstyled
           filteredObjectives={filteredObjectives}

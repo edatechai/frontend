@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import Index from "./pages/Auth/Index";
 import { TeachersLayout } from "./components/Layouts/Teacher";
@@ -13,7 +13,7 @@ import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
 import { useCurrentUserQuery } from "./features/api/apiSlice";
 import CreateOrg from "./pages/SuperAdmin/CreateOrg";
-import { useDispatch, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";
 import Profile from "./pages/Profile/Index";
 import StudentProfile from "./pages/Student/Profile";
@@ -33,10 +33,21 @@ import Report from "./pages/Student/report";
 import TeacherRoom from "./components/classroom/TeacherRoom";
 import CreateReport from "./components/classroom/CreateReport";
 import TeachersClassroom from "./components/classroom/JoinClassByTeacher";
+import { useEffect } from "react";
+// import store from "./app/store";
 
 const App = () => {
-  const { data: user, error, isLoading } = useCurrentUserQuery();
+  const navigate = useNavigate();
+  const {
+    data: user,
+    error,
+    isLoading,
+  } = useCurrentUserQuery(undefined, {
+    extraOptions: { navigate }, // Pass navigate here
+  });
+
   const dispatch = useDispatch();
+
   if (user) {
     dispatch(setUserInfo(user));
   } else {
@@ -59,6 +70,7 @@ const App = () => {
 
   return (
     // <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    // <Provider store={store}>
     <div className="overflow-x-hidden">
       <Routes>
         {/* Teachers layout */}
@@ -145,6 +157,7 @@ const App = () => {
       </Routes>
       <Toaster />
     </div>
+    // </Provider>
   );
 };
 

@@ -35,7 +35,7 @@ export function OrgLayout() {
                 <Home className="h-4 w-4" />
                 Dashboard
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/org-admin/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -47,7 +47,7 @@ export function OrgLayout() {
               >
                 <User className="h-4 w-4" />
                 Profile
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/org-admin/org-settings"
                 className={({ isActive }) =>
@@ -61,7 +61,7 @@ export function OrgLayout() {
                 <Settings className="h-4 w-4" />
                 Add classroom
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/org-admin/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -73,8 +73,8 @@ export function OrgLayout() {
               >
                 <Settings className="h-4 w-4" />
                 Update
-              </NavLink>
-              <NavLink
+              </NavLink> */}
+              {/* <NavLink
                 to="/org-admin/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -86,7 +86,7 @@ export function OrgLayout() {
               >
                 <LineChart className="h-4 w-4" />
                 Report
-              </NavLink>
+              </NavLink> */}
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">

@@ -26,14 +26,14 @@ export function toTitleCase(title: string) {
 
   function convertFirstLetterToUpperCase(str: string) {
     //split into words
-    const words = str.split(" ");
+    const words = str?.split(" ");
 
     //change the case and rejoin into a string
     return words
-      .map((word, index) =>
+      ?.map((word, index) =>
         shouldBeUppercase(word, index, length)
-          ? word.charAt(0).toUpperCase() + word.slice(1)
-          : word.toLowerCase()
+          ? word?.charAt(0)?.toUpperCase() + word?.slice(1)
+          : word?.toLowerCase()
       )
       .join(" ");
   }

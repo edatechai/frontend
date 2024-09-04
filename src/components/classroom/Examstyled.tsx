@@ -54,7 +54,7 @@ export default function Examstyled({
     console.log({ payload });
     try {
       const res = await fetch(
-        "https://edat-microservice-v1.onrender.com/generate_exam_questions",
+        "https://edat-microservice-v1.onrender.com/exam/generate_exam_questions",
         {
           method: "POST",
           headers: {

@@ -2,6 +2,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../features/api/apiSlice";
 import userReducer from "../features/user/userSlice";
+import unauthorizedMiddleware from "@/features/api/reduxMiddleware";
 
 export default configureStore({
   reducer: {
@@ -9,7 +10,9 @@ export default configureStore({
     user: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware()
+      .concat(apiSlice.middleware)
+      .concat(unauthorizedMiddleware.middleware),
 });
 
 // import type { AppState, AppDispatch } from "./store";

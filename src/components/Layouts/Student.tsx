@@ -1,23 +1,24 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
-  Settings,
   Home,
   User,
   ListPlus,
-  LineChart,
   Menu,
   Circle,
   StickyNote,
   Users,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
-import { useSelector } from "react-redux";
-import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { apiSlice, useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
 export function StudentLayout() {
   const userInfo = useSelector((state) => state.user.userInfo);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { data } = useGetAccountByIdQuery(userInfo.accountId);
 
   return (
@@ -99,7 +100,7 @@ export function StudentLayout() {
                 <ListPlus className="h-4 w-4" />
                 Recommendation
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/student/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -111,8 +112,8 @@ export function StudentLayout() {
               >
                 <LineChart className="h-4 w-4" />
                 Report
-              </NavLink>
-              <NavLink
+              </NavLink> */}
+              {/* <NavLink
                 to="/student/under-development"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -124,24 +125,21 @@ export function StudentLayout() {
               >
                 <Settings className="h-4 w-4" />
                 Settings
-              </NavLink>
-              <NavLink
-                to="/dash-test"
-                // className="flex items-center gap-3 rounded-lg px-3 py-2 text-primary-foreground transition-all active:!bg-white active:!text-primary"
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                    isActive
-                      ? "bg-muted text-foreground hover:bg-slate-200"
-                      : "text-primary-foreground hover:bg-blue-500"
-                  }`
-                }
-              >
-                <Settings className="h-4 w-4" />
-                Dashboard-2
-              </NavLink>
+              </NavLink> */}
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
+            <button
+              className="flex items-center gap-3 rounded-lg py-2 mb-5 hover:bg-blue-500 w-full"
+              onClick={() => {
+                localStorage.removeItem("Token");
+                dispatch(apiSlice.util.resetApiState());
+                navigate("/");
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
             <p>EDAT</p>
             <p>All Rights Reserved ©2024</p>
           </div>
@@ -232,7 +230,7 @@ export function StudentLayout() {
                   <ListPlus className="h-5 w-5" />
                   Recommendation
                 </NavLink>
-                <NavLink
+                {/* <NavLink
                   to="/student/under-development"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
@@ -244,8 +242,8 @@ export function StudentLayout() {
                 >
                   <LineChart className="h-5 w-5" />
                   Report
-                </NavLink>
-                <NavLink
+                </NavLink> */}
+                {/* <NavLink
                   to="/student/under-development"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
@@ -257,7 +255,7 @@ export function StudentLayout() {
                 >
                   <Settings className="h-5 w-5" />
                   Settings
-                </NavLink>
+                </NavLink> */}
               </nav>
               <div className="mt-auto px-3">
                 <p>EDAT</p>

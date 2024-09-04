@@ -159,7 +159,7 @@ const Index = (props) => {
       window.speechSynthesis.cancel();
     }
 
-    const words = text.split(" "); // Split the text into words
+    // const words = text.split(" "); // Split the text into words
     let currentWord = 0; // Initialize current word index
     setSpeakingText(text); // Set the speaking text
     setCurrentWordIndex(0); // Reset the word index

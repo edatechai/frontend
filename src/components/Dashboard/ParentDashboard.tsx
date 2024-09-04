@@ -151,7 +151,7 @@ const ParentDashboard = () => {
                   </option>
                   {classes?.classes?.map((i, index) => (
                     <option value={i?._id} key={index}>
-                      {i?.classTitle.split(" ")[3]}
+                      {i?.classTitle?.split(" ")[3]}
                     </option>
                   ))}
                 </select>

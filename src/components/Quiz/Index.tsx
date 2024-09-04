@@ -439,6 +439,8 @@ const Index = (props) => {
         category: data?.category,
         accountId: data?.accountId,
         userId: userInfo?._id,
+        objective: data?.objective,
+        subject: data?.subject,
       };
       handleQuizResult(payload);
     }
@@ -481,6 +483,8 @@ const Index = (props) => {
         student_name: userInfo?.fullName,
       };
 
+     
+
       const response = await analyzeResult(newObject);
       const analyzedResponseData = response.data;
 
@@ -510,6 +514,8 @@ const Index = (props) => {
         id: quizResultId,
         quizResults: quizResults,
       };
+
+   
       const res = await updateQuizResult(payload);
       setDoneAnalysing(false);
       console.log("all here", res);

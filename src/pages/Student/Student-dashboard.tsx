@@ -30,6 +30,8 @@ export function StudentDash() {
     isError: quizResultError,
   } = useGetQuizResultByUserIdQuery(userInfo._id);
 
+  console.log("my data", quizResult);
+
   let classTitle;
   if (classId) {
     classTitle = myClasses?.classes?.filter((i) => classId === i._id)[0]

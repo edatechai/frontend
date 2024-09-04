@@ -6,6 +6,7 @@ import {
   useFindMyClassesQuery,
   useGetAllClassRoomByAccountIdQuery,
   useGetQuizResultByUserIdQuery,
+  useJoinClassMutation,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
 import { useRef, useState } from "react";
@@ -22,6 +23,7 @@ export function StudentClassrooms() {
     isSuccess: quizResultSuccess,
     isError: quizResultError,
   } = useGetQuizResultByUserIdQuery(userInfo._id);
+  const [joinClass, { isLoading }] = useJoinClassMutation();
   const dialogRef = useRef(null);
   const [classRoom, setClassRoom] = useState();
 
@@ -103,6 +105,16 @@ export function StudentClassrooms() {
           </div>
         </div>
       </dialog>
+
+      <div className="flex flex-row justify-end mb-5">
+        <button
+          onClick={() => document.getElementById("my_modal_3").showModal()}
+          className="btn bg-blue-600 font-normal text-white hover:bg-black "
+        >
+          Join a class
+        </button>
+      </div>
+
       <Card x-chunk="dashboard-01-chunk-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg">Classrooms</CardTitle>

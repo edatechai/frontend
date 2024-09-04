@@ -169,22 +169,24 @@ const Recommedation = () => {
     <>
       {/* You can open the modal using document.getElementById('ID').showModal() method */}
 
-      <dialog id="my_modal_4" className="modal">
-        <div className="modal-box min-h-[90vh] max-w-5xl">
-          <h3 className="font-bold text-lg">Hello!</h3>
-          <p className="py-4">Click the button below to close</p>
-          <div className="modal-action">
-            <ChatBot
-              userInfo={userInfo}
-              rec={recData}
-              onClose={() => document.getElementById("my_modal_4").close()}
-            />
-            <form method="dialog">
-              <button className="btn">Close</button>
-            </form>
+      {!!recData && (
+        <dialog id="my_modal_4" className="modal">
+          <div className="modal-box min-h-[90vh] max-w-5xl">
+            <h3 className="font-bold text-lg">Hello!</h3>
+            <p className="py-4">Click the button below to close</p>
+            <div className="modal-action">
+              <ChatBot
+                userInfo={userInfo}
+                rec={recData}
+                onClose={() => document.getElementById("my_modal_4").close()}
+              />
+              <form method="dialog">
+                <button className="btn">Close</button>
+              </form>
+            </div>
           </div>
-        </div>
-      </dialog>
+        </dialog>
+      )}
 
       <div className="flex justify-center">
         {!showSteps &&

@@ -7,7 +7,10 @@ unauthorizedMiddleware.startListening({
   matcher: isRejectedWithValue,
   effect: async (action, listenerApi) => {
     console.log({ action, listenerApi });
-    if (action?.payload?.status === 401 && window.location.pathname != "/") {
+    if (
+      (action?.payload?.status === 401 || action?.payload?.status === 400) &&
+      window.location.pathname != "/"
+    ) {
       window.location.href = "/";
     }
   },

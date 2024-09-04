@@ -11,6 +11,53 @@ export function StudentClassrooms() {
 
   return (
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">
+      <dialog id="my_modal_3" className="modal" ref={dialogRef}>
+        <div className="modal-box">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <h3 className="font-bold text-lg">Join a classroom</h3>
+
+          <div className="mt-4">
+            <label className="form-control w-full min-w-full">
+              <div className="label">
+                <span className="label-text font-medium">
+                  Select a classroom
+                </span>
+              </div>
+
+              <select
+                //   disabled={isLoading}
+                onChange={(e) => setClassRoom(e.target.value)}
+                className="select select-bordered"
+              >
+                <option disabled selected>
+                  Pick one below
+                </option>
+                {classes?.map((i, index) => (
+                  // <option key={index} value={classItem}>{classItem}</option>
+                  <option value={i._id} key={index}>
+                    {i?.classTitle}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-4">
+            <button onClick={handleSubmit} className="btn min-w-full">
+              {isLoading ? (
+                <div className="flex justify-center">Loading...</div>
+              ) : (
+                "Join Classroom"
+              )}
+            </button>
+          </div>
+        </div>
+      </dialog>
       <Card x-chunk="dashboard-01-chunk-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg">Classrooms</CardTitle>

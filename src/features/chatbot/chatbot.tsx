@@ -41,13 +41,13 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
   const payload = {
     name: userInfo?.fullName,
     country: userInfo?.country,
-    learningObjective: rec?.objectives[0].objective,
-    aspiration: userInfo?.bioData[0].career_aspirations,
-    interests: userInfo?.bioData[0].subjects_of_interest,
+    learningObjective: rec?.objectives[0]?.objective,
+    aspiration: userInfo?.bioData[0]?.career_aspirations,
+    interests: userInfo?.bioData[0]?.subjects_of_interest,
     strengths: "",
-    learningStyle: userInfo?.bioData[0].learning_style_preferences,
-    strugglingTopic: rec?.objectives[0].objective,
-    relatedTopic: rec?.objectives[0].objective,
+    learningStyle: userInfo?.bioData[0]?.learning_style_preferences,
+    strugglingTopic: rec?.objectives[0]?.objective,
+    relatedTopic: rec?.objectives[0]?.objective,
     neurodiversity: userInfo?.neurodiversity,
   };
   console.log("this is payload", payload);

@@ -218,7 +218,7 @@ const Recommedation = () => {
                         >
                           {i.objective_id}
                         </button>{" "}
-                        (Current score: {i.scores})
+                        (Average score: {Math.round(i.avg_score)})
                       </li>
                     ))}
                   </ul>

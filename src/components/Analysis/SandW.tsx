@@ -266,40 +266,9 @@ export function SandW({
                 {data?.SW?.weaknesses.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      {/* <li className="truncate hover:overflow-visible hover:whitespace-break-spaces">
+                      <li className="truncate">
                         {toTitleCase(i?.objective_name || "")}
-                      </li> */}
-                      <HoverCard>
-                        <HoverCardTrigger asChild>
-                          <li className="truncate cursor-pointer">
-                            {toTitleCase(i?.objective_name || "")}
-                          </li>
-                        </HoverCardTrigger>
-                        <HoverCardContent className="w-80">
-                          <p className="flex justify-between space-x-4">
-                            {toTitleCase(i?.objective_name || "")}
-                          </p>
-                          <p className="text-sm font-light">
-                            Your score -
-                            <span className="font-normal">
-                              {(i?.score).toFixed(0)}%
-                            </span>
-                          </p>
-                          <p className="text-sm font-light">
-                            Top{" "}
-                            <span className="font-normal">
-                              {Math.round(i?.national_percentile_rank)}%
-                            </span>{" "}
-                            of students in the country
-                          </p>
-                        </HoverCardContent>
-                      </HoverCard>
-                      <p className="text-sm font-light">
-                        Your score:{" "}
-                        <span className="font-normal">
-                          {(i?.score).toFixed(0)}%
-                        </span>
-                      </p>
+                      </li>
                       <p className="text-sm font-light">
                         Top{" "}
                         <span className="font-normal">

@@ -34,6 +34,7 @@ import TeacherRoom from "./components/classroom/TeacherRoom";
 import CreateReport from "./components/classroom/CreateReport";
 import TeachersClassroom from "./components/classroom/JoinClassByTeacher";
 import { useEffect } from "react";
+import ParentReport from "./pages/Parent/Report";
 // import store from "./app/store";
 
 const App = () => {
@@ -145,6 +146,7 @@ const App = () => {
         <Route element={<ParentsLayout />}>
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/parent/report" element={<ParentReport />} />
           <Route path="/dashboard/under-development" element={<UnderDev />} />
         </Route>
 

@@ -126,6 +126,8 @@ const Index = (props) => {
       wrongOption: wrongOptionValue,
     };
 
+    console.log({ result });
+
     setQuizResults([...quizResults, result]);
 
     if (isCorrect) {
@@ -466,11 +468,11 @@ const Index = (props) => {
     const handleAnalyzeResult = async () => {
       document.getElementById("my_modal_3").showModal();
       const failedResults = await quizResults
-        .filter((result) => !result.isCorrect)
+        .filter((result) => !result?.isCorrect)
         .map((result) => ({
-          question: result.question,
-          student_answer: result.wrongOption,
-          correct_answer: result.correctOption,
+          question: result?.question,
+          student_answer: result?.wrongOption,
+          correct_answer: result?.correctOption,
         }));
 
       const newObject = {
@@ -483,15 +485,14 @@ const Index = (props) => {
         student_name: userInfo?.fullName,
       };
 
-     
-
       const response = await analyzeResult(newObject);
       const analyzedResponseData = response.data;
 
       const updatedQuizResults = quizResults.map((result) => {
         const analysis =
-          analyzedResponseData.find((item) => item.question === result.question)
-            ?.analysis || "";
+          analyzedResponseData.find(
+            (item) => item.question === result?.question
+          )?.analysis || "";
         return {
           ...result,
           analysis,
@@ -515,7 +516,6 @@ const Index = (props) => {
         quizResults: quizResults,
       };
 
-   
       const res = await updateQuizResult(payload);
       setDoneAnalysing(false);
       console.log("all here", res);
@@ -655,31 +655,38 @@ const Index = (props) => {
             <div
               key={index}
               className={`p-4 mb-4 rounded-lg w-full ${
-                result.isCorrect ? "bg-green-200" : "bg-red-200"
+                result?.isCorrect ? "bg-green-200" : "bg-red-200"
               }`}
             >
               <div className="font-semibold text-[18px]">
-                Question: {result.question}
+                Question: {result?.question}
               </div>
               <div className="text-sm">
-                Your answer: {result.selectedAnswer.toUpperCase()}
+                Your answer: {result?.selectedAnswer.toUpperCase()}
               </div>
               <div className="text-sm">
-                Correct answer: {result.correctAnswer.toUpperCase()}
+                Correct answer: {result?.correctAnswer.toUpperCase()}
               </div>
               <div className="text-sm">
-                Correct option: {result.correctOption}
+                Correct option: {result?.correctOption}
               </div>
               <div className="text-sm font-bold">
-                {result.isCorrect ? "Correct" : "Wrong"}
+                {result?.isCorrect ? "Correct" : "Wrong"}
               </div>
               {result?.analysis && (
                 <div className="text-sm">
-                  <TextWithLineBreaks texts={results?.analysis} />
+                  <TextWithLineBreaks texts={result?.analysis} />
                 </div>
               )}
             </div>
           ))}
+          <Button
+            variant="outline"
+            onClick={handleAnalyzeResult}
+            disabled={isLoading}
+          >
+            {isLoading ? "Analyzing your mistakes ..." : "Analyze Mistake(s)"}
+          </Button>
         </div>
 
         {/* <div className="mt-8 text-black">

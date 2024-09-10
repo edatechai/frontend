@@ -268,6 +268,10 @@ function Theory({ exam }: { exam: ExamQuestions }) {
               Question {value?.number}
             </h5>
             <p>{value.text}</p>
+
+            <i>
+              {value.marks} {value.marks > 1 ? "marks" : "mark"}
+            </i>
             <label className="mt-7 block">
               <p>Answer:</p>
               <textarea

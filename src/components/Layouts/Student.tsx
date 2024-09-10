@@ -8,27 +8,26 @@ import {
   StickyNote,
   Users,
   LogOut,
+  LineChart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
 import { useDispatch, useSelector } from "react-redux";
-import { apiSlice, useGetAccountByIdQuery } from "../../features/api/apiSlice";
+import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
 export function StudentLayout() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { data } = useGetAccountByIdQuery(userInfo.accountId);
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-primary md:block">
         <div className="flex h-full max-h-screen flex-col gap-2 fixed text-primary-foreground w-[220px] lg:w-[280px]">
-          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 border-muted-foreground">
-            <span className="flex items-center gap-2 font-semibold">
-              <Circle className="h-6 w-6" />
-              {/* <img className="h-8" src="edat_logo.png" /> */}
+          <div className="flex h-14 items-center border-b lg:h-[60px] border-muted-foreground bg-background">
+            <span className="flex px-4  lg:px-6 w-full h-full items-center gap-2 font-semibold bg-muted/40 text-foreground">
+              {/* <Circle className="h-6 w-6" /> */}
+              <img className="h-8" src="/school.png" />
               <span>{data?.accountName}</span>
             </span>
           </div>
@@ -100,8 +99,8 @@ export function StudentLayout() {
                 <ListPlus className="h-4 w-4" />
                 Recommendation
               </NavLink>
-              {/* <NavLink
-                to="/student/under-development"
+              <NavLink
+                to="/student/report"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
                     isActive
@@ -112,7 +111,7 @@ export function StudentLayout() {
               >
                 <LineChart className="h-4 w-4" />
                 Report
-              </NavLink> */}
+              </NavLink>
               {/* <NavLink
                 to="/student/under-development"
                 className={({ isActive }) =>
@@ -129,7 +128,8 @@ export function StudentLayout() {
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
-            <button
+            <img alt="" src="/edat_logo.png" className="w-1/2" />
+            {/* <button
               className="flex items-center gap-3 rounded-lg py-2 mb-5 hover:bg-blue-500 w-full"
               onClick={() => {
                 localStorage.removeItem("Token");
@@ -139,8 +139,8 @@ export function StudentLayout() {
             >
               <LogOut className="h-4 w-4" />
               Logout
-            </button>
-            <p>EDAT</p>
+            </button> */}
+            {/* <p>EDAT</p> */}
             <p>All Rights Reserved ©2024</p>
           </div>
         </div>

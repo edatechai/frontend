@@ -158,7 +158,13 @@ const ParentDashboard = () => {
               </div>
 
               <div className="mt-4">
-                <div className="font-medium py-2">Subject Ranking</div>
+                <div className="font-medium py-2">
+                  Subject Ranking{" "}
+                  <span className="text-sm font-light">
+                    (With 5 being the most important and 1 being the least
+                    important)
+                  </span>
+                </div>
                 <select
                   onChange={(e) => setSubject_important_ranking(e.target.value)}
                   className="select select-bordered w-full"

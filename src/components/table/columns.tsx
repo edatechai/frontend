@@ -85,10 +85,28 @@ export type Child = {
 };
 
 export const columns: ColumnDef<Results>[] = [
-  //   {
-  //     accessorKey: "category",
-  //     header: "Category",
-  //   },
+  {
+    accessorKey: "updatedAt",
+    // header: "Date",
+    sortingFn: "datetime",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
+          className="hover:bg-primary hover:text-primary-foreground"
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      date.toISOString().substring(0, 10);
+      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+    },
+  },
   {
     accessorKey: "classRoomName",
     header: "Classroom",
@@ -104,14 +122,6 @@ export const columns: ColumnDef<Results>[] = [
     accessorKey: "subject",
     header: "Subject",
   },
-  //   {
-  //     accessorKey: "updatedAt",
-  //     header: "Date Taken",
-  //     columnFormatting: {
-  //       type: "date",
-  //       format: "MM/DD/YYYY",
-  //     },
-  //   },
   {
     accessorKey: "objective",
     header: "Objective",
@@ -154,10 +164,28 @@ export const columns: ColumnDef<Results>[] = [
 ];
 
 export const resultColumns: ColumnDef<Results>[] = [
-  //   {
-  //     accessorKey: "category",
-  //     header: "Category",
-  //   },
+  {
+    accessorKey: "updatedAt",
+    // header: "Date",
+    sortingFn: "datetime",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
+          className="hover:bg-primary hover:text-primary-foreground"
+        >
+          Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("updatedAt"));
+      date.toISOString().substring(0, 10);
+      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+    },
+  },
   {
     accessorKey: "classRoomName",
     header: "Classroom",
@@ -173,28 +201,6 @@ export const resultColumns: ColumnDef<Results>[] = [
     accessorKey: "subject",
     header: "Subject",
   },
-  // {
-  //   accessorKey: "updatedAt",
-  //   // header: "Date",
-  //   sortingFn: "datetime",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         // onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
-  //         className="hover:bg-primary hover:text-primary-foreground"
-  //       >
-  //         Date
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => {
-  //     const date = new Date(row.getValue("updatedAt"));
-  //     date.toISOString().substring(0, 10);
-  //     return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
-  //   },
-  // },
   {
     accessorKey: "objective",
     header: "Objective",
@@ -204,19 +210,18 @@ export const resultColumns: ColumnDef<Results>[] = [
   },
   {
     accessorKey: "scorePercentage",
-    header: "Score Percentage",
-    // header: ({ column }) => {
-    //   return (
-    //     <Button
-    //       variant="ghost"
-    //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    //       className="hover:bg-primary hover:text-primary-foreground"
-    //     >
-    //       Score Percentage
-    //       <ArrowUpDown className="ml-2 h-4 w-4" />
-    //     </Button>
-    //   );
-    // },
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-primary hover:text-primary-foreground"
+        >
+          Score Percentage
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
     },
@@ -252,7 +257,9 @@ export const resultColumns: ColumnDef<Results>[] = [
                     )}
                     <p>Correct option: {val.correctOption}</p>
                     <p>Correct answer: {val.correctAnswer}</p>
-                    <p>Your answer: {val.selectedAnswer}</p>
+                    <p className="capitalize">
+                      Your answer: {val.selectedAnswer}
+                    </p>
                     <p>{val.wrongOption}</p>
                   </CardContent>
                 </Card>
@@ -348,7 +355,9 @@ export const licenseColumns: ColumnDef<licenses>[] = [
 export const childColumns: ColumnDef<Child>[] = [
   {
     header: "Name",
-    cell: ({ row }) => row.original.user.fullName,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.user.fullName}</div>
+    ),
   },
   {
     header: "License code",

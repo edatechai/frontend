@@ -26,7 +26,6 @@ import {
 // } from "recharts";
 
 import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
@@ -37,23 +36,18 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
-import { Button } from "../ui/button";
 import { toTitleCase } from "@/lib/utils";
-
-const cData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { name: "June", desktop: 214, mobile: 140 },
-];
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
+import { Button } from "../ui/button";
 
 const chartConfig = {
   country: {
-    label: "National Average",
+    label: "Country Average",
     color: "hsl(var(--chart-1))",
   },
   class: {
@@ -64,7 +58,7 @@ const chartConfig = {
     label: "Student Score",
     color: "hsl(var(--chart-3))",
   },
-} satisfies ChartConfig;
+};
 
 export function SandW({
   classId,
@@ -75,8 +69,7 @@ export function SandW({
 }) {
   const userInfo = useSelector((state) => state?.user.userInfo);
   const [chartData, setChartdata] = useState("") as any;
-  const [getSW, { data, isLoading, isError, isSuccess }] =
-    useGetStrengthsAndweaknessesMutation();
+  const [getSW, { data }] = useGetStrengthsAndweaknessesMutation();
 
   useEffect(() => {
     if (classId) {
@@ -145,7 +138,7 @@ export function SandW({
                         <div className="text-2xl font-bold">{i?.score}%</div>
                         <p className="text-sm text-muted-foreground">
                           National Percentile Rank-{" "}
-                          {Math.round(i?.national_percentile_rank)}%
+                          {Math.round(i?.national_percentile_rank)}%%
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Class Rank-
@@ -178,7 +171,7 @@ export function SandW({
                         <div className="text-2xl font-bold">{i?.score}%</div>
                         <p className="text-sm text-muted-foreground">
                           National Percentile Rank-{" "}
-                          {Math.round(i?.national_percentile_rank)}%
+                          {Math.round(i?.national_percentile_rank)}%%
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Class Rank-
@@ -198,11 +191,11 @@ export function SandW({
         <Card className="bg-slate-50">
           <CardHeader className="pb-4">
             <CardTitle>{classTitle}</CardTitle>
-            <CardDescription>
+            {/* <CardDescription>
               More infomation about this topic on the curriculum.
-            </CardDescription>
+            </CardDescription> */}
           </CardHeader>
-          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto grid sm:grid-cols-2 gap-6 sm:gap-3 pt-8">
+          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-hidden grid sm:grid-cols-2 gap-6 sm:gap-3 pt-8">
             <div className="">
               <span className="flex items-center gap-2">
                 <span className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center">
@@ -214,12 +207,46 @@ export function SandW({
                 {data?.SW?.strengths.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li className="truncate">
+                      {/* <li className="truncate hover:overflow-visible hover:whitespace-break-spaces">
                         {toTitleCase(i?.objective_name || "")}
-                      </li>
+                      </li> */}
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <li className="truncate cursor-pointer">
+                            {toTitleCase(i?.objective_name || "")}
+                          </li>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-80">
+                          <p className="flex justify-between space-x-4">
+                            {toTitleCase(i?.objective_name || "")}
+                          </p>
+                          <p className="text-sm font-light">
+                            Your score:{" "}
+                            <span className="font-normal">
+                              {(i?.score).toFixed(0)}%
+                            </span>
+                          </p>
+                          <p className="text-sm font-light">
+                            Top{" "}
+                            <span className="font-normal">
+                              {Math.round(i?.national_percentile_rank)}%
+                            </span>{" "}
+                            of students in the country
+                          </p>
+                        </HoverCardContent>
+                      </HoverCard>
                       <p className="text-sm font-light">
-                        National Percentile Rank -{" "}
-                        {Math.round(i?.national_percentile_rank)}%
+                        Your score:{" "}
+                        <span className="font-normal">
+                          {(i?.score).toFixed(0)}%
+                        </span>
+                      </p>
+                      <p className="text-sm font-light">
+                        Top{" "}
+                        <span className="font-normal">
+                          {Math.round(i?.national_percentile_rank)}%
+                        </span>{" "}
+                        of students in the country
                       </p>
                     </ul>
                   </div>
@@ -239,12 +266,46 @@ export function SandW({
                 {data?.SW?.weaknesses.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      <li className="truncate">
+                      {/* <li className="truncate hover:overflow-visible hover:whitespace-break-spaces">
                         {toTitleCase(i?.objective_name || "")}
-                      </li>
+                      </li> */}
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <li className="truncate cursor-pointer">
+                            {toTitleCase(i?.objective_name || "")}
+                          </li>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-80">
+                          <p className="flex justify-between space-x-4">
+                            {toTitleCase(i?.objective_name || "")}
+                          </p>
+                          <p className="text-sm font-light">
+                            Your score -
+                            <span className="font-normal">
+                              {(i?.score).toFixed(0)}%
+                            </span>
+                          </p>
+                          <p className="text-sm font-light">
+                            Top{" "}
+                            <span className="font-normal">
+                              {Math.round(i?.national_percentile_rank)}%
+                            </span>{" "}
+                            of students in the country
+                          </p>
+                        </HoverCardContent>
+                      </HoverCard>
                       <p className="text-sm font-light">
-                        National Percentile Rank -{" "}
-                        {Math.round(i?.national_percentile_rank)}%
+                        Your score:{" "}
+                        <span className="font-normal">
+                          {(i?.score).toFixed(0)}%
+                        </span>
+                      </p>
+                      <p className="text-sm font-light">
+                        Top{" "}
+                        <span className="font-normal">
+                          {Math.round(i?.national_percentile_rank)}%
+                        </span>{" "}
+                        of students in the country
                       </p>
                     </ul>
                   </div>
@@ -255,7 +316,7 @@ export function SandW({
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Performance Chart</CardTitle>
+            <CardTitle>Comparative Performance Chart</CardTitle>
             <CardDescription>2024</CardDescription>
           </CardHeader>
           <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto">
@@ -267,13 +328,13 @@ export function SandW({
                   tickLine={false}
                   tickMargin={10}
                   axisLine={false}
-                  //   tickFormatter={(value) => value.slice(0, 3)}
+                  // tickFormatter={(value) => value.slice(0, 3)}
                 />
                 <ChartTooltip
                   cursor={false}
-                  content={<ChartTooltipContent indicator="dashed" />}
+                  content={<ChartTooltipContent indicator="line" />}
                 />
-                <Legend className="mt-4" />
+                <Legend wrapperStyle={{ bottom: -10 }} />
                 <Bar
                   dataKey="student"
                   fill="var(--color-student)"

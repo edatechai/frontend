@@ -88,7 +88,7 @@ const StudentQiuzzes = () => {
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
                     {/* {val?.subject} */}
-                    {val?.topic}
+                    {val?.objective}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between gap-5">

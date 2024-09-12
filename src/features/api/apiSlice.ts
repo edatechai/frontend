@@ -14,10 +14,16 @@ const getToken = () => {
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
+<<<<<<< HEAD
     // baseUrl: "http://localhost:5000/",
     baseUrl:
       "https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/",
     // baseUrl: "https://edatbackend.azurewebsites.net/",
+=======
+    //baseUrl: "http://localhost:5000/",
+    // baseUrl: "https://edatbackend.azurewebsites.net/",
+    baseUrl: "https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/",
+>>>>>>> 591986a (new)
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {

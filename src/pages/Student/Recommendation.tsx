@@ -40,8 +40,7 @@ const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { data } = useRecommendObjectivesQuery();
   const [showChatBot, setShowChatBot] = useState(false);
-  const [getRec, { isLoading, data: recData }] =
-    useStudentRecommendationMutation();
+  const [getRec, { isLoading, data: recData }] = useStudentRecommendationMutation();
   const [preview, setPreview] = useState<Objective | null>(null);
   const [showNoObjectMsg, setShowNoObjectMsg] = useState(false);
   const [showSteps, setShowSteps] = useState(false);
@@ -68,11 +67,15 @@ const Recommedation = () => {
     }
   }, [recData]);
 
+  console.log(" this is recData", data);
+
   const getRecommendation = async () => {
     const payload = {
       objective: preview?.objective_id,
       objcode: preview?.objcode,
     };
+
+    console.log("thiss is payload", payload);
     try {
       const res = await getRec(payload);
       console.log("res here", res);
@@ -215,7 +218,7 @@ const Recommedation = () => {
                         >
                           {i.objective_id}
                         </button>{" "}
-                        (Current score: {i.scores})
+                        (Average score: {Math.round(i.avg_score)})
                       </li>
                     ))}
                   </ul>

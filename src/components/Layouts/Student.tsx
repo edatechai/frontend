@@ -155,6 +155,7 @@ export function StudentLayout() {
                 className="shrink-0 md:hidden"
               >
                 <Menu className="h-5 w-5" />
+
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
@@ -169,6 +170,7 @@ export function StudentLayout() {
                 >
                   <Circle className="h-6 w-6" />
                   <span className="sr-only">Institution's logo</span>
+                  <span>{data?.accountName}</span>
                 </NavLink>
                 <NavLink
                   end
@@ -212,7 +214,13 @@ export function StudentLayout() {
                 </NavLink>
                 <NavLink
                   to="/profile"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
+                  className={({ isActive }) =>
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                      isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
+                    }`
+                  }
                 >
                   <User className="h-5 w-5" />
                   Profile
@@ -230,8 +238,8 @@ export function StudentLayout() {
                   <ListPlus className="h-5 w-5" />
                   Recommendation
                 </NavLink>
-                {/* <NavLink
-                  to="/student/under-development"
+                <NavLink
+                  to="/student/report"
                   className={({ isActive }) =>
                     `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
                       isActive
@@ -242,7 +250,7 @@ export function StudentLayout() {
                 >
                   <LineChart className="h-5 w-5" />
                   Report
-                </NavLink> */}
+                </NavLink>
                 {/* <NavLink
                   to="/student/under-development"
                   className={({ isActive }) =>

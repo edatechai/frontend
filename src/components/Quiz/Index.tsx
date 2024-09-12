@@ -260,21 +260,21 @@ const Index = (props) => {
 
   const QuizContent = () => {
     return (
-      <div className="border-slate-300 border-[1px] rounded-lg p-6 space-y-6">
+      <div className="md:border-slate-300 md:border-[1px] rounded-lg md:p-6 space-y-6">
         <h3 className="text-2xl font-medium capitalize">{data?.objective}</h3>
         <div className="flex items-center">
-          <hr className="w-8 h-0.5 bg-primary" />
-          <div className="border-x-2 border-primary rounded-full p-3 w-full">
+          <hr className="w-8 h-0.5 bg-primary hidden md:block" />
+          <div className="border-x-2 border-primary rounded-full p-2 md:p-3 w-full">
             <div className="text-lg text-center border-2 border-primary rounded-full font-semibold mb-2 p-3 first-letter:capitalize">
               {currentQuiz?.question}
             </div>
           </div>
-          <hr className="w-8 h-0.5 bg-primary" />
+          <hr className="w-8 h-0.5 bg-primary hidden md:block" />
         </div>
         <div>
-          <div className="flex flex-col gap-2">
-            <span className="flex items-center">
-              <hr className="bg-primary w-10 h-0.5" />
+          <div className="flex flex-col md:gap-2 mb-5 md:mb-0">
+            <span className="flex items-center flex-col md:flex-row">
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
                   className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
@@ -294,7 +294,7 @@ const Index = (props) => {
                   {currentQuiz?.optionA}
                 </label>
               </div>
-              <hr className="bg-primary w-10 h-0.5" />
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
                   className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
@@ -314,11 +314,11 @@ const Index = (props) => {
                   {currentQuiz?.optionB}
                 </label>
               </div>
-              <hr className="bg-primary w-10 h-0.5" />
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
             </span>
 
-            <span className="flex items-center">
-              <hr className="bg-primary w-10 h-0.5" />
+            <span className="flex items-center flex-col md:flex-row">
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
                   className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
@@ -338,7 +338,7 @@ const Index = (props) => {
                   {currentQuiz?.optionC}
                 </label>
               </div>
-              <hr className="bg-primary w-10 h-0.5" />
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
               <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
                 <label
                   className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
@@ -358,7 +358,7 @@ const Index = (props) => {
                   {currentQuiz?.optionD}
                 </label>
               </div>
-              <hr className="bg-primary w-10 h-0.5" />
+              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
             </span>
           </div>
         </div>

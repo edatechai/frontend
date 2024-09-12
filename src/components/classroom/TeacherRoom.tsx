@@ -192,7 +192,9 @@ const TeacherRoom = () => {
         {/* <Button onClick={() => setOpenExamTypeDialog(true)}>Set task</Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Set a new task for students</Button>
+            <Button variant="outline" className="bg-orange-600 text-white">
+              Set a new task for students
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Select task type</DropdownMenuLabel>

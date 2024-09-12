@@ -40,7 +40,8 @@ const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
   const { data } = useRecommendObjectivesQuery();
   const [showChatBot, setShowChatBot] = useState(false);
-  const [getRec, { isLoading, data: recData }] = useStudentRecommendationMutation();
+  const [getRec, { isLoading, data: recData }] =
+    useStudentRecommendationMutation();
   const [preview, setPreview] = useState<Objective | null>(null);
   const [showNoObjectMsg, setShowNoObjectMsg] = useState(false);
   const [showSteps, setShowSteps] = useState(false);

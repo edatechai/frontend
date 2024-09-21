@@ -14,89 +14,6 @@ import {
 } from "../ui/dialog";
 import { getColor } from "@/lib/jsons";
 
-const aiRes = {
-  student_name: "marvelous osato",
-  student_id: "66a689fa4c92cafaed484ae9",
-  class_id: "66a68cf94c92cafaed484b16",
-  total_marks: 2,
-  results_per_question: {
-    "1(a)": {
-      student_name: "marvelous osato",
-      student_id: "66a689fa4c92cafaed484ae9",
-      class_id: "66a68cf94c92cafaed484b16",
-      question: {
-        number: "1(a)",
-        text: "If x increases by 3 and y decreases by 2, find the joint variation of x and y, if y varies directly as the cube of x.",
-        marks: 1,
-        learning_objectives: ["joint variation"],
-        mark_scheme:
-          "1 mark for correctly writing the joint variation equation in the form y = kx^3. No marks for working out.",
-      },
-      student_response: "the answer to question 1(a) is 9x^2 + 27x + 27 = -2/k",
-      marks_awarded: 0,
-      feedback:
-        "The given response does not correctly write the joint variation equation in the form y = kx^3, as required by the mark scheme.",
-      justification:
-        "The response provides an equation that is not in the correct form for the joint variation of x and y, where y varies directly as the cube of x. The correct form would be y = kx^3, where k is a constant of variation.",
-      _id: "66d6f7bfc0e7b17e624552ea",
-    },
-    "1(b)": {
-      student_name: "marvelous osato",
-      student_id: "66a689fa4c92cafaed484ae9",
-      class_id: "66a68cf94c92cafaed484b16",
-      question: {
-        number: "1(b)",
-        text: "Given that y varies jointly with x and z, if x increases by 2 and z decreases by 3, find the partial variation of y with respect to x, if y = 5x^2z.",
-        marks: 1,
-        learning_objectives: ["partial variation"],
-        mark_scheme:
-          "1 mark for correctly deriving the partial variation equation with respect to x. No marks for working out.",
-      },
-      student_response:
-        "the answer to question 1(b) is ∂y/∂x = 10xz - 30x + 20z - 60",
-      marks_awarded: 1,
-      feedback:
-        "Correctly derived the partial variation equation with respect to x.",
-      justification:
-        "The student has correctly used the chain rule of differentiation to find the partial variation of y with respect to x. The final expression is correct and shows the expected terms for a joint variation.",
-      _id: "66d6f7c1c0e7b17e624552eb",
-    },
-    "2": {
-      student_name: "marvelous osato",
-      student_id: "66a689fa4c92cafaed484ae9",
-      class_id: "66a68cf94c92cafaed484b16",
-      question: {
-        number: "2",
-        text: "If y varies jointly with x and z, and y = 4x^2z, find the constant of variation, if x increases by 2 and y decreases by 12.",
-        marks: 1,
-        learning_objectives: ["joint variation"],
-        mark_scheme:
-          "1 mark for correctly finding the constant of variation. No marks for working out.",
-      },
-      student_response: "the answer to question 2 is k = 4x",
-      marks_awarded: 1,
-      feedback:
-        "Your response correctly identifies the constant of variation as k = 4x. This is the expected answer according to the mark scheme.",
-      justification:
-        "The question asks for the constant of variation, which is the value that multiplies x and z to give y. In the equation y = 4x^2z, the value 4 is the constant of variation. Your response correctly identifies this.",
-      _id: "66d6f7c3c0e7b17e624552ec",
-    },
-  },
-  performance_per_objective: {
-    "partial variation": {
-      raw_score: 1,
-      total_available: 1,
-      percentage: 100.0,
-    },
-    "joint variation": {
-      raw_score: 1,
-      total_available: 2,
-      percentage: 50.0,
-    },
-  },
-  _id: "66d6f7c3c0e7b17e624552ed",
-};
-
 function Theory({ exam }: { exam: ExamQuestions }) {
   const userInfo = useSelector((state) => state?.user.userInfo);
   const navigate = useNavigate();
@@ -164,7 +81,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
   console.log({ score });
 
   return (
-    <div className="my-8 w-full px-28">
+    <div className="my-8 w-full">
       {!!score && (
         <Dialog open={!!score} onOpenChange={closeDialog}>
           <DialogContent className="h-[90vh] overflow-y-auto">
@@ -213,7 +130,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
                 <h4 className="mt-8 text-xl font-semibold mb-2">
                   Examiner Feedback:
                 </h4>
-                <div className="space-y-3">
+                <div className="space-y-3 text-left">
                   {Object.keys(score?.results_per_question)
                     .map((key) => [key, score?.results_per_question?.[key]])
                     .map((value, index) => {

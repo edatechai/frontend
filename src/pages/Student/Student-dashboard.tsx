@@ -62,19 +62,14 @@ export function StudentDash() {
       {classId && <SandW classId={classId} classTitle={classTitle} />}
       {/* </div> */}
       {/* <div className="grid grid-flow-col gap-4 w-screen md:gap-8 md:w-[calc(100vw-268px)] lg:w-[calc(100vw-328px)] overflow-x-auto"> */}
-      <Card x-chunk="dashboard-01-chunk-5">
-        <CardHeader className="px-6 py-3">
-          <CardTitle className="text-lg">Results</CardTitle>
-        </CardHeader>
-        <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-244px)] lg:w-[calc(100vw-328px)] overflow-x-auto">
-          <DataTable
-            columns={columns}
-            data={quizResult?.data || []}
-            isLoading={quizResultLoading}
-            pageSize={5}
-          />
-        </CardContent>
-      </Card>
+      <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc(100vw-328px)] overflow-x-auto">
+        <DataTable
+          columns={columns}
+          data={quizResult?.data || []}
+          isLoading={quizResultLoading}
+          pageSize={5}
+        />
+      </div>
       {/* <Card x-chunk="dashboard-01-chunk-5">
         <CardHeader className="px-6 py-3">
           <CardTitle className="text-lg">Results</CardTitle>

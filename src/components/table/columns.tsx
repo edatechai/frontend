@@ -271,6 +271,114 @@ export const resultColumns: ColumnDef<Results>[] = [
     ),
   },
 ];
+export const childResultColumns: ColumnDef<Results>[] = [
+  // {
+  //   accessorKey: "createdAt",
+  //   // header: "Date",
+  //   sortingFn: "datetime",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
+  //         className="hover:bg-primary hover:text-primary-foreground"
+  //       >
+  //         Date
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     const date = new Date(row.getValue("createdAt"));
+  //     date.toISOString().substring(0, 10);
+  //     return <div>{row.getValue("createdAt").slice(0, 10)}</div>;
+  //   },
+  // },
+  {
+    accessorKey: "classRoomName",
+    header: "Classroom",
+  },
+  {
+    accessorKey: "topic",
+    header: "Topic",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("topic"))}</div>;
+    },
+  },
+  {
+    accessorKey: "subject",
+    header: "Subject",
+  },
+  {
+    accessorKey: "objective",
+    header: "Objective",
+    cell: ({ row }) => {
+      return <div>{toTitleCase(row.getValue("objective"))}</div>;
+    },
+  },
+  {
+    accessorKey: "scorePercentage",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hover:bg-primary hover:text-primary-foreground"
+        >
+          Score Percentage
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
+    },
+  },
+  {
+    id: "actions",
+    header: "Action",
+    enableHiding: false,
+    cell: ({ row }) => (
+      <Sheet>
+        <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
+          View Report
+        </SheetTrigger>
+        <SheetContent className="sm:w-[540px] overflow-auto">
+          <SheetHeader className="overflow-y-scroll  text-left">
+            <SheetTitle>Quiz Report</SheetTitle>
+            <SheetDescription>
+              {row.original.quizResults.map((val, index: number) => (
+                <Card className="mb-3" key={index}>
+                  <CardHeader>
+                    <CardTitle>Question {index + 1}</CardTitle>
+                    <CardDescription>Question: {val.question}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {val.isCorrect ? (
+                      <p className="text-green-700">
+                        Your child choose the right answer
+                      </p>
+                    ) : (
+                      <p className="text-destructive">
+                        Your child choose a wrong answer
+                      </p>
+                    )}
+                    <p>Correct option: {val.correctOption}</p>
+                    <p>Correct answer: {val.correctAnswer}</p>
+                    <p className="capitalize">
+                      Your child's answer: {val.selectedAnswer}
+                    </p>
+                    <p>{val.wrongOption}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
+    ),
+  },
+];
 
 export const licenseColumns: ColumnDef<licenses>[] = [
   {

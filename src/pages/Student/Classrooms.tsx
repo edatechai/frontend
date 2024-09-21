@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useFindMyClassesQuery,
   useGetAllClassRoomByAccountIdQuery,
-  useGetQuizResultByUserIdQuery,
+  // useGetQuizResultByUserIdQuery,
   useJoinClassMutation,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
@@ -17,12 +17,12 @@ export function StudentClassrooms() {
     userInfo?.accountId
   );
   const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
-  const {
-    data: quizResult,
-    isLoading: quizResultLoading,
-    isSuccess: quizResultSuccess,
-    isError: quizResultError,
-  } = useGetQuizResultByUserIdQuery(userInfo._id);
+  // const {
+  //   data: quizResult,
+  //   isLoading: quizResultLoading,
+  //   isSuccess: quizResultSuccess,
+  //   isError: quizResultError,
+  // } = useGetQuizResultByUserIdQuery(userInfo._id);
   const [joinClass, { isLoading }] = useJoinClassMutation();
   const dialogRef = useRef(null);
   const [classRoom, setClassRoom] = useState();

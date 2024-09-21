@@ -314,7 +314,7 @@ export function SandW({
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-slate-50">
           <CardHeader>
             <CardTitle>Comparative Performance Chart</CardTitle>
             <CardDescription>2024</CardDescription>

@@ -16,7 +16,14 @@ import {
   useStudentRecommendationMutation,
 } from "../../features/api/apiSlice";
 import { RootState } from "../../app/store";
-import ChatBotWrapper from "@/components/ChatBotWrapper";
+// import ChatBotWrapper from "@/components/ChatBotWrapper";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type Objective = {
   objective_id: string;
@@ -35,6 +42,18 @@ type RecData = {
     optionD: string;
   }[];
 };
+
+const mockEng = [
+  { avg_score: 20, objective_id: "The Basics of Grammar and Punctuation" },
+  { avg_score: 25, objective_id: "Academic Writing Conventions" },
+  { avg_score: 18, objective_id: "Principles of Literature Interpretation" },
+];
+const mockBiology = [
+  { avg_score: 30, objective_id: "Digestive System" },
+  { avg_score: 45, objective_id: "Evolution" },
+  { avg_score: 28, objective_id: "Cell structure and function" },
+  { avg_score: 38, objective_id: "Ecology" },
+];
 
 const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -148,7 +167,7 @@ const Recommedation = () => {
       console.log("Moving to step 5");
     } else {
       //setShowChatBot(true);
-      console.log("Opening chat with Eddy");
+      console.log("Opening chat with Eddey");
     }
   };
 
@@ -196,33 +215,135 @@ const Recommedation = () => {
         {!showSteps &&
           !showCon &&
           data?.recommendLearningObjectivesData?.length && (
-            <div className="rounded-lg border border-slate-300 py-5 px-7 bg-white shadow-md">
+            <div className=" bg-white">
               <div className="mt-7">
-                <div className="text-slate-800 font-medium">
-                  Hello <span className="capitalize">{userInfo?.fullName}</span>
-                  , based on your goals, aspirations and performance in{" "}
-                  {data?.recommendLearningObjectivesData?.[0]?.subject}, here
-                  are the learning objectives you need to revise
-                  <ul className="mt-5 list-disc list-inside">
-                    {data?.recommendLearningObjectivesData?.map((i, index) => (
-                      <li
-                        key={index}
-                        className="mt-2 font-normal text-black/75 text-sm italic"
-                      >
-                        <button
-                          onClick={() => {
-                            setPreview(i);
-                            setShowNoObjectMsg(false);
-                            setShowSteps(false);
-                          }}
-                          className="text-primary hover:underline capitalize text-base cursor-pointer"
+                <div className="text-slate-800 font-medium space-y-3">
+                  <p className="mb-4">
+                    Hello{" "}
+                    <span className="capitalize">{userInfo?.fullName}</span>,
+                    based on your goals, aspirations and performance, here are
+                    the learning objectives you need to revise
+                  </p>
+                  <Card x-chunk="dashboard-01-chunk-0">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg">
+                        {data?.recommendLearningObjectivesData?.[0]?.subject}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                      {data?.recommendLearningObjectivesData
+                        ?.filter(
+                          (value, index, self) =>
+                            index ===
+                            self.findIndex(
+                              (t) =>
+                                t.objective_id === value.objective_id &&
+                                t.avg_score === value.avg_score
+                            )
+                        )
+                        ?.map((i, index) => (
+                          <Card
+                            x-chunk="dashboard-01-chunk-0"
+                            key={i}
+                            className="flex flex-col justify-between"
+                          >
+                            <CardHeader>
+                              <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                                {i.objective_id}
+                              </CardTitle>
+                              <CardDescription>
+                                Average score: {Math.round(i.avg_score)}
+                              </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <Button
+                                variant="link"
+                                className="text-xs"
+                                onClick={() => {
+                                  setPreview(i);
+                                  setShowNoObjectMsg(false);
+                                  setShowSteps(false);
+                                }}
+                              >
+                                View Recommendation
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        ))}
+                    </CardContent>
+                  </Card>
+                  <Card x-chunk="dashboard-01-chunk-0">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg">English</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                      {mockEng?.map((i, index) => (
+                        <Card
+                          x-chunk="dashboard-01-chunk-0"
+                          key={i}
+                          className="flex flex-col justify-between"
                         >
-                          {i.objective_id}
-                        </button>{" "}
-                        (Average score: {Math.round(i.avg_score)})
-                      </li>
-                    ))}
-                  </ul>
+                          <CardHeader>
+                            <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                              {i.objective_id}
+                            </CardTitle>
+                            <CardDescription>
+                              Average score: {Math.round(i.avg_score)}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <Button
+                              variant="link"
+                              className="text-xs"
+                              onClick={() => {
+                                setPreview(i);
+                                setShowNoObjectMsg(false);
+                                setShowSteps(false);
+                              }}
+                            >
+                              View Recommendation
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </CardContent>
+                  </Card>
+                  <Card x-chunk="dashboard-01-chunk-0">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-lg">Biology</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                      {mockBiology.map((i, index) => (
+                        <Card
+                          x-chunk="dashboard-01-chunk-0"
+                          key={i}
+                          className="flex flex-col justify-between"
+                        >
+                          <CardHeader>
+                            <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                              {i.objective_id}
+                            </CardTitle>
+                            <CardDescription>
+                              Average score: {Math.round(i.avg_score)}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <Button
+                              variant="link"
+                              className="text-xs"
+                              onClick={() => {
+                                setPreview(i);
+                                setShowNoObjectMsg(false);
+                                setShowSteps(false);
+                              }}
+                            >
+                              View Recommendation
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>
@@ -233,7 +354,7 @@ const Recommedation = () => {
         )}
 
         <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="max-w-[95vw] sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle className="capitalize">
                 {preview?.objective_id}
@@ -259,7 +380,7 @@ const Recommedation = () => {
               <DialogTitle>Ooops!</DialogTitle>
               <DialogDescription>
                 Sorry, there is no recommendation for you on this learning
-                objective at the moment, but you can talk to Eddy, our AI
+                objective at the moment, but you can talk to Eddey, our AI
                 assistant, about this learning objective.
               </DialogDescription>
             </DialogHeader>
@@ -270,7 +391,7 @@ const Recommedation = () => {
               }}
               type="submit"
             >
-              Chat with Eddy
+              Chat with Eddey
             </Button>
           </DialogFooter> */}
           </DialogContent>
@@ -278,11 +399,11 @@ const Recommedation = () => {
 
         {!(quizAttempted && !quizPassed) && (
           <Dialog open={showSteps} onOpenChange={handleDialogClose}>
-            <DialogContent className="max-w-[70vw]">
+            <DialogContent className="max-w-[95vw] md:max-w-[70vw]">
               <DialogHeader>
                 <DialogTitle>{recData?.objectives?.[0]?.objective}</DialogTitle>
 
-                <DialogDescription className="flex flex-row gap-5">
+                <DialogDescription className="flex flex-col md:flex-row gap-5">
                   {currentStepPage === 4 ? (
                     <div className="bg-white p-6 rounded-lg">
                       <p className="text-lg font-medium mb-4">
@@ -294,11 +415,11 @@ const Recommedation = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-white p-6 rounded-lg grid grid-flow-col gap-10 max-w-[90vw] min-w-[60%]">
+                    <div className="bg-white md:p-6 rounded-lg grid grid-flow-col gap-10 max-w-[90vw] min-w-[60%] text-left">
                       {!showNoObjectMsg &&
                         currentStepPage !==
                           recData?.objectives[0]?.learningSteps?.length && (
-                          <div className="shadow-md p-6 grow flex flex-col justify-between">
+                          <div className="shadow  p-6 grow flex flex-col justify-between">
                             {recData?.objectives?.[0]?.learningSteps
                               .slice(
                                 quizPassedCount >= 2
@@ -548,7 +669,7 @@ const Recommedation = () => {
 
               {/* <DialogFooter> */}
               <div className="text-sm text-slate-500 font-bold bg-yellow-100 p-2 rounded-md border border-yellow-300 shadow-sm">
-                Remember: You can ask Eddy for help at any point!
+                Remember: You can ask Eddey for help at any point!
               </div>
               <button
                 className="btn text-sm flex items-center gap-2"
@@ -569,7 +690,7 @@ const Recommedation = () => {
                 >
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                Chat with Eddy
+                Chat with Eddey
               </button>
 
               {/* {showChatBot && (
@@ -596,7 +717,7 @@ const Recommedation = () => {
           <div className="mt-7 bg-white p-6 rounded-lg shadow-md">
             <div className="text-slate-700 mb-6">
               It seems you didn't get the correct answers. Please try again or
-              chat with Eddy for assistance.
+              chat with Eddey for assistance.
             </div>
             <div className="flex gap-5">
               <Button
@@ -604,7 +725,7 @@ const Recommedation = () => {
                   document.getElementById("my_modal_4").showModal()
                 }
               >
-                Chat with Eddy
+                Chat with Eddey
               </Button>
               <Button
                 onClick={() => {

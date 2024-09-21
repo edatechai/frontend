@@ -19,8 +19,15 @@ import {
 } from "../ui/table";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useGenerateStudentReportMutation } from "@/features/api/apiSlice";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../ui/breadcrumb";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -169,57 +176,74 @@ export default function CreateReport() {
   };
 
   return (
-    <form className="p-2" onSubmit={(e) => e.preventDefault()}>
-      <h1 className="text-2xl mb-6 font-medium">Create Students Report</h1>
-      <Table>
-        <TableHeader className="bg-primary text-primary-foreground">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="hover:bg-primary">
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    className="text-white hover:bg-primary"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => {
+    <>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <Link to="/teacher">Classrooms</Link>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <Link to="/teacher/class">Students</Link>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Create Report</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <form className="p-2" onSubmit={(e) => e.preventDefault()}>
+        <h1 className="text-2xl mb-6 font-medium">Create Students Report</h1>
+        <Table>
+          <TableHeader className="bg-primary text-primary-foreground">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="hover:bg-primary">
+                {headerGroup.headers.map((header) => {
                   return (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+                    <TableHead
+                      key={header.id}
+                      className="text-white hover:bg-primary"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   );
                 })}
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-      <Button
-        type="submit"
-        onClick={() => handleSubmit()}
-        disabled={isLoading}
-        className="mt-6 float-right"
-      >
-        Create Report
-      </Button>
-    </form>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => {
+              return (
+                <TableRow key={row.id}>
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <Button
+          type="submit"
+          onClick={() => handleSubmit()}
+          disabled={isLoading}
+          className="mt-6 float-right"
+        >
+          Create Report
+        </Button>
+      </form>
+    </>
   );
 }

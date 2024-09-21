@@ -21,7 +21,7 @@ export function TeachersLayout() {
           <div className="flex h-14 items-center border-b lg:h-[60px] border-muted-foreground bg-background">
             <span className="flex px-4  lg:px-6 w-full h-full items-center gap-2 font-semibold bg-muted/40 text-foreground">
               {/* <Circle className="h-6 w-6" /> */}
-              <img className="h-8" src="school.png" />
+              <img className="h-8" src="/school.png" />
               <span>{data?.accountName}</span>
             </span>
           </div>

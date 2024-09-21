@@ -12,7 +12,7 @@ export const Result = () => {
 
   return (
     <main>
-      <h1>Results</h1>
+      <h1 className="text-lg font-medium">Results</h1>
       <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc(100vw-328px)] overflow-x-auto">
         <DataTable
           columns={resultColumns}

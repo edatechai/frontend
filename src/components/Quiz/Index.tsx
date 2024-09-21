@@ -597,7 +597,7 @@ const Index = (props) => {
         {analyzedData.length > 0 && (
           <>
             <div className="mt-4 text-slate-800">Result Analysis </div>
-            <div className="px-2 border-slate-300 border-[1px] mt-2 rounded-md text-slate-800 text-[16px] min-w-full ">
+            <div className="border-slate-300 border-[1px] mt-2 rounded-md text-slate-800 text-[16px] min-w-full ">
               {analyzedData
                 .slice(
                   currentPage * itemsPerPage,
@@ -709,11 +709,7 @@ const Index = (props) => {
   };
 
   return (
-    <div
-      className={`flex w-full min-w-full bg-white p-4 ${
-        isLoading ? "blur-lg" : ""
-      }`}
-    >
+    <div className={`flex ${isLoading ? "blur-lg" : ""}`}>
       <dialog
         id="my_modal_3"
         className="modal w-screen min-w-screen min-h-screen"

@@ -15,9 +15,9 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     // baseUrl: "http://localhost:5000/",
-    baseUrl:
-      "https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/",
-    // baseUrl: "https://edatbackend.azurewebsites.net/",
+    // baseUrl:
+    //   "https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/",
+    baseUrl: "https://edatbackend.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -81,7 +81,7 @@ export const apiSlice = createApi({
 
     getAccountById: builder.query({
       query: (id) => `/api/account/getAccountById/${id}`,
-      providesTags: (result, error, id) => [{ type: "Account", id }],
+      providesTags: (id) => [{ type: "Account", id }],
     }),
 
     //classRoom endpoint
@@ -129,6 +129,11 @@ export const apiSlice = createApi({
     findMyClassesTeacher: builder.query({
       query: (id) => `/api/classroom/findMyClassesTeacher/${id}`,
       providesTags: ["ClassRoom"],
+    }),
+
+    studentDetails: builder.query({
+      query: (id) => `/api/quiz/getQuizResultByUserId/${id}`,
+      // providesTags: ["ClassRoom"],
     }),
 
     //objectives
@@ -333,6 +338,21 @@ export const apiSlice = createApi({
       providesTags: ["Notification"],
     }),
 
+    getChildResult: builder.query({
+      query: (childId) => `/api/users/getChildReport/${childId}`,
+    }),
+
+    getChildSandW: builder.mutation({
+      query: ({ classId, userId }) => ({
+        url: `/api/quiz/childSW`,
+        method: "POST",
+        body: {
+          classId,
+          userId,
+        },
+      }),
+    }),
+
     markNotificationAsRead: builder.mutation({
       query: ({ userId, notificationId }) => ({
         url: `/api/users/markNotificationAsRead/${userId}/${notificationId}`,
@@ -412,6 +432,7 @@ export const {
   useUpdateBioMutation,
   useGenerateStudentReportMutation,
   useAddSubjectPriorityMutation,
+  useStudentDetailsQuery,
 
   //objectives
   useCreateObjectiveMutation,
@@ -443,4 +464,8 @@ export const {
 
   // chat
   useChatMutation,
+
+  //parent
+  useGetChildResultQuery,
+  useGetChildSandWMutation,
 } = apiSlice;

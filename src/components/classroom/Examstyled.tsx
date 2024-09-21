@@ -84,7 +84,7 @@ export default function Examstyled({
   };
 
   return (
-    <DialogContent className="h-[90vh] overflow-y-auto">
+    <DialogContent className="h-[90vh] overflow-y-auto max-w-[95vw] sm:max-w-md">
       <DialogHeader>
         <DialogTitle>Create Exam Style Questions</DialogTitle>
         <DialogDescription className="flex gap-3 pt-5 flex-col">

@@ -8,6 +8,7 @@ import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdmin";
 import { OrgLayout } from "./components/Layouts/Org";
 import OrgDashboard from "./pages/Org/Org";
 import StudentDashboard from "./pages/Student/Student";
+import StudentDetails from "./pages/Teacher/studentDetails";
 import { StudentDash } from "./pages/Student/Student-dashboard";
 import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
@@ -35,6 +36,8 @@ import CreateReport from "./components/classroom/CreateReport";
 import TeachersClassroom from "./components/classroom/JoinClassByTeacher";
 import { useEffect } from "react";
 import ParentReport from "./pages/Parent/Report";
+import ChildResult from "./pages/Parent/Result";
+import Strengths from "./pages/Parent/Strengths";
 // import store from "./app/store";
 
 const App = () => {
@@ -84,6 +87,7 @@ const App = () => {
             path="/teacher/class/create-report"
             element={<CreateReport />}
           />
+          <Route path="/teacher/class/:userId" element={<StudentDetails />} />
           {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
         </Route>
 
@@ -146,6 +150,8 @@ const App = () => {
         <Route element={<ParentsLayout />}>
           <Route path="/parent" element={<ParentDashboard />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/parent/result/:childId" element={<ChildResult />} />
+          <Route path="/parent/strengths/:childId" element={<Strengths />} />
           <Route path="/parent/report" element={<ParentReport />} />
           <Route path="/dashboard/under-development" element={<UnderDev />} />
         </Route>

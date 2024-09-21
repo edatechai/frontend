@@ -128,7 +128,6 @@ export function StudentLayout() {
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
-            <img alt="" src="/edat_logo.png" className="w-1/2" />
             {/* <button
               className="flex items-center gap-3 rounded-lg py-2 mb-5 hover:bg-blue-500 w-full"
               onClick={() => {
@@ -140,8 +139,10 @@ export function StudentLayout() {
               <LogOut className="h-4 w-4" />
               Logout
             </button> */}
-            {/* <p>EDAT</p> */}
-            <p>All Rights Reserved ©2024</p>
+            <span className="flex gap-2 text-xs items-center">
+              <img alt="" src="/edat_logo.png" className="w-12" />
+              <p>All Rights Reserved ©2024</p>
+            </span>
           </div>
         </div>
       </div>
@@ -164,14 +165,11 @@ export function StudentLayout() {
               className="flex flex-col bg-primary text-primary-foreground"
             >
               <nav className="grid gap-2 text-lg font-medium">
-                <NavLink
-                  to="/student/under-development"
-                  className="flex items-center gap-2 text-lg font-semibold"
-                >
+                <span className="flex items-center gap-2 text-lg font-semibold">
                   <Circle className="h-6 w-6" />
                   <span className="sr-only">Institution's logo</span>
                   <span>{data?.accountName}</span>
-                </NavLink>
+                </span>
                 <NavLink
                   end
                   to="/student"

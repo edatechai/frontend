@@ -33,6 +33,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { LinkIcon } from "lucide-react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../ui/breadcrumb";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
@@ -42,7 +51,7 @@ const TeacherRoom = () => {
   const { data: allObjectives, isLoading: isLoadingObjectives } =
     useFindAllObjectivesQuery();
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
-  const { data: AllQuiz } = useFindAllQuizQuery();
+  // const { data: AllQuiz } = useFindAllQuizQuery();
   const [openExamTypeDialog, setOpenExamTypeDialog] = useState(false);
   const [openQuizDialog, setOpenQuizDialog] = useState(false);
 
@@ -110,6 +119,19 @@ const TeacherRoom = () => {
 
   return (
     <>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              <Link to="/teacher">Classrooms</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Students</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       {/* create class modal */}
       <dialog id="my_modal_3" className="modal" ref={dialogRef}>
         <div className="modal-box w-11/12 max-w-5xl">
@@ -230,8 +252,9 @@ const TeacherRoom = () => {
         <CardContent className="grid gap-2 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {state?.data?.numberOfStudents &&
             state?.data?.numberOfStudents.map((student, index: number) => (
-              <p
+              <Link
                 key={index}
+                to={`/teacher/class/${student?._id}`}
                 className="flex cursor-pointer gap-2 items-center p-3 rounded-lg border bg-card text-card-foreground shadow-sm hover:bg-slate-50"
               >
                 <span
@@ -243,7 +266,7 @@ const TeacherRoom = () => {
                 <span className="flex flex-col">
                   <p className="text-lg capitalize">{student.fullName}</p>
                 </span>
-              </p>
+              </Link>
             ))}
         </CardContent>
       </Card>

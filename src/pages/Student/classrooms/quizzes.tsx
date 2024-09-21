@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type ExamQuestions = {
   exam_questions: {
@@ -77,68 +83,80 @@ const StudentQiuzzes = () => {
       <h3 className="my-4 text-lg font-medium">
         {AllQuiz?.[0]?.classRoomName}
       </h3>
-      <div className="">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Quizzes</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-            {AllQuiz?.map((val, i: number) => (
-              <Card key={i} className="flex flex-col justify-between">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                    {/* {val?.subject} */}
-                    {val?.objective}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between gap-5">
-                  <p className="text-slate-950 truncate text-xs">
-                    {val?.numberOfQuestions} questions
-                  </p>
-                  {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
-                  <Link
-                    to="/dashboard/quiz"
-                    state={{ data: val }}
-                    className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
-                  >
-                    Take Quiz
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </CardContent>
-        </Card>
-        <Card className="mt-10">
-          <CardHeader>
-            <CardTitle className="text-lg">Exams</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-            {examQuestions?.exam_questions?.map((val, i: number) => (
-              <Card key={i} className="flex flex-col justify-between">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                    {/* {val?.subject} */}
-                    {val?.questions[0].learning_objectives[0]}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between gap-5">
-                  <p className="text-slate-950 truncate text-xs">
-                    {val?.questions.length} questions
-                  </p>
-                  {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
-                  <Link
-                    to={`/student/classrooms/exam/${val._id}`}
-                    state={{ data: val }}
-                    className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
-                  >
-                    Take Exam
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="quizzes">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">
+                <AccordionTrigger>Quizzes</AccordionTrigger>
+              </CardTitle>
+            </CardHeader>
+            <AccordionContent>
+              <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                {AllQuiz?.map((val, i: number) => (
+                  <Card key={i} className="flex flex-col justify-between">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                        {/* {val?.subject} */}
+                        {val?.objective}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-between gap-5">
+                      <p className="text-slate-950 truncate text-xs">
+                        {val?.numberOfQuestions} questions
+                      </p>
+                      {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
+                      <Link
+                        to="/dashboard/quiz"
+                        state={{ data: val }}
+                        className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
+                      >
+                        Take Quiz
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </CardContent>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+        <AccordionItem value="exams">
+          <Card className="mt-5">
+            <CardHeader>
+              <CardTitle className="text-lg">
+                <AccordionTrigger>Exams</AccordionTrigger>
+              </CardTitle>
+            </CardHeader>
+            <AccordionContent>
+              <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+                {examQuestions?.exam_questions?.map((val, i: number) => (
+                  <Card key={i} className="flex flex-col justify-between">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                        {/* {val?.subject} */}
+                        {val?.questions[0].learning_objectives[0]}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-between gap-5">
+                      <p className="text-slate-950 truncate text-xs">
+                        {val?.questions.length} questions
+                      </p>
+                      {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
+                      <Link
+                        to={`/student/classrooms/exam/${val._id}`}
+                        state={{ data: val }}
+                        className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
+                      >
+                        Take Exam
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ))}
+              </CardContent>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
         {AllQuiz?.length === 0 && (
           <div className="text-center">No Quiz Found</div>

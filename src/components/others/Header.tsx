@@ -28,7 +28,9 @@ const Header = () => {
   const [markAsRead] = useMarkNotificationAsReadMutation();
   console.log({ data });
 
-  const unreadNotifications = data?.filter((val) => val.status == "unread");
+  const unreadNotifications = data?.filter(
+    (val) => val.status == "unread" && val?.data?.classId
+  );
 
   return (
     <>
@@ -53,7 +55,7 @@ const Header = () => {
             )}
           </span>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="max-w-[78vw]">
           <DropdownMenuLabel>
             {unreadNotifications?.length
               ? "Notifications"
@@ -65,12 +67,13 @@ const Header = () => {
               <DropdownMenu key={index}>
                 <button
                   className="items-center gap-2 grid grid-flow-col justify-start text-left hover:bg-border w-full mb-2 py-1 pr-2 rounded"
-                  onClick={() =>
+                  onClick={() => {
                     markAsRead({
                       userId: userInfo._id,
                       notificationId: val.id,
-                    })
-                  }
+                    });
+                    navigate(`/student/classrooms/${val?.data?.classId}`);
+                  }}
                 >
                   <span className="size-8 rounded-full border border-border flex items-center justify-center">
                     <BookText className="size-5 text-muted-foreground" />

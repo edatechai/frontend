@@ -1,19 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Eye, EyeOff, Loader } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoginSchema } from "../../lib/schema";
 import { useLoginMutation } from "../../features/api/apiSlice";
+import { toast } from "sonner";
 
 export const LoginForm = () => {
-  const { toast } = useToast();
-  const [Login, { isLoading, isError: LoginError }] = useLoginMutation();
+  const [Login, { isLoading }] = useLoginMutation();
   const [showPassword, setShowPassword] = useState(false);
   //   const dispatch = useDispatch();
 
@@ -30,9 +29,13 @@ export const LoginForm = () => {
     try {
       const response = await Login(data);
       if (response.error) {
-        return alert(response.error.data.message);
+        toast.error("Login failed", {
+          description: response?.error?.data?.message,
+        });
+        return;
       }
       if (response.data.token) {
+        toast("Login successful");
         const Token = response.data.token;
         localStorage.setItem("Token", Token);
         window.location.reload();
@@ -73,6 +76,7 @@ export const LoginForm = () => {
             autoCorrect="off"
             disabled={isLoading}
             {...register("password")}
+            className="pr-8"
           />
           <button
             className={`absolute right-2 top-7 ${isLoading && "text-border"}`}

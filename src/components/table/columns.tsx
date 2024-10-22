@@ -1,9 +1,15 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Ellipsis } from "lucide-react";
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  Ellipsis,
+  Delete,
+  Pencil,
+  Loader,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "../ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,18 +37,61 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
 import { useState } from "react";
 import {
+  useDeleteAimByIDMutation,
+  useDeleteSubjectByIDMutation,
+  useDeleteYearGroupByIDMutation,
+  useUpdateArmByIDMutation,
   useUpdateNumberOfLearningObjectiveMutation,
   useUpdatePassScoreMutation,
+  useUpdateSubjectByIDMutation,
+  useUpdateYearGroupByIDMutation,
 } from "@/features/api/apiSlice";
 import { Input } from "../ui/input";
 import { Label } from "recharts";
 import { toTitleCase } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import { Label as FormLabel } from "../ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  ArmFormSchema,
+  SubjectFormSchema,
+  YearGroupFormSchema,
+} from "../org/classSettings";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { DataTable } from "./data-table";
+import QuizReport from "../Quiz/quizReport";
 
 export type licenses = {
   email: string;
@@ -51,6 +100,20 @@ export type licenses = {
   licenseLimit: number;
   parentLicense: string;
   role: string;
+};
+
+export type org = {
+  accountName: string;
+  email: string;
+  category: string;
+  numberOfLicense: string;
+  license: {
+    licenseCode: string;
+    parentLicense: string;
+    email: string;
+    fullName?: string;
+    role?: string;
+  }[];
 };
 
 export type Results = {
@@ -84,6 +147,27 @@ export type Child = {
   };
 };
 
+export type YearGroup = {
+  _id: string;
+  accountId: string;
+  yearGroup: string;
+  createdAt: string;
+};
+
+export type Arm = {
+  _id: string;
+  accountId: string;
+  aim: string;
+  createdAt: string;
+};
+
+export type Subject = {
+  _id: string;
+  accountId: string;
+  subject: string;
+  createdAt: string;
+};
+
 export const columns: ColumnDef<Results>[] = [
   {
     accessorKey: "updatedAt",
@@ -94,7 +178,7 @@ export const columns: ColumnDef<Results>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
-          className="hover:bg-primary hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground p-0"
         >
           Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -104,7 +188,11 @@ export const columns: ColumnDef<Results>[] = [
     cell: ({ row }) => {
       const date = new Date(row.getValue("updatedAt"));
       date.toISOString().substring(0, 10);
-      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+      return (
+        <div className="whitespace-nowrap">
+          {date.toISOString().substring(0, 10)}
+        </div>
+      );
     },
   },
   {
@@ -136,7 +224,7 @@ export const columns: ColumnDef<Results>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-primary hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground px-0"
         >
           Score Percentage
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -144,7 +232,11 @@ export const columns: ColumnDef<Results>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div>{Math.round(row.getValue("scorePercentage"))}%</div>;
+      return (
+        <div className="px-3 py-2.5 bg-border w-fit rounded-md">
+          {Math.round(row.getValue("scorePercentage"))}%
+        </div>
+      );
     },
   },
   // {
@@ -173,7 +265,7 @@ export const resultColumns: ColumnDef<Results>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() == "asc")}
-          className="hover:bg-primary hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground p-0"
         >
           Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -182,8 +274,7 @@ export const resultColumns: ColumnDef<Results>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue("updatedAt"));
-      date.toISOString().substring(0, 10);
-      return <div>{row.getValue("updatedAt").slice(0, 10)}</div>;
+      return <div>{date.toISOString().substring(0, 10)}</div>;
     },
   },
   {
@@ -215,7 +306,7 @@ export const resultColumns: ColumnDef<Results>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="hover:bg-primary hover:text-primary-foreground"
+          className="hover:bg-primary hover:text-primary-foreground p-0"
         >
           Score Percentage
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -230,45 +321,7 @@ export const resultColumns: ColumnDef<Results>[] = [
     id: "actions",
     header: "Action",
     enableHiding: false,
-    cell: ({ row }) => (
-      <Sheet>
-        <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
-          View Report
-        </SheetTrigger>
-        <SheetContent className="sm:w-[540px] overflow-auto">
-          <SheetHeader className="overflow-y-scroll  text-left">
-            <SheetTitle>Quiz Report</SheetTitle>
-            <SheetDescription>
-              {row.original.quizResults.map((val, index: number) => (
-                <Card className="mb-3" key={index}>
-                  <CardHeader>
-                    <CardTitle>Question {index + 1}</CardTitle>
-                    <CardDescription>Question: {val.question}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {val.isCorrect ? (
-                      <p className="text-green-700">
-                        You choose the right answer
-                      </p>
-                    ) : (
-                      <p className="text-destructive">
-                        You choose a wrong answer
-                      </p>
-                    )}
-                    <p>Correct option: {val.correctOption}</p>
-                    <p>Correct answer: {val.correctAnswer}</p>
-                    <p className="capitalize">
-                      Your answer: {val.selectedAnswer}
-                    </p>
-                    <p>{val.wrongOption}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
-    ),
+    cell: ({ row }) => <QuizReport quizResults={row.original.quizResults} />,
   },
 ];
 export const childResultColumns: ColumnDef<Results>[] = [
@@ -338,45 +391,7 @@ export const childResultColumns: ColumnDef<Results>[] = [
     id: "actions",
     header: "Action",
     enableHiding: false,
-    cell: ({ row }) => (
-      <Sheet>
-        <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
-          View Report
-        </SheetTrigger>
-        <SheetContent className="sm:w-[540px] overflow-auto">
-          <SheetHeader className="overflow-y-scroll  text-left">
-            <SheetTitle>Quiz Report</SheetTitle>
-            <SheetDescription>
-              {row.original.quizResults.map((val, index: number) => (
-                <Card className="mb-3" key={index}>
-                  <CardHeader>
-                    <CardTitle>Question {index + 1}</CardTitle>
-                    <CardDescription>Question: {val.question}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {val.isCorrect ? (
-                      <p className="text-green-700">
-                        Your child choose the right answer
-                      </p>
-                    ) : (
-                      <p className="text-destructive">
-                        Your child choose a wrong answer
-                      </p>
-                    )}
-                    <p>Correct option: {val.correctOption}</p>
-                    <p>Correct answer: {val.correctAnswer}</p>
-                    <p className="capitalize">
-                      Your child's answer: {val.selectedAnswer}
-                    </p>
-                    <p>{val.wrongOption}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </SheetDescription>
-          </SheetHeader>
-        </SheetContent>
-      </Sheet>
-    ),
+    cell: ({ row }) => <QuizReport quizResults={row.original.quizResults} />,
   },
 ];
 
@@ -398,7 +413,7 @@ export const licenseColumns: ColumnDef<licenses>[] = [
     cell: ({ row }) => {
       if (!row.original.fullName) {
         return <span>Not assigned</span>;
-      } else return <span>{row.original.fullName}</span>;
+      } else return <span className="capitalize">{row.original.fullName}</span>;
     },
     header: "Owner",
   },
@@ -440,7 +455,7 @@ export const licenseColumns: ColumnDef<licenses>[] = [
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(license.licenseCode);
-                toast("Copied!");
+                toast("License code copied!");
               }}
             >
               Copy license code
@@ -448,7 +463,7 @@ export const licenseColumns: ColumnDef<licenses>[] = [
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(license.parentLicense);
-                toast("Copied!");
+                toast("Parent's license code copied!");
               }}
             >
               Copy parent's license code
@@ -611,6 +626,564 @@ export const childColumns: ColumnDef<Child>[] = [
           </DropdownMenuContent>
         </DropdownMenu>
       );
+    },
+  },
+];
+
+export const yearGroupColumns: ColumnDef<YearGroup>[] = [
+  {
+    accessorKey: "yearGroup",
+    header: "Year group",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      return <div>{date.toISOString().substring(0, 10)}</div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Actions",
+    cell: ({ row }) => {
+      const yearGroup = row.original;
+      const [updateYearGroup, { isLoading }] = useUpdateYearGroupByIDMutation();
+      const [deleteYearGroup, { isLoading: isDeleting }] =
+        useDeleteYearGroupByIDMutation();
+      const form = useForm<z.infer<typeof YearGroupFormSchema>>({
+        resolver: zodResolver(YearGroupFormSchema),
+        defaultValues: {
+          yearGroup: yearGroup?.yearGroup,
+        },
+      });
+
+      async function onSubmit(data: z.infer<typeof YearGroupFormSchema>) {
+        try {
+          const response = await updateYearGroup({
+            payload: {
+              yearGroup: data.yearGroup,
+              accountId: yearGroup.accountId,
+            },
+            id: yearGroup._id,
+          });
+          if (response.error) {
+            toast.error("Year group creation failed", {
+              description: response?.error?.data?.message,
+            });
+            console.log({ backendError: response.error });
+          } else {
+            toast(response.data.message);
+          }
+        } catch (error) {
+          toast.error("Year group creation failed", {
+            description: "Something went wrong",
+          });
+          console.log("error", error);
+        }
+      }
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 border-0 bg-transparent font-normal gap-2 w-full justify-start cursor-pointer hover:bg-border"
+                >
+                  <Pencil className="size-4" /> Edit year group
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit year group</DialogTitle>
+                  <DialogDescription>
+                    Make changes to the year group here. Click save when you're
+                    done.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="w-2/3 space-y-6"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="yearGroup"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>YearGroup</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && (
+                        <span className="mr-2 animate-spin">
+                          <Loader />
+                        </span>
+                      )}
+                      Save changes
+                    </Button>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+            <AlertDialog>
+              <AlertDialogTrigger className="flex gap-2 border-0 relative select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer hover:bg-border">
+                <Delete className="size-4" />
+                Delete year group
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you absolutely sure you want to delete{" "}
+                    {yearGroup.yearGroup}?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the year group from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteYearGroup(yearGroup._id)}
+                    disabled={isDeleting}
+                    className="bg-orange-700"
+                  >
+                    {isLoading && (
+                      <span className="mr-2 animate-spin">
+                        <Loader />
+                      </span>
+                    )}
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const ArmColumns: ColumnDef<Arm>[] = [
+  {
+    accessorKey: "aim",
+    header: "Arm",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      return <div>{date.toISOString().substring(0, 10)}</div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Actions",
+    cell: ({ row }) => {
+      const aim = row.original;
+      const [updateArm, { isLoading }] = useUpdateArmByIDMutation();
+      const [deleteArm, { isLoading: isDeleting }] = useDeleteAimByIDMutation();
+      const form = useForm<z.infer<typeof ArmFormSchema>>({
+        resolver: zodResolver(ArmFormSchema),
+        defaultValues: {
+          aim: aim?.aim,
+        },
+      });
+
+      async function onSubmit(data: z.infer<typeof ArmFormSchema>) {
+        try {
+          const response = await updateArm({
+            payload: {
+              aim: data.aim,
+              accountId: aim.accountId,
+            },
+            id: aim._id,
+          });
+          if (response.error) {
+            toast.error("Arm creation failed", {
+              description: response?.error?.data?.message,
+            });
+            console.log({ backendError: response.error });
+          } else {
+            toast(response.data.message);
+          }
+        } catch (error) {
+          toast.error("Arm creation failed", {
+            description: "Something went wrong",
+          });
+          console.log("error", error);
+        }
+      }
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 border-0 bg-transparent font-normal gap-2 w-full justify-start cursor-pointer hover:bg-border"
+                >
+                  <Pencil className="size-4" /> Edit arm
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit arm</DialogTitle>
+                  <DialogDescription>
+                    Make changes to the arm here. Click save when you're done.
+                  </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="w-2/3 space-y-6"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="aim"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Arm</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && (
+                        <span className="mr-2 animate-spin">
+                          <Loader />
+                        </span>
+                      )}
+                      Save changes
+                    </Button>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+            <AlertDialog>
+              <AlertDialogTrigger className="flex gap-2 border-0 relative select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer hover:bg-border">
+                <Delete className="size-4" />
+                Delete arm
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you absolutely sure you want to delete {aim?.aim}?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the arm from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deleteArm(aim._id);
+                    }}
+                    disabled={isDeleting}
+                    className="bg-orange-700"
+                  >
+                    {isLoading && (
+                      <span className="mr-2 animate-spin">
+                        <Loader />
+                      </span>
+                    )}
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const subjectColumns: ColumnDef<Subject>[] = [
+  {
+    accessorKey: "subject",
+    header: "subject",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
+      return <div>{date.toISOString().substring(0, 10)}</div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    header: "Actions",
+    cell: ({ row }) => {
+      const subject = row.original;
+      const [updateSubject, { isLoading }] = useUpdateSubjectByIDMutation();
+      const [deleteSubject, { isLoading: isDeleting }] =
+        useDeleteSubjectByIDMutation();
+      const form = useForm<z.infer<typeof SubjectFormSchema>>({
+        resolver: zodResolver(SubjectFormSchema),
+        defaultValues: {
+          subject: subject.subject,
+        },
+      });
+
+      async function onSubmit(data: z.infer<typeof SubjectFormSchema>) {
+        try {
+          const response = await updateSubject({
+            payload: {
+              subject: data.subject,
+              accountId: subject.accountId,
+            },
+            id: subject._id,
+          });
+          if (response.error) {
+            toast.error("Arm creation failed", {
+              description: response?.error?.data?.message,
+            });
+            console.log({ backendError: response.error });
+          } else {
+            toast(response.data.message);
+          }
+        } catch (error) {
+          toast.error("Arm creation failed", {
+            description: "Something went wrong",
+          });
+          console.log("error", error);
+        }
+      }
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <Ellipsis />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 border-0 bg-transparent font-normal gap-2 w-full justify-start cursor-pointer hover:bg-border"
+                >
+                  <Pencil className="size-4" /> Edit subject
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit arm</DialogTitle>
+                  <DialogDescription>
+                    Make changes to the arm here. Click save when you're done.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="full space-y-6"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="subject"
+                      render={({ field }) => (
+                        <FormItem className="w-2/3">
+                          <FormLabel>Subject</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a subject" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="Mathematics">
+                                Mathematics
+                              </SelectItem>
+                              <SelectItem value="English">English</SelectItem>
+                              <SelectItem value="Biology">Biology</SelectItem>
+                              <SelectItem value="Chemistry">
+                                Chemistry
+                              </SelectItem>
+                              <SelectItem value="Physic">Physis</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <DialogFooter>
+                      <Button type="submit" disabled={isLoading}>
+                        {isLoading && (
+                          <span className="mr-2 animate-spin">
+                            <Loader />
+                          </span>
+                        )}
+                        Save changes
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
+            <AlertDialog>
+              <AlertDialogTrigger className="flex gap-2 border-0 relative select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer hover:bg-border">
+                <Delete className="size-4" />
+                Delete subject
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you absolutely sure you want to delete{" "}
+                    {subject?.subject}?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the subject from our servers.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deleteSubject(subject._id);
+                    }}
+                    disabled={isDeleting}
+                    className="bg-orange-700"
+                  >
+                    {isLoading && (
+                      <span className="mr-2 animate-spin">
+                        <Loader />
+                      </span>
+                    )}
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const orgColumns: ColumnDef<org>[] = [
+  {
+    cell: ({ row }) => (
+      <span className="capitalize">{row.original.license[0].fullName}</span>
+    ),
+    header: "Contact Details",
+  },
+  {
+    accessorKey: "accountName",
+    header: "Name of Organisation",
+  },
+  {
+    header: "Email Address",
+    cell: ({ row }) => (
+      <span className="capitalize">{row.original.license[0].email}</span>
+    ),
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+  },
+  {
+    header: "Number of Licenses",
+    accessorKey: "numberOfLicense",
+  },
+  {
+    header: "Actions",
+    id: "actions",
+    cell: ({ row }) => {
+      const license = row.original;
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">View Licenses</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-x-hidden overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Licenses</DialogTitle>
+              {/* <DialogDescription>
+                Make changes to your profile here. Click save when you're done.
+              </DialogDescription> */}
+            </DialogHeader>
+            <div className="overflow-x-auto">
+              <DataTable
+                columns={orgLicenseColumns}
+                data={license.license}
+                isLoading={false}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      );
+    },
+  },
+];
+
+export const orgLicenseColumns: ColumnDef<org["license"][0]>[] = [
+  {
+    header: "Name",
+    cell: ({ row }) => {
+      return (
+        <div className="">{row?.original?.fullName || "Not assigned"}</div>
+      );
+    },
+  },
+  {
+    header: "Email",
+    cell: ({ row }) => {
+      return <div className="">{row?.original?.email || "Not assigned"}</div>;
+    },
+  },
+  {
+    accessorKey: "licenseCode",
+    header: "License",
+  },
+  {
+    accessorKey: "parentLicense",
+    header: "Parent license",
+  },
+  {
+    header: "Role",
+    cell: ({ row }) => {
+      return <div className="">{row?.original?.role || "Not assigned"}</div>;
     },
   },
 ];

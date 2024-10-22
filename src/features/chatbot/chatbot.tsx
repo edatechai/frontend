@@ -1,12 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useChatMutation } from "../api/apiSlice";
+import Chatbox from "./chatbox";
 
 interface ChatBotProps {
   userInfo: any; // Replace 'any' with the actual type of userInfo
@@ -29,20 +24,21 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
   const [chat, { isLoading }] = useChatMutation();
   console.log("this is user info", userInfo, rec?.questions[0].question);
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<
-    Array<{ text: string; isUser: boolean; time: string }>
-  >([]);
   const [isInitializing, setIsInitializing] = useState(true);
   const [conversation, setConversation] = useState<Message[]>([]);
-  const [conversationItems, setConversationItems] = useState<
-    ConversationItem[]
-  >([]);
-  const [, updateState] = useState({});
-  const forceUpdate = useCallback(() => updateState({}), []);
+  // const [conversationItems, setConversationItems] = useState<
+  //   ConversationItem[]
+  // >([]);
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [convo, setConvo] = useState([
+    {
+      role: "assistant",
+      content: "",
+    },
+  ]);
 
   const payload = {
     name: userInfo?.fullName,
@@ -51,10 +47,11 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
     aspiration: userInfo?.bioData[0]?.career_aspirations,
     interests: userInfo?.bioData[0]?.subjects_of_interest,
     strengths: "",
-    learningStyle: userInfo?.bioData[0].learning_style_preferences,
+    learningStyle: userInfo?.bioData[0]?.learning_style_preferences,
     strugglingTopic: rec?.objectives[0]?.objective,
     relatedTopic: rec?.objectives[0]?.objective,
     neurodiversity: userInfo?.neurodiversity,
+    userId: userInfo?._id,
   };
   console.log("this is payload", payload);
 
@@ -71,6 +68,7 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
       setIsInitializing(false);
     }
   };
+  console.log({ conversation });
 
   useEffect(() => {
     if (isChatVisible) {
@@ -79,28 +77,36 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
   }, [isChatVisible]);
 
   useEffect(() => {
-    if (conversation.length > 0) {
-      const items = conversation.reduce(
-        (acc: ConversationItem[], message: Message) => {
-          if (message.role === "user") {
-            acc.push({ type: "user", messages: [message], currentIndex: 0 });
-          } else {
-            if (acc.length > 0 && acc[acc.length - 1].type === "assistant") {
-              acc[acc.length - 1].messages.push(message);
-            } else {
-              acc.push({
-                type: "assistant",
-                messages: [message],
-                currentIndex: 0,
-              });
-            }
-          }
-          return acc;
-        },
-        []
-      );
-      setConversationItems(items);
+    let h = [
+      {
+        role: "assistant",
+        content: "",
+      },
+    ];
+
+    let newIndex = 0;
+
+    for (let i = 0; i < conversation?.length; i++) {
+      if (conversation?.[i]?.role == "assistant") {
+        h[newIndex].role = "assistant";
+        if (i == 0 || (conversation?.[i - 1]?.role == "user" && i != 2)) {
+          h[newIndex].content = conversation?.[i]?.content;
+        } else {
+          h[newIndex].content += `\n\n${conversation?.[i]?.content}`;
+        }
+      } else if (conversation?.[i]?.role == "user" && i != 1) {
+        newIndex = newIndex + 1;
+        (h[newIndex] = {
+          role: "user",
+          content: "",
+        }),
+          (h[newIndex].role = "user");
+        h[newIndex].content += conversation?.[i]?.content;
+      }
     }
+
+    setConvo(h);
+    console.log({ h });
   }, [conversation]);
 
   const scrollToBottom = (behavior: "auto" | "smooth" = "auto") => {
@@ -114,7 +120,7 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
 
   useEffect(() => {
     scrollToBottom("smooth");
-  }, [conversationItems]);
+  }, [convo]);
 
   const handleQuestionSubmit = async () => {
     if (question.trim() && !isSubmitting) {
@@ -134,10 +140,6 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
         console.log("this is response", response);
         setConversation(response?.data.conversation);
         setAskedQuestions(response?.data.askedQuestions);
-        setConversationItems((prev) => [
-          ...prev,
-          { type: "user", messages: [userMessage], currentIndex: 0 },
-        ]);
         scrollToBottom("smooth");
       } catch (error) {
         console.error("Error getting chat response:", error);
@@ -148,48 +150,7 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
     }
   };
 
-  const formatMessage = (content: string) => {
-    if (!content) return ""; // Add this line to handle undefined content
-    const lines = content?.split("\n");
-    let formattedContent = "";
-    let inList = false;
-    let inParagraph = false;
-
-    lines.forEach((line, index) => {
-      const trimmedLine = line.trim();
-      if (trimmedLine.match(/^\d+\./)) {
-        if (inParagraph) {
-          formattedContent += "</p>";
-          inParagraph = false;
-        }
-        if (!inList) {
-          formattedContent += "<ol>";
-          inList = true;
-        }
-        formattedContent += `<li>${trimmedLine}</li>`;
-      } else if (inList && trimmedLine === "") {
-        formattedContent += "</ol>";
-        inList = false;
-      } else if (trimmedLine !== "") {
-        if (!inParagraph) {
-          formattedContent += "<p>";
-          inParagraph = true;
-        }
-        formattedContent += line + " ";
-      } else if (inParagraph) {
-        formattedContent += "</p>";
-        inParagraph = false;
-      }
-    });
-
-    if (inList) formattedContent += "</ol>";
-    if (inParagraph) formattedContent += "</p>";
-
-    return formattedContent.trim();
-  };
-
   const messageStyle = `
-    p { margin-bottom: 0.75em; }
     ol { margin-top: 0.5em; margin-bottom: 0.75em; padding-left: 1.5em; }
     li { margin-bottom: 0.5em; }
     p + ol { margin-top: -0.25em; }
@@ -214,7 +175,7 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [conversationItems]);
+  }, [convo]);
 
   return (
     <div
@@ -240,12 +201,50 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
         className="flex-grow mb-6 overflow-y-auto scroll-smooth"
       >
         <style>{messageStyle}</style>
-        {conversationItems.map((item, index) =>
-          item.type === "assistant" ? (
-            <div key={index} className="flex flex-col items-start mb-4">
-              <HoverCard>
-                <HoverCardTrigger className="max-w-[80%] p-3 rounded-lg bg-gray-200 text-gray-800">
+        {convo?.map((item, index) => {
+          return item.content ? (
+            <div
+              key={index}
+              className={`flex flex-col mb-4 ${
+                item?.role === "assistant" ? "items-start" : "items-end"
+              }`}
+            >
+              <div
+                className={`max-w-[80%] p-3 rounded-lg ${
+                  item?.role === "assistant"
+                    ? "bg-gray-200 text-gray-800"
+                    : "bg-blue-500 text-white"
+                }`}
+              >
+                {item?.role === "assistant" && (
                   <div className="font-bold mb-1">Eddey</div>
+                )}
+                <Chatbox item={item} />
+              </div>
+            </div>
+          ) : (
+            <></>
+          );
+        })}
+        {/* {conversationItems.map((item, index) => (
+          <div
+            key={index}
+            className={`flex flex-col mb-4 ${
+              item.type === "assistant" ? "items-start" : "items-end"
+            }`}
+          >
+            {item.type === "assistant" && (
+              <HoverCard>
+                <HoverCardTrigger
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    item.type === "assistant"
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-blue-500 text-white"
+                  }`}
+                >
+                  {item.type === "assistant" && (
+                    <div className="font-bold mb-1">Eddey</div>
+                  )}
                   <div
                     className="whitespace-pre-wrap font-sans"
                     dangerouslySetInnerHTML={{
@@ -337,23 +336,9 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
                   </Button>
                 </HoverCardContent>
               </HoverCard>
-            </div>
-          ) : (
-            item.messages[0]?.content && (
-              <div key={index} className="flex flex-col items-end mb-4">
-                <div className="max-w-[80%] p-3 rounded-lg bg-blue-500 text-white">
-                  {/* <div className="font-bold mb-1">You</div> */}
-                  <div
-                    className="whitespace-pre-wrap font-sans m-0"
-                    dangerouslySetInnerHTML={{
-                      __html: formatMessage(item.messages[0].content),
-                    }}
-                  />
-                </div>
-              </div>
-            )
-          )
-        )}
+            )}
+          </div>
+        ))} */}
       </div>
 
       <div className="bg-gray-100 rounded-[20px] border-slate-200 border-[1px] rounded-b-[19px]">

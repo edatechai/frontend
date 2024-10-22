@@ -1,32 +1,35 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
   useDeleteObjectiveMutation,
   useCreateObjectiveMutation,
   useFindAllObjectivesQuery,
-  useUploadObjectiveMutation
+  useUploadObjectiveMutation,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
-import axios from 'axios';
+import axios from "axios";
 
 const Index = () => {
   const [createObjective, { isLoading, data }] = useCreateObjectiveMutation();
-  const { data: allObjectives, isLoading: isLoadingObjectives } = useFindAllObjectivesQuery();
-  const [uploadObjective, { isLoading: uploading, error }] = useUploadObjectiveMutation();
-  const [deleteObjective, { isLoading: isDeleting }] = useDeleteObjectiveMutation();
+  const { data: allObjectives, isLoading: isLoadingObjectives } =
+    useFindAllObjectivesQuery();
+  const [uploadObjective, { isLoading: uploading, error }] =
+    useUploadObjectiveMutation();
+  const [deleteObjective, { isLoading: isDeleting }] =
+    useDeleteObjectiveMutation();
   const userInfo = useSelector((state) => state.user.userInfo);
   const dialogRef = useRef(null);
 
-  const [objCode, setObjCode] = useState('');
-  const [category, setCategory] = useState('');
-  const [topic, setTopic] = useState('');
-  const [objective, setObjective] = useState('');
-  const [subject, setSubject] = useState('');
+  const [objCode, setObjCode] = useState("");
+  const [category, setCategory] = useState("");
+  const [topic, setTopic] = useState("");
+  const [objective, setObjective] = useState("");
+  const [subject, setSubject] = useState("");
   const [file, setFile] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // State variable for search input
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -38,7 +41,7 @@ const Index = () => {
       objCode,
       category,
       objective,
-      topic
+      topic,
     };
     try {
       const response = await createObjective(payload).unwrap();
@@ -55,7 +58,11 @@ const Index = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this Objective? This action cannot be undone.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this Objective? This action cannot be undone."
+      )
+    ) {
       try {
         const response = await deleteObjective(id).unwrap();
         console.log(response);
@@ -69,7 +76,7 @@ const Index = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) return alert('Please upload a CSV file.');
+    if (!file) return alert("Please upload a CSV file.");
 
     const payload = { file };
 
@@ -77,21 +84,25 @@ const Index = () => {
       await uploadObjective(payload).unwrap();
       alert("Objective uploaded successfully");
     } catch (error) {
-      console.error('Error uploading file', error);
+      console.error("Error uploading file", error);
     }
   };
 
   const totalPages = Math.ceil(allObjectives?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentObjectives = allObjectives?.slice(startIndex, startIndex + itemsPerPage);
+  const currentObjectives = allObjectives?.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // Filter objectives based on search input
-  const filteredObjectives = allObjectives?.filter(objective => 
-    (objective.objCode.toLowerCase().includes(searchInput.toLowerCase()) ||
-    objective.subject.toLowerCase().includes(searchInput.toLowerCase()) ||
-    objective.category.toLowerCase().includes(searchInput.toLowerCase()) ||
-    objective.topic.toLowerCase().includes(searchInput.toLowerCase()) ||
-    objective.objective.toLowerCase().includes(searchInput.toLowerCase()))
+  const filteredObjectives = allObjectives?.filter(
+    (objective) =>
+      objective?.objCode?.toLowerCase().includes(searchInput?.toLowerCase()) ||
+      objective?.subject?.toLowerCase().includes(searchInput?.toLowerCase()) ||
+      objective?.category?.toLowerCase().includes(searchInput?.toLowerCase()) ||
+      objective?.topic?.toLowerCase().includes(searchInput?.toLowerCase()) ||
+      objective?.objective?.toLowerCase().includes(searchInput?.toLowerCase())
   );
 
   return (
@@ -99,7 +110,9 @@ const Index = () => {
       <dialog id="my_modal_3" className="modal" ref={dialogRef}>
         <div className="modal-box">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
           </form>
           <h3 className="font-bold text-lg">Create Learning Objective</h3>
 
@@ -185,19 +198,34 @@ const Index = () => {
 
           <div className="mt-4">
             <button onClick={handleSubmit} className="btn min-w-full">
-              {isLoading ? (<div className="flex justify-center">Loading...</div>) : "Add Learning Objective"}
+              {isLoading ? (
+                <div className="flex justify-center">Loading...</div>
+              ) : (
+                "Add Learning Objective"
+              )}
             </button>
           </div>
         </div>
       </dialog>
 
       <div className="flex flex-row justify-end mb-5">
-        {uploading ? (<div className="flex justify-center">Uploading...</div>) : null}
-        <div className='flex px-5 gap-2'>
-          <input type="file" className="file-input file-input-bordered file-input-md w-full max-w-xs" onChange={handleFileChange} />
-          <button className='btn' onClick={handleUpload}>Bulk Upload</button>
+        {uploading ? (
+          <div className="flex justify-center">Uploading...</div>
+        ) : null}
+        <div className="flex px-5 gap-2">
+          <input
+            type="file"
+            className="file-input file-input-bordered file-input-md w-full max-w-xs"
+            onChange={handleFileChange}
+          />
+          <button className="btn" onClick={handleUpload}>
+            Bulk Upload
+          </button>
         </div>
-        <button onClick={() => document.getElementById('my_modal_3').showModal()} className="btn">
+        <button
+          onClick={() => document.getElementById("my_modal_3").showModal()}
+          className="btn"
+        >
           Create Learning Objectives
         </button>
       </div>
@@ -226,24 +254,31 @@ const Index = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredObjectives?.slice(startIndex, startIndex + itemsPerPage).map((i, index) => (
-                <tr key={index}>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <div className="font-bold">{i.objCode}</div>
+              {filteredObjectives
+                ?.slice(startIndex, startIndex + itemsPerPage)
+                .map((i, index) => (
+                  <tr key={index}>
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="font-bold">{i.objCode}</div>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>{i.subject}</td>
-                  <td>{i.category}</td>
-                  <td>{i.topic}</td>
-                  <td>{i.objective}</td>
-                  <td>
-                    <button onClick={() => handleDelete(i._id)} className="btn btn-ghost btn-xs">Delete</button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>{i.subject}</td>
+                    <td>{i.category}</td>
+                    <td>{i.topic}</td>
+                    <td>{i.objective}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDelete(i._id)}
+                        className="btn btn-ghost btn-xs"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
 
@@ -267,7 +302,11 @@ const Index = () => {
             </button>
           </div>
         </div>
-      ) : (<div className="flex justify-center items-center">No objectives found</div>)}
+      ) : (
+        <div className="flex justify-center items-center">
+          No objectives found
+        </div>
+      )}
     </>
   );
 };

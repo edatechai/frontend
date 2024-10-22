@@ -14,7 +14,7 @@ import { Link, useParams } from "react-router-dom";
 function StudentDetails() {
   const { userId } = useParams();
   const { data, isLoading } = useStudentDetailsQuery(userId);
-  console.log({ studentDetails: data });
+  console.log({ data });
 
   return (
     <main>
@@ -23,10 +23,10 @@ function StudentDetails() {
           <BreadcrumbItem>
             <Link to="/teacher">Classrooms</Link>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
+          {/* <BreadcrumbSeparator />
           <BreadcrumbItem>
             <Link to="/teacher/class">Students</Link>
-          </BreadcrumbItem>
+          </BreadcrumbItem> */}
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="capitalize">

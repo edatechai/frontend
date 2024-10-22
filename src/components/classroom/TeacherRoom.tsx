@@ -2,14 +2,13 @@ import { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import {
-  useFindAllQuizQuery,
   useFindAllObjectivesQuery,
   useCreateQuizMutation,
+  useLazyGetAllQuizByObjCodeQuery,
 } from "../../features/api/apiSlice";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -25,15 +24,9 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { LinkIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -42,25 +35,34 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
+import EditQuiz from "../Quiz/multiple-choice/editQuiz";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
-  console.log("this is state", state?.data);
-
   const userInfo = useSelector((state) => state.user.userInfo);
+  console.log({ userInfo });
   const { data: allObjectives, isLoading: isLoadingObjectives } =
     useFindAllObjectivesQuery();
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
   // const { data: AllQuiz } = useFindAllQuizQuery();
+  // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
   const [openExamTypeDialog, setOpenExamTypeDialog] = useState(false);
   const [openQuizDialog, setOpenQuizDialog] = useState(false);
-
-  const dialogRef = useRef(null);
+  const [openDropdown, setOpenDropdown] = useState(false);
+  const [openEditQuizDialog, setOpenEditQuizDialog] = useState(false);
+  const [getAllQuiz, { data }] = useLazyGetAllQuizByObjCodeQuery();
+  const [edittedIndexes, setEdittedIndexes] = useState<string[]>([]);
   const [numberOfQuestions, setNumberOfQuestions] = useState("");
   const [search, setSearch] = useState("");
   const [filteredObjectives, setFilteredObjectives] = useState([]);
   const [selectedObjective, setSelectedObjective] = useState(null);
   const [followUp, setFollowUp] = useState("");
+
+  console.log("all i need here", { allObjectives, data });
+  console.log({ edittedIndexes });
+  // console.log({ data: data?.filter((val) => val.country == "United Kingdom") });
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -79,6 +81,7 @@ const TeacherRoom = () => {
         );
       });
       setFilteredObjectives(filtered);
+      console.log("this is fileter", filtered);
     }
   };
 
@@ -110,10 +113,21 @@ const TeacherRoom = () => {
     console.log(response);
     console.log("heere", payload);
     if (response.data.status === true) {
-      dialogRef.current.close();
-      alert(response.data.message);
+      const getAllQ = await getAllQuiz({
+        lo: selectedObjective?.objective,
+        country: userInfo?.country,
+        objCode: selectedObjective?.objCode,
+      });
+
+      console.log("data here", getAllQ);
+
+      toast(response.data.message);
+      setOpenQuizDialog(false);
+      setOpenEditQuizDialog(true);
     } else {
-      alert(response.data.message);
+      toast.error("Error creating quiz", {
+        description: response.data.message,
+      });
     }
   };
 
@@ -133,88 +147,96 @@ const TeacherRoom = () => {
         </BreadcrumbList>
       </Breadcrumb>
       {/* create class modal */}
-      <dialog id="my_modal_3" className="modal" ref={dialogRef}>
-        <div className="modal-box w-11/12 max-w-5xl">
-          <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-              ✕
-            </button>
-          </form>
-          <h3 className="font-bold text-lg">Create Quiz</h3>
+      <Dialog open={openQuizDialog} onOpenChange={setOpenQuizDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Quiz</DialogTitle>
+            {/* <DialogDescription className="flex gap-3 pt-5 flex-col">
+            </DialogDescription> */}
+            <div className="modal-box w-11/12 max-w-5xl">
+              <div className="mt-4">
+                <Label className="form-control w-full min-w-full">
+                  <div className="label mt-4">
+                    <span className="label-text font-medium">
+                      Search learning outcome
+                    </span>
+                  </div>
 
-          <div className="mt-4">
-            <Label className="form-control w-full min-w-full">
-              <div className="label mt-4">
-                <span className="label-text font-medium">
-                  Search learning outcome
-                </span>
+                  <Label className="input input-bordered flex items-center gap-2 relative">
+                    <Input
+                      value={search}
+                      onChange={handleSearchChange}
+                      type="text"
+                      className="w-full"
+                      placeholder="Search"
+                    />
+                    {filteredObjectives?.length > 0 && (
+                      <ul className="absolute left-0 top-full bg-white border border-gray-300 w-full  overflow-y-auto">
+                        {filteredObjectives.map((objective, index) => (
+                          <li
+                            key={index}
+                            className="p-4 cursor-pointer first-letter:capitalize hover:bg-gray-100"
+                            onClick={() => handleObjectiveSelect(objective)}
+                          >
+                            {objective?.objective}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </Label>
+
+                  <div className="label mt-4">
+                    <span className="label-text font-medium">
+                      Number of questions
+                    </span>
+                  </div>
+                  <Label className="input input-bordered flex items-center gap-2">
+                    <Input
+                      value={numberOfQuestions}
+                      onChange={(e) => setNumberOfQuestions(e.target.value)}
+                      type="text"
+                      className="w-full"
+                      placeholder="Number of questions"
+                    />
+                  </Label>
+
+                  <div className="label mt-4">
+                    <span className="label-text font-medium">
+                      Describe follow-up learning activities
+                    </span>
+                  </div>
+                  <textarea
+                    value={followUp}
+                    onChange={(e) => setFollowUp(e.target.value)}
+                    placeholder="Describe follow-up learning activities"
+                    className="textarea textarea-bordered textarea-lg w-full max-w-full min-w-full"
+                  ></textarea>
+                </Label>
               </div>
-
-              <Label className="input input-bordered flex items-center gap-2 relative">
-                <Input
-                  value={search}
-                  onChange={handleSearchChange}
-                  type="text"
-                  className="w-full"
-                  placeholder="Search"
-                />
-                {filteredObjectives.length > 0 && (
-                  <ul className="absolute left-0 top-full bg-white border border-gray-300 w-full  overflow-y-auto">
-                    {filteredObjectives.map((objective, index) => (
-                      <li
-                        key={index}
-                        className="p-4 cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleObjectiveSelect(objective)}
-                      >
-                        {objective?.objective}
-                      </li>
-                    ))}
-                  </ul>
+              <Button
+                onClick={handleSubmit}
+                className="mt-4 w-full"
+                disabled={isLoadingQuiz}
+              >
+                {isLoadingQuiz && (
+                  <span className="mr-2 animate-spin">
+                    <Loader />
+                  </span>
                 )}
-              </Label>
-
-              <div className="label mt-4">
-                <span className="label-text font-medium">
-                  Number of questions
-                </span>
-              </div>
-              <Label className="input input-bordered flex items-center gap-2">
-                <Input
-                  value={numberOfQuestions}
-                  onChange={(e) => setNumberOfQuestions(e.target.value)}
-                  type="text"
-                  className="w-full"
-                  placeholder="Number of questions"
-                />
-              </Label>
-
-              <div className="label mt-4">
-                <span className="label-text font-medium">
-                  Describe follow-up learning activities
-                </span>
-              </div>
-              <textarea
-                value={followUp}
-                onChange={(e) => setFollowUp(e.target.value)}
-                placeholder="Describe follow-up learning activities"
-                className="textarea textarea-bordered textarea-lg w-full max-w-full min-w-full"
-              ></textarea>
-            </Label>
-          </div>
-
-          <div className="mt-4">
-            <button onClick={handleSubmit} className="btn min-w-full">
-              Create Quiz
-            </button>
-          </div>
-        </div>
-      </dialog>
+                Create Quiz
+              </Button>
+            </div>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex flex-row justify-end mb-5">
-        {/* <Button onClick={() => setOpenExamTypeDialog(true)}>Set task</Button> */}
-        <DropdownMenu>
+        <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="bg-orange-600 text-white">
+            <Button
+              variant="outline"
+              className="bg-orange-600 text-white hover:bg-orange-500 hover:text-white"
+            >
               Set a new task for students
             </Button>
           </DropdownMenuTrigger>
@@ -224,17 +246,16 @@ const TeacherRoom = () => {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() => {
-                  // setOpenQuizDialog(true);
-                  document.getElementById("my_modal_3").showModal();
-                  setOpenExamTypeDialog(false);
+                  setOpenQuizDialog(true);
+                  setOpenDropdown(false);
                 }}
               >
                 Multiple choice questions
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  setOpenQuizDialog(true);
-                  setOpenExamTypeDialog(false);
+                  setOpenExamTypeDialog(true);
+                  setOpenDropdown(false);
                 }}
               >
                 Exam styled questions
@@ -271,7 +292,7 @@ const TeacherRoom = () => {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end w-full">
+      <div className="flex justify-end w-full mt-5">
         <Link
           to="/teacher/class/create-report"
           state={{ studentData: state.data.numberOfStudents }}
@@ -281,54 +302,40 @@ const TeacherRoom = () => {
         </Link>
       </div>
 
-      {/* <Card x-chunk="dashboard-01-chunk-5">
-        <CardHeader className="px-6 py-3">
-          <CardTitle className="text-lg">quizzes</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-2 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-          {AllQuiz?.map((i, index) => {
-            return (
-              <div className="">
-                <div className="card bg-white border-2 border-slate-300 text-primary-content w-96">
-                  <div className="card-body px-3 py-3">
-                    <img src={Books} className=" h-[200px] rounded-md" />
-                    <h2 className="card-title text-slate-950">{i?.subject}</h2>
-                    <p className="text-slate-800">Topic: {i?.topic}</p>
-                    <div className="text-slate-950"></div>
-                    <div className="card-actions justify-start">
-                      <div className="flex-row flex">
-                        <div className="avatar">
-                          <div className="w-[50px] rounded-xl">
-                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-                          </div>
-                        </div>
-                        <div className="px-3 justify-center">
-                          <div className="text-slate-800 font-semibold text-[18px]">
-                            {i?.teacherName}
-                          </div>
-                          <div className="text-slate-800 font-semibold text-[14px]">
-                            {i?.classRoomName}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card> */}
-
-      <Dialog open={openQuizDialog} onOpenChange={setOpenQuizDialog}>
+      <Dialog open={openExamTypeDialog} onOpenChange={setOpenExamTypeDialog}>
         <Examstyled
           filteredObjectives={filteredObjectives}
           handleObjectiveSelect={handleObjectiveSelect}
           handleSearchChange={handleSearchChange}
           search={search}
           classId={state?.data?._id}
-          openDialog={setOpenQuizDialog}
+          country={userInfo?.country}
+          openDialog={setOpenExamTypeDialog}
         />
+      </Dialog>
+
+      <Dialog open={openEditQuizDialog} onOpenChange={setOpenEditQuizDialog}>
+        <DialogContent className="h-[90vh] max-w-[95vw]">
+          <DialogHeader>
+            <DialogTitle>Edit Questions</DialogTitle>
+            {/* <DialogDescription className="flex gap-3 pt-5 flex-col">
+            </DialogDescription> */}
+          </DialogHeader>
+          <div className="overflow-y-auto">
+            {data?.map((question, index) => {
+              if (edittedIndexes?.indexOf(question._id) == -1) {
+                return (
+                  <EditQuiz
+                    index={index}
+                    question={question}
+                    setEdittedIndexes={setEdittedIndexes}
+                    edittedIndexes={edittedIndexes}
+                  />
+                );
+              } else return <></>;
+            })}
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );

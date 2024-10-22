@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
+import katex from "katex";
 import { FaSpinner } from "react-icons/fa";
 import { ExamQuestions } from "@/pages/Student/classrooms/exams";
 import { Button } from "../ui/button";
@@ -184,7 +185,20 @@ function Theory({ exam }: { exam: ExamQuestions }) {
             <h5 className="px-3 py-2 rounded bg-primary text-white w-fit">
               Question {value?.number}
             </h5>
-            <p>{value.text}</p>
+            {/* <p>{value.text}</p> */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: value.text?.replaceAll(
+                  /\frac.*?\}.*?\}/g,
+                  //
+                  (match) => {
+                    const m = match.replace(/^\f/, "\\f");
+                    console.log({ mm: m.slice(0), m });
+                    return katex.renderToString(match.replace(/^\f/, "\\f"));
+                  }
+                ),
+              }}
+            ></div>
 
             <i>
               {value.marks} {value.marks > 1 ? "marks" : "mark"}

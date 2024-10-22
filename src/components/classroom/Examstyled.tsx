@@ -8,11 +8,25 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Loader, SearchIcon } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AITaskSchema } from "@/lib/schema";
 import { z } from "zod";
+
+const examBoards = [
+  "AQA - Assessment and Qualifications Alliance",
+  "Edexcel - Pearson Edexcel",
+  "OCR - Oxford Cambridge and RSA Examinations",
+  "WJEC - Welsh Joint Education Committee",
+  "CCEA - Council for the Curriculum, Examinations & Assessment",
+  "Cambridge Assessment International Education (CAIE)",
+  "International Baccalaureate (IB) - Offers the IB Diploma Programme",
+  "National Examinations Council (NECO)",
+  "West African Examinations Council (WAEC)",
+  "National Business and Technical Examinations Board (NABTEB)",
+  "Joint Admissions and Matriculation Board (JAMB)",
+];
 
 export default function Examstyled({
   search,
@@ -21,6 +35,7 @@ export default function Examstyled({
   handleObjectiveSelect,
   classId,
   openDialog,
+  country,
 }) {
   const {
     register,
@@ -35,7 +50,6 @@ export default function Examstyled({
 
   const onSubmit = async ({
     exam_board,
-    user_country: country,
     estimated_time: exam_length,
     total_questions: num_questions,
     total_score: total_marks,
@@ -64,21 +78,18 @@ export default function Examstyled({
         }
       );
       const data = await res.json();
-      console.log({ data });
 
       if (res.ok) {
-        toast("Exam task created successfully");
         openDialog(false);
+        toast("Exam task created successfully");
       } else {
-        toast("Request failed.", {
+        toast.error("Request failed.", {
           description: "Something went wrong",
-          style: { color: "red" },
         });
       }
     } catch (err) {
-      toast("Request failed.", {
+      toast.error("Request failed.", {
         description: "Something went wrong",
-        style: { color: "red" },
       });
     }
   };
@@ -161,30 +172,13 @@ export default function Examstyled({
                 
               </Labei> */}
             <Label className="relative text-slate-900">
-              Select Country
-              <select
-                className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
-                {...register("user_country")}
-              >
-                <option value="">--Select Country--</option>
-                {["Nigeria"].map((style, index) => (
-                  <option key={index} value={style}>
-                    {style.charAt(0).toLocaleUpperCase() + style.slice(1)}
-                  </option>
-                ))}
-              </select>
-              <i className="text-red-400 text-xs block">
-                {errors?.user_country?.message}
-              </i>
-            </Label>
-            <Label className="relative text-slate-900">
               Exam Board
               <select
                 className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
                 {...register("exam_board")}
               >
                 <option value="">--Exam Board--</option>
-                {["WAEC", "JAMB", "NECO"].map((style, index) => (
+                {examBoards.map((style, index) => (
                   <option key={index} value={style}>
                     {style.charAt(0).toLocaleUpperCase() + style.slice(1)}
                   </option>

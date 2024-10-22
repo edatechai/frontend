@@ -1,6 +1,14 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Settings, Home, User, LineChart, Menu, Circle } from "lucide-react";
+import {
+  Settings,
+  Home,
+  User,
+  LineChart,
+  Menu,
+  Circle,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -49,6 +57,19 @@ export function OrgLayout() {
                 Profile
               </NavLink> */}
               <NavLink
+                to="/org-admin/classrooms"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
+                  }`
+                }
+              >
+                <Users className="h-4 w-4" />
+                Classroom
+              </NavLink>
+              <NavLink
                 to="/org-admin/org-settings"
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
@@ -59,7 +80,7 @@ export function OrgLayout() {
                 }
               >
                 <Settings className="h-4 w-4" />
-                Add classroom
+                Settings
               </NavLink>
               {/* <NavLink
                 to="/org-admin/under-development"

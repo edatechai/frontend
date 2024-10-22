@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import {
   Home,
   User,
@@ -7,18 +7,17 @@ import {
   Circle,
   StickyNote,
   Users,
-  LogOut,
   LineChart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
 export function StudentLayout() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data } = useGetAccountByIdQuery(userInfo.accountId);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId);
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -97,7 +96,7 @@ export function StudentLayout() {
                 }
               >
                 <ListPlus className="h-4 w-4" />
-                Recommendation
+                Study Plan
               </NavLink>
               <NavLink
                 to="/student/report"

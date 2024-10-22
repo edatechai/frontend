@@ -18,8 +18,6 @@ const ParentDashboard = () => {
   const [childlicense, setChildlicense] = useState("");
   const [currentData, setCurrentData] = useState("");
 
-  console.log(currentData);
-
   const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray);
   const [addChild, { isLoading: isAdding }] = useAddChildMutation();
   const [addSubjectPriority, { isLoading: isAdding2 }] =
@@ -72,7 +70,7 @@ const ParentDashboard = () => {
   };
 
   return (
-    <div className="min-w-screen lg:max-w-[100%] px-8 py-5">
+    <div className="min-w-screen lg:max-w-[100%] px-8 py-5 overflow-hidden">
       <dialog id="my_modal_3" className="modal" ref={dialogRef}>
         <div className="modal-box">
           <form method="dialog">
@@ -212,7 +210,7 @@ const ParentDashboard = () => {
         </Button>
       </div>
 
-      <div className="overflow-x-auto min-w-full max-w-full">
+      <div className="overflow-x-auto min-w-full max-w-[100vw]">
         <DataTable
           columns={childColumns}
           data={data || []}

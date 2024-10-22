@@ -27,6 +27,7 @@ import {
 } from "../ui/breadcrumb";
 import { Link } from "react-router-dom";
 import TextWithLineBreaks from "../others/textWithLineBreaks";
+import { latexToHTML } from "@/lib/utils";
 
 const Index = (props) => {
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -39,10 +40,9 @@ const Index = (props) => {
   const [analyzedData, setAnalyzedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 1; // Show one item per page
-  const [analyzeResult, { isLoading, isSuccess, isError, error }] =
-    useAnalyzeResultMutation();
-  const [currentWordIndex, setCurrentWordIndex] = useState(-1); // Track the current word index
-  const [speakingText, setSpeakingText] = useState(""); // Track the text being spoken
+  const [analyzeResult, { isLoading }] = useAnalyzeResultMutation();
+  // const [currentWordIndex, setCurrentWordIndex] = useState(-1); // Track the current word index
+  // const [speakingText, setSpeakingText] = useState(""); // Track the text being spoken
   const utteranceRef = useRef(null); // Ref to hold the SpeechSynthesisUtterance
   const [createQuizResult] = useCreateQuizResultMutation();
   const [quizResultId, setQuizResultId] = useState();
@@ -51,10 +51,6 @@ const Index = (props) => {
   let score = "";
 
   const data = props?.data?.data;
-  console.log("find ddata", data);
-  useEffect(() => {
-    setIsQuizCompleted(false);
-  });
 
   const [quizRandomSelect] = useQuizRandomSelectMutation();
   const [updateQuizResult] = useUpdateQuizResultMutation();
@@ -106,6 +102,8 @@ const Index = (props) => {
         ? currentQuiz?.optionD
         : "";
 
+    console.log({ correctOptionValue });
+
     const wrongOptionValue =
       selectedAnswer.toLowerCase() === "a"
         ? currentQuiz?.optionA
@@ -116,6 +114,8 @@ const Index = (props) => {
         : selectedAnswer.toLowerCase() === "d"
         ? currentQuiz?.optionD
         : "";
+
+    console.log({ wrongOptionValue });
 
     const result = {
       question: currentQuiz?.question,
@@ -163,8 +163,8 @@ const Index = (props) => {
 
     // const words = text.split(" "); // Split the text into words
     let currentWord = 0; // Initialize current word index
-    setSpeakingText(text); // Set the speaking text
-    setCurrentWordIndex(0); // Reset the word index
+    // setSpeakingText(text); // Set the speaking text
+    // setCurrentWordIndex(0); // Reset the word index
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1; // Set the speech rate to 0.8 (slower)
@@ -174,14 +174,14 @@ const Index = (props) => {
     utterance.addEventListener("boundary", (event) => {
       if (event.name === "word") {
         currentWord++;
-        setCurrentWordIndex(currentWord);
+        // setCurrentWordIndex(currentWord);
       }
     });
 
     // Handle the end event to reset the word index
-    utterance.addEventListener("end", () => {
-      setCurrentWordIndex(-1);
-    });
+    // utterance.addEventListener("end", () => {
+    //   setCurrentWordIndex(-1);
+    // });
 
     window.speechSynthesis.speak(utterance);
   };
@@ -222,7 +222,7 @@ const Index = (props) => {
   const stopSpeech = () => {
     if (utteranceRef.current) {
       window.speechSynthesis.cancel();
-      setCurrentWordIndex(-1);
+      // setCurrentWordIndex(-1);
     }
   };
 
@@ -249,7 +249,7 @@ const Index = (props) => {
               }`}
             >
               <div className="font-semibold">Quiz {index + 1}</div>
-              <div className="text-sm text-gray-700">{`${data?.topic}`}</div>
+              <div className="text-sm text-gray-700">{`${data?.objective}`}</div>
             </div>
           ))}
         </div>
@@ -260,106 +260,102 @@ const Index = (props) => {
 
   const QuizContent = () => {
     return (
-      <div className="md:border-slate-300 md:border-[1px] rounded-lg md:p-6 space-y-6">
+      <div className="bg-background rounded-lg md:px-24 p-3 md:pt-14 md:pb-20 space-y-6">
         <h3 className="text-2xl font-medium capitalize">{data?.objective}</h3>
-        <div className="flex items-center">
-          <hr className="w-8 h-0.5 bg-primary hidden md:block" />
-          <div className="border-x-2 border-primary rounded-full p-2 md:p-3 w-full">
-            <div className="text-lg text-center border-2 border-primary rounded-full font-semibold mb-2 p-3 first-letter:capitalize">
-              {currentQuiz?.question}
-            </div>
-          </div>
-          <hr className="w-8 h-0.5 bg-primary hidden md:block" />
-        </div>
+        {currentQuiz?.question && (
+          <h4
+            className="rounded bg-[#EBF0FC] px-4 py-5 font-medium first-letter:uppercase"
+            dangerouslySetInnerHTML={{
+              __html: latexToHTML(currentQuiz?.question),
+            }}
+          ></h4>
+        )}
         <div>
-          <div className="flex flex-col md:gap-2 mb-5 md:mb-0">
-            <span className="flex items-center flex-col md:flex-row">
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-              <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
-                <label
-                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
-                    selectedAnswer === "a" && "bg-primary/20"
-                  } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
-                  onClick={() => handleAnswerSelect("a")}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAnswer === "a"}
-                    onChange={() => handleAnswerSelect("a")}
-                    className="appearance-none"
-                  />
-                  <span className="flex items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                    A
-                  </span>{" "}
-                  {currentQuiz?.optionA}
-                </label>
-              </div>
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-              <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
-                <label
-                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
-                    selectedAnswer === "b" && "bg-primary/20"
-                  } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
-                  onClick={() => handleAnswerSelect("b")}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAnswer === "b"}
-                    onChange={() => handleAnswerSelect("b")}
-                    className="appearance-none"
-                  />
-                  <span className="flex items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                    B
-                  </span>{" "}
-                  {currentQuiz?.optionB}
-                </label>
-              </div>
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-            </span>
-
-            <span className="flex items-center flex-col md:flex-row">
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-              <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
-                <label
-                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
-                    selectedAnswer === "c" && "bg-primary/20"
-                  } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
-                  onClick={() => handleAnswerSelect("c")}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAnswer === "c"}
-                    onChange={() => handleAnswerSelect("c")}
-                    className="appearance-none"
-                  />
-                  <span className="flex items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                    C
-                  </span>{" "}
-                  {currentQuiz?.optionC}
-                </label>
-              </div>
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-              <div className="border-x-2 border-primary p-1.5 rounded-full w-full">
-                <label
-                  className={`w-full py-4 rounded-full text-foreground hover:border-lime-700 ${
-                    selectedAnswer === "d" && "bg-primary/20"
-                  } border-primary border-2 text-start items-center flex gap-3 cursor-pointer`}
-                  onClick={() => handleAnswerSelect("d")}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedAnswer === "d"}
-                    onChange={() => handleAnswerSelect("d")}
-                    className="appearance-none"
-                  />
-                  <span className="flex items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                    D
-                  </span>{" "}
-                  {currentQuiz?.optionD}
-                </label>
-              </div>
-              <hr className="bg-primary w-10 h-0.5 hidden md:block" />
-            </span>
+          <div className="grid md:grid-cols-2 gap-3 mb-5 md:mb-0">
+            <label
+              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
+                selectedAnswer === "a" && "bg-primary/20"
+              } border-primary text-start items-center flex gap-3 cursor-pointer`}
+              onClick={() => handleAnswerSelect("a")}
+            >
+              <input
+                type="checkbox"
+                checked={selectedAnswer === "a"}
+                onChange={() => handleAnswerSelect("a")}
+                className="appearance-none"
+              />
+              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
+                A
+              </span>{" "}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: latexToHTML(currentQuiz?.optionA),
+                }}
+              ></span>
+            </label>
+            <label
+              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
+                selectedAnswer === "b" && "bg-primary/20"
+              } border-primary text-start items-center flex gap-3 cursor-pointer`}
+              onClick={() => handleAnswerSelect("b")}
+            >
+              <input
+                type="checkbox"
+                checked={selectedAnswer === "b"}
+                onChange={() => handleAnswerSelect("b")}
+                className="appearance-none"
+              />
+              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
+                B
+              </span>{" "}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: latexToHTML(currentQuiz?.optionB),
+                }}
+              ></span>
+            </label>
+            <label
+              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
+                selectedAnswer === "c" && "bg-primary/20"
+              } border-primary text-start items-center flex gap-3 cursor-pointer`}
+              onClick={() => handleAnswerSelect("c")}
+            >
+              <input
+                type="checkbox"
+                checked={selectedAnswer === "c"}
+                onChange={() => handleAnswerSelect("c")}
+                className="appearance-none"
+              />
+              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
+                C
+              </span>{" "}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: latexToHTML(currentQuiz?.optionC),
+                }}
+              ></span>
+            </label>
+            <label
+              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
+                selectedAnswer === "d" && "bg-primary/20"
+              } border-primary text-start items-center flex gap-3 cursor-pointer`}
+              onClick={() => handleAnswerSelect("d")}
+            >
+              <input
+                type="checkbox"
+                checked={selectedAnswer === "d"}
+                onChange={() => handleAnswerSelect("d")}
+                className="appearance-none"
+              />
+              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
+                D
+              </span>{" "}
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: latexToHTML(currentQuiz?.optionD),
+                }}
+              ></span>
+            </label>
           </div>
         </div>
         {/* <div className="flex justify-between">
@@ -373,17 +369,20 @@ const Index = (props) => {
             Next question
           </button>
         </div> */}
-        <div style={{ position: "relative", marginBlock: "10px" }}>
+        <div className="relative md:pt-9">
           {/* {currentQuestion > 0 && ( */}
-          <Button
+          {/* <Button
             variant="outline"
-            // onClick={handlePrevious}
-            // disabled={isQuizCompleted}
+            onClick={() => {
+              setCurrentQuiz(data.questionsAndAnswers[currentIndex - 1]);
+              setCurrentIndex(currentIndex - 1);
+            }}
             className="absolute"
             type="button"
+            disabled={currentIndex == 0}
           >
             Previous
-          </Button>
+          </Button> */}
 
           <Button
             onClick={handleNextQuestion}
@@ -477,12 +476,14 @@ const Index = (props) => {
 
       const newObject = {
         questions: failedResults,
-        student_info: {
+        studentInfo: {
           age: userInfo?.age,
-          learning_objectives: `${data?.category}: ${scorePercentage}`,
-          disability: userInfo?.neurodiversity,
+          learningObjectives: `${data?.category}: ${scorePercentage}`,
+          neurodiversity: userInfo?.neurodiversity,
+          gender: userInfo?.gender,
+          userId: userInfo?._id,
         },
-        student_name: userInfo?.fullName,
+        studentName: userInfo?.fullName,
       };
 
       const response = await analyzeResult(newObject);
@@ -658,23 +659,53 @@ const Index = (props) => {
                 result?.isCorrect ? "bg-green-200" : "bg-red-200"
               }`}
             >
-              <div className="font-semibold text-[18px]">
-                Question: {result?.question}
-              </div>
-              <div className="text-sm">
-                Your answer: {result?.selectedAnswer.toUpperCase()}
-              </div>
-              <div className="text-sm">
-                Correct answer: {result?.correctAnswer.toUpperCase()}
-              </div>
-              <div className="text-sm">
-                Correct option: {result?.correctOption}
-              </div>
-              <div className="text-sm font-bold">
-                {result?.isCorrect ? "Correct" : "Wrong"}
+              <div className="flex gap-4 justify-between items-center">
+                <div className="">
+                  <p
+                    className="font-semibold text-[18px]"
+                    dangerouslySetInnerHTML={{
+                      __html: latexToHTML(result?.question),
+                    }}
+                    // dangerouslySetInnerHTML={{
+                    //   __html: result?.question?.replaceAll(
+                    //     /\\.*?\}.*?\}/g,
+                    //     //
+                    //     (match) => katex.renderToString(match)
+                    //   ),
+                    // }}
+                  ></p>
+                  <p className="text-sm">
+                    Your answer: {result?.selectedAnswer?.toUpperCase()}
+                  </p>
+                  <p className="text-sm">
+                    Correct answer: {result?.correctAnswer.toUpperCase()}
+                  </p>
+                  <span className="flex gap-1 text-sm">
+                    <p>Correct option:</p>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: latexToHTML(result?.correctOption),
+                      }}
+                      // dangerouslySetInnerHTML={{
+                      //   __html: result?.correctOption?.replaceAll(
+                      //     /\.*?}.*?}/g,
+                      //     //
+                      //     (match) => katex.renderToString(match)
+                      //   ),
+                      // }}
+                    ></p>
+                  </span>
+                </div>
+                <p
+                  className={`text-sm font-bold px-3 py-1 rounded ${
+                    result?.isCorrect ? "bg-green-300" : "bg-red-300"
+                  }`}
+                >
+                  {result?.isCorrect ? "Correct" : "Wrong"}
+                </p>
               </div>
               {result?.analysis && (
-                <div className="text-sm">
+                <div className="text-sm border rounded mt-4 p-2 border-red-300">
                   <TextWithLineBreaks texts={result?.analysis} />
                 </div>
               )}

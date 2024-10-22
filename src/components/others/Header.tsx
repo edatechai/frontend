@@ -28,9 +28,7 @@ const Header = () => {
   const [markAsRead] = useMarkNotificationAsReadMutation();
   console.log({ data });
 
-  const unreadNotifications = data?.filter(
-    (val) => val.status == "unread" && val?.data?.classId
-  );
+  const unreadNotifications = data?.filter((val) => val.status == "unread");
 
   return (
     <>
@@ -72,7 +70,7 @@ const Header = () => {
                       userId: userInfo._id,
                       notificationId: val.id,
                     });
-                    navigate(`/student/classrooms/${val?.data?.classId}`);
+                    navigate(`/student/classrooms/${val?.classId}`);
                   }}
                 >
                   <span className="size-8 rounded-full border border-border flex items-center justify-center">
@@ -104,7 +102,9 @@ const Header = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{userInfo?.fullName}</DropdownMenuLabel>
+          <DropdownMenuLabel className="capitalize">
+            {userInfo?.fullName}
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>{userInfo.email}</DropdownMenuItem>
           {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}

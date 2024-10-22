@@ -36,12 +36,15 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isLoading: boolean;
   pageSize?: number;
+  noData?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageSize = 10,
+  noData = "Nothing to show",
+  isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -87,7 +90,7 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           /> */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
@@ -112,10 +115,10 @@ export function DataTable<TData, TValue>({
                   );
                 })}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       )}
-      <div className="rounded-md border">
+      <div className="border">
         <Table>
           <TableHeader className="bg-primary text-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -138,13 +141,13 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="text-sm">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="odd:bg-blue-50"
+                  className="bg-background hover:bg-white"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -162,7 +165,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {isLoading ? "Loading..." : noData}
                 </TableCell>
               </TableRow>
             )}

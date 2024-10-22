@@ -107,7 +107,8 @@ const StudentQiuzzes = () => {
                       </p>
                       {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
                       <Link
-                        to="/dashboard/quiz"
+                        // to="/dashboard/quiz"
+                        to={`/dashboard/quiz?obj_code=${val?.questionsAndAnswers?.[0]?.objCode}&qs=${val?.questionsAndAnswers?.length}`}
                         state={{ data: val }}
                         className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
                       >

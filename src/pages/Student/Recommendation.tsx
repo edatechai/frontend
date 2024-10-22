@@ -17,43 +17,18 @@ import {
 } from "../../features/api/apiSlice";
 import { RootState } from "../../app/store";
 // import ChatBotWrapper from "@/components/ChatBotWrapper";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import TextWithLineBreaks, {
+  TextWithLineBreaksRec,
+} from "@/components/others/textWithLineBreaks";
+import { Loader, MessageSquare } from "lucide-react";
+import { latexToHTML, toTitleCase } from "@/lib/utils";
 
 type Objective = {
   objective_id: string;
   objcode: string;
   scores: number;
 };
-
-type RecData = {
-  objectives: Objective[];
-  questions: {
-    question: string;
-    answer: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-  }[];
-};
-
-const mockEng = [
-  { avg_score: 20, objective_id: "The Basics of Grammar and Punctuation" },
-  { avg_score: 25, objective_id: "Academic Writing Conventions" },
-  { avg_score: 18, objective_id: "Principles of Literature Interpretation" },
-];
-const mockBiology = [
-  { avg_score: 30, objective_id: "Digestive System" },
-  { avg_score: 45, objective_id: "Evolution" },
-  { avg_score: 28, objective_id: "Cell structure and function" },
-  { avg_score: 38, objective_id: "Ecology" },
-];
 
 const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
@@ -73,8 +48,11 @@ const Recommedation = () => {
   const [quizPassed, setQuizPassed] = useState(false);
   const [quizAttempted, setQuizAttempted] = useState(false);
   const [quizPassedCount, setQuizPassedCount] = useState(0);
+  const [recs, setRecs] = useState();
   const stepsPerPage = 1;
   const questionsPerPage = 1;
+
+  console.log({ recQuery: data, recData });
 
   useEffect(() => {
     if (recData?.objectives?.length === 0) {
@@ -86,6 +64,20 @@ const Recommedation = () => {
       setShowNoObjectMsg(false);
     }
   }, [recData]);
+
+  useEffect(() => {
+    if (data?.recommendLearningObjectivesData.length > 0) {
+      const v = data?.recommendLearningObjectivesData;
+      // v.push(
+
+      // );
+      setRecs(
+        [...v].sort(function (a, b) {
+          return a?.subject_important_ranking + b?.subject_important_ranking;
+        })
+      );
+    }
+  }, [data]);
 
   console.log(" this is recData", data);
 
@@ -215,137 +207,61 @@ const Recommedation = () => {
         {!showSteps &&
           !showCon &&
           data?.recommendLearningObjectivesData?.length && (
-            <div className=" bg-white">
-              <div className="mt-7">
-                <div className="text-slate-800 font-medium space-y-3">
-                  <p className="mb-4">
-                    Hello{" "}
-                    <span className="capitalize">{userInfo?.fullName}</span>,
-                    based on your goals, aspirations and performance, here are
-                    the learning objectives you need to revise
-                  </p>
-                  <Card x-chunk="dashboard-01-chunk-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-lg">
-                        {data?.recommendLearningObjectivesData?.[0]?.subject}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                      {data?.recommendLearningObjectivesData
-                        ?.filter(
-                          (value, index, self) =>
-                            index ===
-                            self.findIndex(
-                              (t) =>
-                                t.objective_id === value.objective_id &&
-                                t.avg_score === value.avg_score
-                            )
-                        )
-                        ?.map((i, index) => (
-                          <Card
-                            x-chunk="dashboard-01-chunk-0"
-                            key={i}
-                            className="flex flex-col justify-between"
-                          >
-                            <CardHeader>
-                              <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                                {i.objective_id}
-                              </CardTitle>
-                              <CardDescription>
-                                Average score: {Math.round(i.avg_score)}
-                              </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                              <Button
-                                variant="link"
-                                className="text-xs"
-                                onClick={() => {
-                                  setPreview(i);
-                                  setShowNoObjectMsg(false);
-                                  setShowSteps(false);
-                                }}
-                              >
-                                View Recommendation
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        ))}
-                    </CardContent>
-                  </Card>
-                  <Card x-chunk="dashboard-01-chunk-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-lg">English</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                      {mockEng?.map((i, index) => (
-                        <Card
-                          x-chunk="dashboard-01-chunk-0"
-                          key={i}
-                          className="flex flex-col justify-between"
-                        >
-                          <CardHeader>
-                            <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                              {i.objective_id}
-                            </CardTitle>
-                            <CardDescription>
-                              Average score: {Math.round(i.avg_score)}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <Button
-                              variant="link"
-                              className="text-xs"
-                              onClick={() => {
-                                setPreview(i);
-                                setShowNoObjectMsg(false);
-                                setShowSteps(false);
-                              }}
-                            >
-                              View Recommendation
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </CardContent>
-                  </Card>
-                  <Card x-chunk="dashboard-01-chunk-0">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-lg">Biology</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                      {mockBiology.map((i, index) => (
-                        <Card
-                          x-chunk="dashboard-01-chunk-0"
-                          key={i}
-                          className="flex flex-col justify-between"
-                        >
-                          <CardHeader>
-                            <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                              {i.objective_id}
-                            </CardTitle>
-                            <CardDescription>
-                              Average score: {Math.round(i.avg_score)}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <Button
-                              variant="link"
-                              className="text-xs"
-                              onClick={() => {
-                                setPreview(i);
-                                setShowNoObjectMsg(false);
-                                setShowSteps(false);
-                              }}
-                            >
-                              View Recommendation
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2.5 rounded bg-background p-6">
+                <img alt="waving hand" src="/waving_hand.png" />
+                <p>
+                  Hello <span className="capitalize">{userInfo?.fullName}</span>
+                  , based on your goals, aspirations and performance, here are
+                  the learning objectives you need to revise
+                </p>
               </div>
+              <Card x-chunk="dashboard-01-chunk-0">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-lg">Study Plans</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:gap-8">
+                  {recs
+                    ?.filter(
+                      (value, index, self) =>
+                        index ===
+                        self.findIndex(
+                          (t) =>
+                            t.objective_id === value.objective_id &&
+                            t.avg_score === value.avg_score
+                        )
+                    )
+                    ?.map((i, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col md:flex-row items-start justify-between gap-4 md:items-center border border-[#EBF0FC] md:border-x-[23px] md:border-y-[30px] rounded text-sm font-light pl-5 pb-10 pt-5 pr-12"
+                      >
+                        <span className="grid gap-1 text-lg">
+                          <h3 className="text-xl font-medium line-clamp-2">
+                            {toTitleCase(i.objective_id)}
+                          </h3>
+                          <span className="">
+                            Average score: {Math.round(i.avg_score)}%
+                          </span>
+                          <span>Subject: {i.subject}</span>
+                          <span>
+                            Importance Rating: {i.subject_important_ranking}
+                          </span>
+                        </span>
+                        <Button
+                          className="text-xs h-8 self-end md:self-center"
+                          onClick={() => {
+                            setPreview(i);
+                            setShowNoObjectMsg(false);
+                            setShowSteps(false);
+                          }}
+                        >
+                          View Study Plan
+                        </Button>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
             </div>
           )}
 
@@ -367,7 +283,16 @@ const Recommedation = () => {
             </DialogHeader>
             <p>When you're ready, click start.</p>
             <DialogFooter>
-              <Button type="submit" onClick={getRecommendation}>
+              <Button
+                type="submit"
+                onClick={getRecommendation}
+                disabled={isLoading}
+              >
+                {isLoading && (
+                  <span className="mr-2 animate-spin">
+                    <Loader />
+                  </span>
+                )}
                 Start
               </Button>
             </DialogFooter>
@@ -401,9 +326,13 @@ const Recommedation = () => {
           <Dialog open={showSteps} onOpenChange={handleDialogClose}>
             <DialogContent className="max-w-[95vw] md:max-w-[70vw]">
               <DialogHeader>
-                <DialogTitle>{recData?.objectives?.[0]?.objective}</DialogTitle>
+                <DialogTitle>
+                  <p className="capitalize">
+                    {recData?.objectives?.[0]?.objective}
+                  </p>
+                </DialogTitle>
 
-                <DialogDescription className="flex flex-col md:flex-row gap-5">
+                <DialogDescription className="flex flex-col md:flex-row gap-5 overflow-auto max-h-[70vh]">
                   {currentStepPage === 4 ? (
                     <div className="bg-white p-6 rounded-lg">
                       <p className="text-lg font-medium mb-4">
@@ -415,11 +344,11 @@ const Recommedation = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="bg-white md:p-6 rounded-lg grid grid-flow-col gap-10 max-w-[90vw] min-w-[60%] text-left">
+                    <div className="bg-white rounded border-foreground/20 border p-4 grid grid-flow-col gap-10 max-w-[90vw] min-w-[60%] text-left">
                       {!showNoObjectMsg &&
                         currentStepPage !==
                           recData?.objectives[0]?.learningSteps?.length && (
-                          <div className="shadow  p-6 grow flex flex-col justify-between">
+                          <div className=" grow flex flex-col justify-between">
                             {recData?.objectives?.[0]?.learningSteps
                               .slice(
                                 quizPassedCount >= 2
@@ -430,14 +359,12 @@ const Recommedation = () => {
                                   : currentStepPage + stepsPerPage
                               )
                               .map((step, index) => (
-                                <div key={index} className="mt-7">
-                                  <span className="text-green-500 text-lg font-medium px-1">
-                                    {/* Step {step.stepNumber} */}
-                                  </span>
-                                  <div className="mt-3 text-slate-800">
-                                    {step.instruction.charAt(0).toUpperCase() +
-                                      step.instruction.slice(1)}
-                                  </div>
+                                <div className="mt-10 text-slate-800 first-letter:capitalize">
+                                  {
+                                    <TextWithLineBreaksRec
+                                      texts={step.instruction}
+                                    />
+                                  }
                                 </div>
                               ))}
                             <div className="flex justify-between mt-10">
@@ -498,8 +425,8 @@ const Recommedation = () => {
                   )}
 
                   {currentStepPage <= 4 && (
-                    <div className="shadow-md p-6 grow flex flex-col justify-between">
-                      <div className="mt-7">
+                    <div className="border border-foreground/20 rounded p-4 grow flex flex-col justify-between min-w-[22vw]">
+                      <div className="my-auto">
                         {recData?.questions
                           .slice(
                             currentQuestionPage,
@@ -507,16 +434,18 @@ const Recommedation = () => {
                           )
                           .map((question, index) => (
                             <div key={index}>
-                              <div className="text-slate-800 first-letter:uppercase">
-                                {question.question.charAt(0).toUpperCase() +
-                                  question.question.slice(1)}
-                              </div>
-                              <div className="mt-2 flex items-center">
-                                <span className="mr-2 text-gray-700">A</span>
+                              <p
+                                className="mb-4 first-letter:uppercase"
+                                dangerouslySetInnerHTML={{
+                                  __html: latexToHTML(question.question),
+                                }}
+                              ></p>
+                              <div className="flex mb-3 items-center">
+                                <span className="mr-2">A</span>
                                 <label className="inline-flex items-center">
                                   <input
                                     type="radio"
-                                    className="form-radio h-5 w-5 text-gray-600"
+                                    className="form-radio h-5 w-5 flex-none"
                                     value="A"
                                     checked={
                                       selectedOptions[
@@ -530,17 +459,20 @@ const Recommedation = () => {
                                       )
                                     }
                                   />
-                                  <span className="ml-2 text-gray-700">
-                                    {question.optionA}
-                                  </span>
+                                  <span
+                                    className="ml-2"
+                                    dangerouslySetInnerHTML={{
+                                      __html: latexToHTML(question.optionA),
+                                    }}
+                                  ></span>
                                 </label>
                               </div>
-                              <div className="mt-2 flex items-center">
-                                <span className="mr-2 text-gray-700">B</span>
+                              <div className="flex mb-3 items-center">
+                                <span className="mr-2">B</span>
                                 <label className="inline-flex items-center">
                                   <input
                                     type="radio"
-                                    className="form-radio h-5 w-5 text-gray-600"
+                                    className="form-radio h-5 w-5 flex-none"
                                     value="B"
                                     checked={
                                       selectedOptions[
@@ -554,17 +486,20 @@ const Recommedation = () => {
                                       )
                                     }
                                   />
-                                  <span className="ml-2 text-gray-700">
-                                    {question.optionB}
-                                  </span>
+                                  <span
+                                    className="ml-2"
+                                    dangerouslySetInnerHTML={{
+                                      __html: latexToHTML(question.optionB),
+                                    }}
+                                  ></span>
                                 </label>
                               </div>
-                              <div className="mt-2 flex items-center">
-                                <span className="mr-2 text-gray-700">C</span>
+                              <div className="flex mb-3 items-center">
+                                <span className="mr-2">C</span>
                                 <label className="inline-flex items-center">
                                   <input
                                     type="radio"
-                                    className="form-radio h-5 w-5 text-gray-600"
+                                    className="form-radio h-5 w-5 flex-none"
                                     value="C"
                                     checked={
                                       selectedOptions[
@@ -578,17 +513,20 @@ const Recommedation = () => {
                                       )
                                     }
                                   />
-                                  <span className="ml-2 text-gray-700">
-                                    {question.optionC}
-                                  </span>
+                                  <span
+                                    className="ml-2"
+                                    dangerouslySetInnerHTML={{
+                                      __html: latexToHTML(question.optionC),
+                                    }}
+                                  ></span>
                                 </label>
                               </div>
-                              <div className="mt-2 flex items-center">
-                                <span className="mr-2 text-gray-700">D</span>
+                              <div className="flex mb-3 items-center">
+                                <span className="mr-2">D</span>
                                 <label className="inline-flex items-center">
                                   <input
                                     type="radio"
-                                    className="form-radio h-5 w-5 text-gray-600"
+                                    className="form-radio h-5 w-5 flex-none"
                                     value="D"
                                     checked={
                                       selectedOptions[
@@ -602,103 +540,67 @@ const Recommedation = () => {
                                       )
                                     }
                                   />
-                                  <span className="ml-2 text-gray-700">
-                                    {question.optionD}
-                                  </span>
+                                  <span
+                                    className="ml-2"
+                                    dangerouslySetInnerHTML={{
+                                      __html: latexToHTML(question.optionD),
+                                    }}
+                                  ></span>
                                 </label>
                               </div>
                             </div>
                           ))}
                       </div>
-                      <div className="flex justify-between mt-10">
-                        <Button
-                          // disable if currentStepPage is not grater or === 4
-                          disabled={currentStepPage !== 4}
-                          onClick={handleQuestionPrev}
-                          className="text-sm"
-                          variant="outline"
-                        >
-                          Previous
-                        </Button>
-                        {currentQuestionPage ===
-                        recData?.questions.length - 1 ? (
+                      {!(currentStepPage !== 4) && (
+                        <div className="flex justify-between mt-10">
                           <Button
+                            // disable if currentStepPage is not grater or === 4
                             disabled={currentStepPage !== 4}
-                            onClick={evaluateQuiz}
+                            onClick={handleQuestionPrev}
                             className="text-sm"
+                            variant="outline"
                           >
-                            Submit
+                            Previous
                           </Button>
-                        ) : (
-                          <Button
-                            disabled={currentStepPage !== 4}
-                            onClick={handleQuestionNext}
-                            className="text-sm"
-                          >
-                            Next
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* {quizPassed && currentStepPage === 5 && (
-                  <div className="shadow-md p-6 grow flex flex-col justify-between">
-                    <div className="mt-7">
-                      
-                      {recData?.objectives?.[0]?.learningSteps[4] && (
-                        <div className="mt-5">
-                          <span className="text-green-500 text-lg font-medium px-1">
-                            Step {recData.objectives[0].learningSteps[4].stepNumber}
-                          </span>
-                          <div className="mt-3 text-slate-800">
-                            {recData.objectives[0].learningSteps[4].instruction}
-                          </div>
+                          {currentQuestionPage ===
+                          recData?.questions.length - 1 ? (
+                            <Button
+                              disabled={currentStepPage !== 4}
+                              onClick={evaluateQuiz}
+                              className="text-sm"
+                            >
+                              Submit
+                            </Button>
+                          ) : (
+                            <Button
+                              disabled={currentStepPage !== 4}
+                              onClick={handleQuestionNext}
+                              className="text-sm"
+                            >
+                              Next
+                            </Button>
+                          )}
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-end mt-10">
-                      <Button onClick={() => setCurrentStepPage(5)} className="text-sm">
-                        Next
-                      </Button>
-                    </div>
-                  </div>
-                )} */}
+                  )}
                 </DialogDescription>
               </DialogHeader>
-
-              {/* <DialogFooter> */}
-              <div className="text-sm text-slate-500 font-bold bg-yellow-100 p-2 rounded-md border border-yellow-300 shadow-sm">
-                Remember: You can ask Eddey for help at any point!
-              </div>
-              <button
-                className="btn text-sm flex items-center gap-2"
-                onClick={() =>
-                  document.getElementById("my_modal_4").showModal()
-                }
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              <div className="bg-[#EBF0FC] px-4 py-3 md:py-1 rounded flex flex-col md:flex-row justify-between items-center gap-3">
+                <p>
+                  <span className="font-bold">Remember:</span> You can ask Eddey
+                  for help at any point!
+                </p>
+                <Button
+                  className="btn text-sm flex items-center gap-2 w-full md:w-fit"
+                  onClick={() =>
+                    document.getElementById("my_modal_4").showModal()
+                  }
                 >
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Chat with Eddey
-              </button>
-
-              {/* {showChatBot && (
-                <div className="mt-4 w-full">
-                  <ChatBot userInfo={userInfo} rec={recData} />
-                </div>
-              )} */}
-              {/* </DialogFooter> */}
+                  <MessageSquare />
+                  Chat with Eddey
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         )}

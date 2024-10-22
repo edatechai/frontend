@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import katex from "katex";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -40,3 +41,8 @@ export function toTitleCase(title: string) {
 
   return convertFirstLetterToUpperCase(title);
 }
+
+export const latexToHTML = (latexString: string) =>
+  latexString?.replaceAll(/\\.*?}.*?}/g, (match) =>
+    katex.renderToString(match)
+  );

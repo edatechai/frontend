@@ -15,16 +15,6 @@ import {
   RadarChart,
 } from "recharts";
 
-// import {
-//   BarChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   Legend,
-// } from "recharts";
-
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,7 +33,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
-import { Button } from "../ui/button";
 
 const chartConfig = {
   country: {
@@ -55,7 +44,7 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
   student: {
-    label: "Student Score",
+    label: `Your score`,
     color: "hsl(var(--chart-3))",
   },
 };
@@ -89,111 +78,14 @@ export function SandW({
     setChartdata(v);
   };
 
-  //console.log("here d.data.aggData.chartData)
-
   const chartDatas = chartData?.data?.getAggregateScores?.data;
-  //   console.log("new", chartData?.classScores?.classScore);
-
-  // const newdata = [
-  //   { name: 'Class',  score : chartData?.classScores.classScore },
-  //   { name: 'Student', score : chartData?.studentScores.studentScore },
-  //   { name: 'Country', score : chartData?.countryScores.countryScore }
-  // ];
-
-  // const newdata = [
-  //   { name: `${userInfo?.fullName}`, sales: chartData?.studentScores.studentScore },
-  //   { name: `Class Ave`, sales: chartData?.classScores.classScore},
-  //   { name: `Country Ave`, sales: chartData?.countryScores.countryScore},
-
-  // ];
 
   return (
     <>
-      {/* {data?.SW?.strengths.length || data?.SW?.weaknesses.length ? (
-        <Card x-chunk="dashboard-01-chunk-5">
-          <CardHeader className="px-6 py-3">
-            <CardTitle className="text-lg">{classTitle}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-4 flex-1 flex-col w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc(100vw-328px)] overflow-hidden">
-            <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
-              <Card x-chunk="dashboard-01-chunk-5" className="flex flex-col">
-                <CardHeader className="px-6 py-3">
-                  <CardTitle className="text-lg flex gap-1 items-center">
-                    <BadgeCheck />
-                    Strengths
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-flow-col gap-4 flex-1 w-[calc(100vw-80px)] md:w-[calc(100vw-300px)] lg:w-[calc((100vw-412px)/2)] overflow-auto">
-                  {data?.SW?.strengths.map((i, index) => (
-                    <Card
-                      x-chunk="dashboard-01-chunk-5"
-                      className="flex flex-col w-64"
-                    >
-                      <CardHeader className="px-6 py-3 flex-1">
-                        <CardTitle className="text-lg capitalize line-clamp-2">
-                          {i?.objective_name}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex gap-4 flex-1 flex-col">
-                        <div className="text-2xl font-bold">{i?.score}%</div>
-                        <p className="text-sm text-muted-foreground">
-                          National Percentile Rank-{" "}
-                          {Math.round(i?.national_percentile_rank)}%%
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Class Rank-
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </CardContent>
-              </Card>
-              <Card x-chunk="dashboard-01-chunk-5" className="flex flex-col">
-                <CardHeader className="px-6 py-3">
-                  <CardTitle className="text-lg flex gap-1 items-center">
-                    <OctagonAlert />
-                    Areas of Improvements
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="grid grid-flow-col gap-4 flex-1 w-[calc(100vw-80px)] md:w-[calc(100vw-300px)] lg:w-[calc((100vw-412px)/2)] overflow-auto">
-                  {data?.SW?.weaknesses.map((i, index) => (
-                    <Card
-                      x-chunk="dashboard-01-chunk-5"
-                      className="flex flex-col w-64"
-                      key={index}
-                    >
-                      <CardHeader className="px-6 py-3 flex-1">
-                        <CardTitle className="text-lg capitalize line-clamp-2">
-                          {i?.objective_name}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex gap-4 flex-1 flex-col">
-                        <div className="text-2xl font-bold">{i?.score}%</div>
-                        <p className="text-sm text-muted-foreground">
-                          National Percentile Rank-{" "}
-                          {Math.round(i?.national_percentile_rank)}%%
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Class Rank-
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <p>No Strenths or area of improvement</p>
-      )} */}
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
         <Card className="bg-slate-50">
           <CardHeader className="pb-4">
             <CardTitle>{classTitle}</CardTitle>
-            {/* <CardDescription>
-              More infomation about this topic on the curriculum.
-            </CardDescription> */}
           </CardHeader>
           <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-hidden grid sm:grid-cols-2 gap-6 sm:gap-3 pt-8">
             <div className="">
@@ -205,11 +97,62 @@ export function SandW({
               </span>
               <div className="space-y-3 mt-3">
                 {data?.SW?.strengths.map((i, index: number) => (
+                  <ul className="list-disc ml-8 font-medium" key={index}>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <li className="truncate cursor-pointer">
+                          {toTitleCase(i?.objective_name || "")}
+                        </li>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <p className="flex justify-between space-x-4">
+                          {toTitleCase(i?.objective_name || "")}
+                        </p>
+                        <p className="text-sm font-light">
+                          Your score:{" "}
+                          <span className="font-normal">
+                            {(i?.score).toFixed(0)}%
+                          </span>
+                        </p>
+                        <p className="text-sm font-light">
+                          Top{" "}
+                          <span className="font-normal">
+                            {Math.round(i?.national_percentile_rank)}%
+                          </span>{" "}
+                          of students in the country
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                    <p className="text-sm font-light">
+                      Your score:{" "}
+                      <span className="font-normal">
+                        {(i?.score).toFixed(0)}%
+                      </span>
+                    </p>
+                    <p className="text-sm font-light">
+                      Top{" "}
+                      <span className="font-normal">
+                        {Math.round(i?.national_percentile_rank)}%
+                      </span>{" "}
+                      of students in the country
+                    </p>
+                  </ul>
+                ))}
+              </div>
+            </div>
+            <div className="">
+              <span className="grid grid-flow-col justify-start items-center gap-2">
+                <span className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center">
+                  <OctagonAlert />
+                </span>
+                <h4 className="text-xl font-medium truncate">
+                  Areas of Improvements
+                </h4>
+              </span>
+              <div className="space-y-3 mt-3">
+                {data?.SW?.weaknesses.map((i, index: number) => (
                   <div key={index}>
                     <ul className="list-disc ml-8 font-medium">
-                      {/* <li className="truncate hover:overflow-visible hover:whitespace-break-spaces">
-                        {toTitleCase(i?.objective_name || "")}
-                      </li> */}
                       <HoverCard>
                         <HoverCardTrigger asChild>
                           <li className="truncate cursor-pointer">
@@ -253,34 +196,6 @@ export function SandW({
                 ))}
               </div>
             </div>
-            <div className="">
-              <span className="grid grid-flow-col justify-start items-center gap-2">
-                <span className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center">
-                  <OctagonAlert />
-                </span>
-                <h4 className="text-xl font-medium truncate">
-                  Areas of Improvements
-                </h4>
-              </span>
-              <div className="space-y-3 mt-3">
-                {data?.SW?.weaknesses.map((i, index: number) => (
-                  <div key={index}>
-                    <ul className="list-disc ml-8 font-medium">
-                      <li className="truncate">
-                        {toTitleCase(i?.objective_name || "")}
-                      </li>
-                      <p className="text-sm font-light">
-                        Top{" "}
-                        <span className="font-normal">
-                          {Math.round(i?.national_percentile_rank)}%
-                        </span>{" "}
-                        of students in the country
-                      </p>
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
           </CardContent>
         </Card>
         <Card className="bg-slate-50">
@@ -308,7 +223,7 @@ export function SandW({
                   dataKey="student"
                   fill="var(--color-student)"
                   radius={4}
-                  name="Student Score"
+                  name={`${userInfo?.fullName.split(" ")[0]}'s score`}
                 />
                 <Bar
                   dataKey="class"

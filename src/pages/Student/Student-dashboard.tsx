@@ -23,12 +23,8 @@ export function StudentDash() {
   const userInfo = useSelector((state) => state.user.userInfo);
   const [classId, setClassId] = useState("");
   const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
-  const {
-    data: quizResult,
-    isLoading: quizResultLoading,
-    isSuccess: quizResultSuccess,
-    isError: quizResultError,
-  } = useGetQuizResultByUserIdQuery(userInfo._id);
+  const { data: quizResult, isLoading: quizResultLoading } =
+    useGetQuizResultByUserIdQuery(userInfo._id);
 
   console.log("my data", quizResult);
 
@@ -37,18 +33,35 @@ export function StudentDash() {
     classTitle = myClasses?.classes?.filter((i) => classId === i._id)[0]
       ?.classTitle;
   }
-  console.log({ classTitle });
 
   return (
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">
-      <div className="w-full flex justify-end">
+      <div className="bg-primary text-primary-foreground flex justify-between">
+        <span className="grid md:ml-10 mt-4 md:mt-8 mx-4 mb-4 md:mr-0">
+          <h4 className="text-lg md:text-3xl font-bold">
+            Welcome back,{" "}
+            <span className="capitalize">{userInfo?.fullName}</span>
+          </h4>
+          <p className="md:text-xl">
+            Your personalized learning journey starts here.
+            <br /> Unleashing potentials, Igniting Minds.
+          </p>
+        </span>
+        <img
+          alt="student and teacher illustration"
+          src="/teacher-and-student.png"
+          className="h-full hidden md:block"
+        />
+      </div>
+      <div className="flex items-center justify-between px-4 py-3 md:py-5 rounded-lg bg-background border border-border">
+        <p className="text-lg md:text-xl font-semibold">Select a subject</p>{" "}
         <Select onValueChange={setClassId}>
-          <SelectTrigger className="w-[180px] bg-orange-500 text-white">
-            <SelectValue placeholder="Select a subject" />
+          <SelectTrigger className="w-36 border-foreground/50">
+            <SelectValue placeholder="Subject" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Classrooms</SelectLabel>
+              <SelectLabel>Subjects</SelectLabel>
               {myClasses?.classes?.map((i) => (
                 <SelectItem value={i._id} key={i._id}>
                   {i?.classTitle}

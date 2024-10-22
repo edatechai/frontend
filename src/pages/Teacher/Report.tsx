@@ -1,53 +1,53 @@
-import { Link } from "react-router-dom";
-import { Users } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useFindMyClassesQuery } from "../../features/api/apiSlice";
+import { useFindMyClassesTeacherQuery } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
-import { JoinClassroom } from "@/components/classroom/joinClassroom";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users } from "lucide-react";
 
-export function StudentClassrooms() {
+const Report = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
+  const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo._id);
+  console.log({ myClasses });
 
   return (
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">
-      <JoinClassroom userInfo={userInfo} />
       <Card x-chunk="dashboard-01-chunk-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-lg">Classrooms</CardTitle>
         </CardHeader>
-        {myClasses?.classes?.length ? (
-          <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-            {myClasses?.classes?.map((val, i) => (
+        <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+          {myClasses?.classes?.map((i, index) => {
+            return (
               <Card
                 x-chunk="dashboard-01-chunk-0"
-                key={i}
+                key={index}
                 className="flex flex-col justify-between"
               >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium line-clamp-2">
-                    {val?.classTitle}
+                    {i.classTitle}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex items-center justify-between gap-5">
+                <CardContent className="flex items-center justify-between gap-5 pt-6">
                   <span className="flex items-center gap-1">
                     <Users className="h-4 w-4 text-muted-foreground" />
-                    <div>{val?.numberOfStudents?.length}</div>
+                    <div>{i?.numberOfStudents.length}</div>
                   </span>
                   <Link
-                    to={`/student/classrooms/${val?._id}`}
+                    to={`/teacher/report/${i._id}`}
+                    state={{ data: i }}
                     className="text-primary hover:underline text-sm font-semibold"
                   >
-                    View Class
+                    View Class Report
                   </Link>
                 </CardContent>
               </Card>
-            ))}
-          </CardContent>
-        ) : (
-          <p className="ml-6 mb-5">You do not belong to any class yet</p>
-        )}
+            );
+          })}
+        </CardContent>
       </Card>
     </div>
   );
-}
+};
+
+export default Report;

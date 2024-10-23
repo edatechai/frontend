@@ -36,7 +36,7 @@ type ExamQuestions = {
 
 const StudentQiuzzes = () => {
   const { classId } = useParams();
-  const { data: AllQuiz } = useFindAllQuizByIdQuery(classId);
+  const { data: AllQuiz, isLoading } = useFindAllQuizByIdQuery(classId);
   const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
@@ -93,30 +93,34 @@ const StudentQiuzzes = () => {
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                {AllQuiz?.map((val, i: number) => (
-                  <Card key={i} className="flex flex-col justify-between">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                        {/* {val?.subject} */}
-                        {val?.objective}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-between gap-5">
-                      <p className="text-slate-950 truncate text-xs">
-                        {val?.numberOfQuestions} questions
-                      </p>
-                      {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
-                      <Link
-                        // to="/dashboard/quiz"
-                        to={`/dashboard/quiz?obj_code=${val?.questionsAndAnswers?.[0]?.objCode}&qs=${val?.questionsAndAnswers?.length}`}
-                        state={{ data: val }}
-                        className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
-                      >
-                        Take Quiz
-                      </Link>
-                    </CardContent>
-                  </Card>
-                ))}
+                {!isLoading ? (
+                  AllQuiz?.map((val, i: number) => (
+                    <Card key={i} className="flex flex-col justify-between">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
+                          {/* {val?.subject} */}
+                          {val?.objective}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex items-center justify-between gap-5">
+                        <p className="text-slate-950 truncate text-xs">
+                          {val?.numberOfQuestions} questions
+                        </p>
+                        {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
+                        <Link
+                          // to="/dashboard/quiz"
+                          to={`/dashboard/quiz?obj_code=${val?.questionsAndAnswers?.[0]?.objCode}&qs=${val?.questionsAndAnswers?.length}`}
+                          state={{ data: val }}
+                          className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
+                        >
+                          Take Quiz
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <p>Loading...</p>
+                )}
               </CardContent>
             </AccordionContent>
           </Card>

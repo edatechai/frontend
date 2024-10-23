@@ -28,10 +28,11 @@ export function StudentDash() {
 
   console.log("my data", quizResult);
 
-  let classTitle;
+  console.log({ myClasses });
+
+  let clas;
   if (classId) {
-    classTitle = myClasses?.classes?.filter((i) => classId === i._id)[0]
-      ?.classTitle;
+    clas = myClasses?.classes?.filter((i) => classId === i._id)[0];
   }
 
   return (
@@ -72,7 +73,7 @@ export function StudentDash() {
         </Select>
       </div>
       {/* <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3"> */}
-      {classId && <SandW classId={classId} classTitle={classTitle} />}
+      {classId && <SandW classId={classId} clas={clas} />}
       {/* </div> */}
       {/* <div className="grid grid-flow-col gap-4 w-screen md:gap-8 md:w-[calc(100vw-268px)] lg:w-[calc(100vw-328px)] overflow-x-auto"> */}
       <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc(100vw-328px)] overflow-x-auto">
@@ -122,7 +123,7 @@ export function StudentDash() {
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 w-52">
                 <CardTitle className="text-sm font-medium line-clamp-2">
-                  {val.classTitle}
+                  {val.class}
                 </CardTitle>
               </CardHeader>
               <CardContent className="flex items-center justify-between gap-5">

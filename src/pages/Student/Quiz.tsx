@@ -46,7 +46,8 @@ const Quiz = () => {
   const [doneAnalysing, setDoneAnalysing] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 1; // Show one item per page
-  const [quizRandomSelect] = useQuizRandomSelectMutation();
+  const [quizRandomSelect, { isLoading: quizLoading }] =
+    useQuizRandomSelectMutation();
   const [createQuizResult, { isLoading: quizSubmitting }] =
     useCreateQuizResultMutation();
   const [quizResultId, setQuizResultId] = useState();
@@ -86,6 +87,8 @@ const Quiz = () => {
       );
     }
   };
+
+  console.log({ allQuiz });
 
   const updateResult = () => {
     const correctOptionValue =
@@ -138,11 +141,24 @@ const Quiz = () => {
     const score = quizResults.filter((val) => val?.isCorrect)?.length;
     setQuizScore(score);
 
+    console.log({
+      score,
+      state: state.data?.questionsAndAnswers?.length,
+      div: quizScore / state.data?.questionsAndAnswers?.length,
+      percent: (
+        (quizScore / state.data?.questionsAndAnswers?.length) *
+        100
+      ).toFixed(),
+    });
+
     const payload = {
       userInfo,
       userId: userInfo?._id,
       quizResults,
-      scorePercentage: score,
+      scorePercentage: (
+        (score / state.data?.questionsAndAnswers?.length) *
+        100
+      ).toFixed(),
       classId: state?.data?.classId,
       classRoomName: state?.data?.classRoomName,
       topic: state?.data?.topic,
@@ -177,7 +193,7 @@ const Quiz = () => {
       studentInfo: {
         age: userInfo?.age,
         learningObjectives: `${state?.data?.category}: ${(
-          (+quizScore / state.data?.data?.questionsAndAnswers?.length) *
+          (+quizScore / state.data?.questionsAndAnswers?.length) *
           100
         ).toFixed()}`,
         neurodiversity: userInfo?.neurodiversity,
@@ -212,7 +228,7 @@ const Quiz = () => {
     setShowGrade(false);
     getQuiz();
     // reload page
-    window.location.reload();
+    // window.location.reload();
   };
 
   const handleUpdateQuizResult = async () => {
@@ -484,7 +500,9 @@ const Quiz = () => {
           <>
             {!allQuiz?.[currentIndex] ? (
               <div className="justify-center items-center text-[18px]">
-                can not find quiz in this topic try another topic
+                {quizLoading
+                  ? "Loading..."
+                  : "Can not find quiz in this topic try another topic"}
               </div>
             ) : (
               <div className="min-w-full max-w-full">

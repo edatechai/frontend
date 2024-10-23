@@ -62,7 +62,9 @@ const TeacherRoom = () => {
 
   console.log("all i need here", { allObjectives, data });
   console.log({ edittedIndexes });
-  // console.log({ data: data?.filter((val) => val.country == "United Kingdom") });
+  console.log({
+    datat: data?.filter((val) => val.country == "United Kingdom"),
+  });
 
   const handleSearchChange = (e) => {
     const value = e.target.value;

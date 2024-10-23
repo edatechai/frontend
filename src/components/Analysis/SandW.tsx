@@ -49,13 +49,7 @@ const chartConfig = {
   },
 };
 
-export function SandW({
-  classId,
-  classTitle,
-}: {
-  classId: string;
-  classTitle: string;
-}) {
+export function SandW({ classId, clas }: { classId: string }) {
   const userInfo = useSelector((state) => state?.user.userInfo);
   const [chartData, setChartdata] = useState("") as any;
   const [getSW, { data }] = useGetStrengthsAndweaknessesMutation();
@@ -74,6 +68,7 @@ export function SandW({
       topic: "",
       category: "",
       userId: userInfo?._id,
+      subject: clas?.subject,
     });
     setChartdata(v);
   };
@@ -85,7 +80,7 @@ export function SandW({
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
         <Card className="bg-slate-50">
           <CardHeader className="pb-4">
-            <CardTitle>{classTitle}</CardTitle>
+            <CardTitle>{clas?.classTitle}</CardTitle>
           </CardHeader>
           <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-hidden grid sm:grid-cols-2 gap-6 sm:gap-3 pt-8">
             <div className="">

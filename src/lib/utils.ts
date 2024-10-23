@@ -42,7 +42,22 @@ export function toTitleCase(title: string) {
   return convertFirstLetterToUpperCase(title);
 }
 
+// export const latexToHTML = (latexString: string) =>
+//   latexString?.replaceAll(/\\.*?}.*?}/g, (match) =>
+//     katex.renderToString(match)
+//   );
+
 export const latexToHTML = (latexString: string) =>
-  latexString?.replaceAll(/\\.*?}.*?}/g, (match) =>
-    katex.renderToString(match)
+  latexString.replace(
+    /\\frac{(\w+)}{(\w+)}|(\w+)\^(\w+)/g,
+    (match, num1, num2, base, exponent) => {
+      if (num1 && num2) {
+        // Handling \frac{num1}{num2}
+        return `(${num1}/${num2})`;
+      } else if (base && exponent) {
+        // Handling x^y
+        return `${base}<sup>${exponent}</sup>`;
+      }
+      return match; // Fallback in case of unexpected match
+    }
   );

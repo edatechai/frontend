@@ -7,7 +7,7 @@ import { JoinClassroom } from "@/components/classroom/joinClassroom";
 
 export function StudentClassrooms() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
+  const { data: myClasses, isLoading } = useFindMyClassesQuery(userInfo._id);
 
   return (
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">
@@ -45,7 +45,13 @@ export function StudentClassrooms() {
             ))}
           </CardContent>
         ) : (
-          <p className="ml-6 mb-5">You do not belong to any class yet</p>
+          <>
+            {isLoading ? (
+              <p className="ml-6 mb-5">Loading"</p>
+            ) : (
+              <p className="ml-6 mb-5">You do not belong to any class yet</p>
+            )}
+          </>
         )}
       </Card>
     </div>

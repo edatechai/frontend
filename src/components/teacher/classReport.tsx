@@ -254,44 +254,49 @@ const ClassReport = () => {
                                         </CardHeader>
                                         <CardContent>
                                           {!val.isCorrect ? (
-                                            <p className="text-destructive">
-                                              Wrong answer
-                                            </p>
-                                          ) : (
-                                            <p className="text-green-700">
-                                              Correct answer
-                                            </p>
-                                          )}
-                                          <div className="flex gap-1 items-center">
-                                            <p>Correct option: </p>
-                                            <p
-                                              dangerouslySetInnerHTML={{
-                                                __html: latexToHTML(
-                                                  val.correctOption
-                                                ),
-                                              }}
-                                            ></p>
-                                          </div>
-                                          <p>
-                                            Correct answer: {val.correctAnswer}
-                                          </p>
-                                          <p className="capitalize">
-                                            Your answer: {val.selectedAnswer}
-                                          </p>
-                                          {!val.isCorrect && (
-                                            <div className="flex gap-1">
-                                              <p className="flex-none">
-                                                Wrong option:
-                                              </p>
-                                              <p
+                                            <p>
+                                              <span className="text-destructive font-medium">
+                                                You choose a wrong answer:
+                                              </span>{" "}
+                                              <span
                                                 dangerouslySetInnerHTML={{
                                                   __html: latexToHTML(
                                                     val.wrongOption
                                                   ),
                                                 }}
-                                              ></p>
-                                            </div>
+                                              ></span>
+                                            </p>
+                                          ) : (
+                                            <p className="text-green-700 font-medium">
+                                              You got it right
+                                            </p>
                                           )}
+                                          <p>
+                                            <span className="font-medium">
+                                              Correct option:
+                                            </span>{" "}
+                                            <span
+                                              dangerouslySetInnerHTML={{
+                                                __html: latexToHTML(
+                                                  val.correctOption
+                                                ),
+                                              }}
+                                            />
+                                          </p>
+                                          <p>
+                                            <span className="font-medium">
+                                              Correct answer:
+                                            </span>{" "}
+                                            {val.correctAnswer}
+                                          </p>
+                                          <p className="capitalize">
+                                            <span className="font-medium">
+                                              Your answer:
+                                            </span>{" "}
+                                            <span className="capitalize">
+                                              {val.selectedAnswer}
+                                            </span>
+                                          </p>
                                         </CardContent>
                                       </Card>
                                     )

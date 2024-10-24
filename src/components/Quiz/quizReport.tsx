@@ -38,20 +38,32 @@ const QuizReport = ({ quizResults }) => {
                 </CardHeader>
                 <CardContent>
                   {val.isCorrect ? (
-                    <p className="text-green-700">
+                    <p className="text-green-700 font-medium">
                       You choose the right answer
                     </p>
                   ) : (
-                    <p className="text-destructive">
-                      You choose a wrong answer
-                    </p>
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: latexToHTML(val.wrongOption),
+                      }}
+                    ></span>
                   )}
-                  <p>Correct option: {val.correctOption}</p>
-                  <p>Correct answer: {val.correctAnswer}</p>
-                  <p className="capitalize">
-                    Your answer: {val.selectedAnswer}
+                  <p>
+                    <span className="font-medium">Correct option:</span>{" "}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: latexToHTML(val.correctOption),
+                      }}
+                    />
                   </p>
-                  <p>{val.wrongOption}</p>
+                  <p>
+                    <span className="font-medium">Correct answer:</span>{" "}
+                    {val.correctAnswer}
+                  </p>
+                  <p className="capitalize">
+                    <span className="font-medium">Your answer:</span>{" "}
+                    <span className="capitalize">{val.selectedAnswer}</span>
+                  </p>
                 </CardContent>
               </Card>
             ))}

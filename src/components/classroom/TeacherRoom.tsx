@@ -61,6 +61,7 @@ const TeacherRoom = () => {
   const [followUp, setFollowUp] = useState("");
 
   console.log("all i need here", { allObjectives, data });
+  console.log({ state });
   console.log({ edittedIndexes });
   console.log({
     datat: data?.filter((val) => val.country == "United Kingdom"),
@@ -73,17 +74,27 @@ const TeacherRoom = () => {
     if (value.trim() === "") {
       setFilteredObjectives([]);
     } else {
-      const filtered = allObjectives?.filter((objective) => {
-        const searchValue = value.toLowerCase();
-        return (
-          objective?.objective?.toLowerCase().includes(searchValue) ||
-          objective?.category?.toLowerCase().includes(searchValue) ||
-          objective?.topic?.toLowerCase().includes(searchValue) ||
-          objective?.subject?.toLowerCase().includes(searchValue)
-        );
-      });
+      const filtered = allObjectives
+        ?.filter((objective) => {
+          const searchValue = value.toLowerCase();
+          const matchesSearch =
+            objective?.objective?.toLowerCase().includes(searchValue) ||
+            objective?.category?.toLowerCase().includes(searchValue) ||
+            objective?.topic?.toLowerCase().includes(searchValue) ||
+            objective?.subject?.toLowerCase().includes(searchValue);
+
+          // Filter based on country and objCode
+          if (userInfo.country === "United Kingdom") {
+            return matchesSearch && objective.objCode.startsWith("E");
+          } else if (userInfo.country === "Nigeria") {
+            return matchesSearch && objective.objCode.startsWith("N");
+          } else {
+            return matchesSearch; // For other countries, don't filter by objCode
+          }
+        })
+        .filter((objs) => objs.subject == state.data.subject);
       setFilteredObjectives(filtered);
-      console.log("this is fileter", filtered);
+      console.log("this is filtered", filtered);
     }
   };
 

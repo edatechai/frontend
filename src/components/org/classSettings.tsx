@@ -213,10 +213,10 @@ export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
                   <SelectItem value="English">English</SelectItem>
                   <SelectItem value="Commerce">Commerce</SelectItem>
                   <SelectItem value="Government">Government</SelectItem>
-                  <SelectItem value="ECONOMICS">Economics</SelectItem>
+                  <SelectItem value="Economics">Economics</SelectItem>
                   <SelectItem value="Social Science">Social Science</SelectItem>
-                  <SelectItem value="Geography ">Geography</SelectItem>
-                  <SelectItem value="Biology ">Biology</SelectItem>
+                  <SelectItem value="Geography">Geography</SelectItem>
+                  <SelectItem value="Biology">Biology</SelectItem>
                   <SelectItem value="Chemistry">Chemistry</SelectItem>
                   <SelectItem value="Physics">Physics</SelectItem>
                   <SelectItem value="Further Mathematics">

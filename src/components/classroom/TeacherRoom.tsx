@@ -42,9 +42,10 @@ import EditQuiz from "../Quiz/multiple-choice/editQuiz";
 const TeacherRoom = () => {
   let { state } = useLocation();
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log({ userInfo });
-  const { data: allObjectives, isLoading: isLoadingObjectives } =
-    useFindAllObjectivesQuery();
+  const { data: allObjectives } = useFindAllObjectivesQuery({
+    subject: state.data.subject,
+    country: userInfo.country,
+  });
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
   // const { data: AllQuiz } = useFindAllQuizQuery();
   // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
@@ -60,40 +61,45 @@ const TeacherRoom = () => {
   const [selectedObjective, setSelectedObjective] = useState(null);
   const [followUp, setFollowUp] = useState("");
 
-  console.log("all i need here", { allObjectives, data });
-  console.log({ state });
-  console.log({ edittedIndexes });
-  console.log({
-    datat: data?.filter((val) => val.country == "United Kingdom"),
-  });
-
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
+    // console.log({ value1: value });
+
+    // console.log({ statetes: state });
+
+    console.log({ subject: allObjectives.length });
 
     if (value.trim() === "") {
       setFilteredObjectives([]);
     } else {
-      const filtered = allObjectives
-        ?.filter((objective) => {
-          const searchValue = value.toLowerCase();
-          const matchesSearch =
-            objective?.objective?.toLowerCase().includes(searchValue) ||
-            objective?.category?.toLowerCase().includes(searchValue) ||
-            objective?.topic?.toLowerCase().includes(searchValue) ||
-            objective?.subject?.toLowerCase().includes(searchValue);
+      const filtered = allObjectives?.filter((objective) => {
+        const searchValue = value.toLowerCase();
+        const matchesSearch =
+          objective?.objective?.toLowerCase().includes(searchValue) ||
+          objective?.category?.toLowerCase().includes(searchValue) ||
+          objective?.topic?.toLowerCase().includes(searchValue) ||
+          objective?.subject?.toLowerCase().includes(searchValue);
 
-          // Filter based on country and objCode
-          if (userInfo.country === "United Kingdom") {
-            return matchesSearch && objective.objCode.startsWith("E");
-          } else if (userInfo.country === "Nigeria") {
-            return matchesSearch && objective.objCode.startsWith("N");
-          } else {
-            return matchesSearch; // For other countries, don't filter by objCode
-          }
-        })
-        .filter((objs) => objs.subject == state.data.subject);
+        return matchesSearch;
+
+        // Filter based on country and objCode
+        // if (userInfo.country === "United Kingdom") {
+        //   return matchesSearch && objective.objCode.startsWith("E");
+        // } else if (userInfo.country === "Nigeria") {
+        //   return matchesSearch && objective.objCode.startsWith("N");
+        // } else {
+        //   return matchesSearch; // For other countries, don't filter by objCode
+        // }
+      });
+      // .filter((objs) => {
+      //   // console.log({ subject1: objs.subject, state: state.data.subject });
+      //   return objs.subject == state.data.subject;
+      // });
+
       setFilteredObjectives(filtered);
+
+      // console.log({ userInfo });
       console.log("this is filtered", filtered);
     }
   };

@@ -111,7 +111,7 @@ export default function Examstyled({
                   placeholder="Search"
                   required
                 />
-                {filteredObjectives.length > 0 && (
+                {filteredObjectives?.length > 0 && (
                   <ul className="absolute left-0 top-full bg-white border border-gray-300 w-full z-50 overflow-y-auto">
                     {filteredObjectives.map((objective, index: number) => (
                       <li

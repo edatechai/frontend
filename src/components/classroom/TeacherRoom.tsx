@@ -73,29 +73,30 @@ const TeacherRoom = () => {
     if (value.trim() === "") {
       setFilteredObjectives([]);
     } else {
-      const filtered = allObjectives?.filter((objective) => {
-        const searchValue = value.toLowerCase();
-        const matchesSearch =
-          objective?.objective?.toLowerCase().includes(searchValue) ||
-          objective?.category?.toLowerCase().includes(searchValue) ||
-          objective?.topic?.toLowerCase().includes(searchValue) ||
-          objective?.subject?.toLowerCase().includes(searchValue);
+      const filtered = allObjectives
+        ?.filter((objective) => {
+          const searchValue = value.toLowerCase();
+          const matchesSearch =
+            objective?.objective?.toLowerCase().includes(searchValue) ||
+            objective?.category?.toLowerCase().includes(searchValue) ||
+            objective?.topic?.toLowerCase().includes(searchValue) ||
+            objective?.subject?.toLowerCase().includes(searchValue);
 
-        return matchesSearch;
+          return matchesSearch;
 
-        // Filter based on country and objCode
-        // if (userInfo.country === "United Kingdom") {
-        //   return matchesSearch && objective.objCode.startsWith("E");
-        // } else if (userInfo.country === "Nigeria") {
-        //   return matchesSearch && objective.objCode.startsWith("N");
-        // } else {
-        //   return matchesSearch; // For other countries, don't filter by objCode
-        // }
-      });
-      // .filter((objs) => {
-      //   // console.log({ subject1: objs.subject, state: state.data.subject });
-      //   return objs.subject == state.data.subject;
-      // });
+          // Filter based on country and objCode
+          // if (userInfo.country === "United Kingdom") {
+          //   return matchesSearch && objective.objCode.startsWith("E");
+          // } else if (userInfo.country === "Nigeria") {
+          //   return matchesSearch && objective.objCode.startsWith("N");
+          // } else {
+          //   return matchesSearch; // For other countries, don't filter by objCode
+          // }
+        })
+        .filter((objs) => {
+          // console.log({ subject1: objs.subject, state: state.data.subject });
+          return objs.subject == state.data.subject;
+        });
 
       setFilteredObjectives(filtered);
 

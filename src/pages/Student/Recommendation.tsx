@@ -73,7 +73,7 @@ const Recommedation = () => {
       // );
       setRecs(
         [...v].sort(function (a, b) {
-          return a?.subject_important_ranking + b?.subject_important_ranking;
+          return a?.importance_rating + b?.importance_rating;
         })
       );
     }
@@ -244,9 +244,7 @@ const Recommedation = () => {
                             Average score: {Math.round(i.avg_score)}%
                           </span>
                           <span>Subject: {i.subject}</span>
-                          <span>
-                            Importance Rating: {i.subject_important_ranking}
-                          </span>
+                          <span>Importance Rating: {i.importance_rating}</span>
                         </span>
                         <Button
                           className="text-xs h-8 self-end md:self-center"

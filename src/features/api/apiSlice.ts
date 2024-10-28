@@ -17,8 +17,9 @@ export const apiSlice = createApi({
     // baseUrl: "https://edat-backend.onrender.com",
     // baseUrl: "http://localhost:5000/",
     // baseUrl: "https://edatbackend.azurewebsites.net/",
+    //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
     baseUrl:
-      "https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/",
+      "http://localhost:5000/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {

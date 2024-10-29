@@ -1,11 +1,9 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Index from "./pages/Auth/Index";
-import { TeachersLayout } from "./components/Layouts/Teacher";
 import { Layout } from "./components/Layouts/Layout";
 import { SuperAdminLayout } from "./components/Layouts/SuperAdmin";
 import SuperAdminDashboard from "./pages/SuperAdmin/SuperAdmin";
-import { OrgLayout } from "./components/Layouts/Org";
 import OrgDashboard from "./pages/Org/Org";
 import StudentDetails from "./pages/Teacher/studentDetails";
 import { StudentDash } from "./pages/Student/Student-dashboard";

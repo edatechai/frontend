@@ -28,6 +28,8 @@ const ParentDashboard = () => {
   const [subject_important_ranking, setSubject_important_ranking] =
     useState("");
 
+  console.log({ classes });
+
   const handleSubmit = async () => {
     const payload = {
       id: userInfo?._id,
@@ -149,7 +151,7 @@ const ParentDashboard = () => {
                   </option>
                   {classes?.classes?.map((i, index) => (
                     <option value={i?._id} key={index}>
-                      {i?.classTitle?.split(" ")[3]}
+                      {i?.subject}
                     </option>
                   ))}
                 </select>

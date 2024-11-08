@@ -14,12 +14,16 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { getColor } from "@/lib/jsons";
+import "mathlive";
+import { MathfieldElement } from "mathlive";
+import { convertLatexToMarkup, convertLatexToMathMl, validateLatex, convertMathMlToLatex } from 'mathlive';
 
 function Theory({ exam }: { exam: ExamQuestions }) {
   const userInfo = useSelector((state) => state?.user.userInfo);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<any>(false);
   const [score, setScore] = useState(false);
+  const [answers, setAnswers] = useState<string[]>([]);
 
   function closeDialog(x: boolean) {
     if (!x) {
@@ -31,13 +35,20 @@ function Theory({ exam }: { exam: ExamQuestions }) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    const answers = Object.values(
-      Object.fromEntries(new FormData(e.target).entries())
-    );
+
+    // Get all math-field elements from the form
+    const mathFields = Array.from(e.target.querySelectorAll('math-field')) as MathfieldElement[];
+    
+    // Get their LaTeX values
+    const answers = mathFields.map(field => field.value);   
+
+    // const answers = Object.values(
+    //   Object.fromEntries(new FormData(e.target as HTMLFormElement).entries())
+    // );
 
     const prepend = answers.map(
       (val, i) =>
-        `the answer to question ${exam?.exam_question.questions[i].number} is ${val}`
+        `${val}`
     );
 
     try {
@@ -80,6 +91,12 @@ function Theory({ exam }: { exam: ExamQuestions }) {
   };
 
   console.log({ score });
+
+  // Add this to handle mathfield value changes
+  const handleMathFieldInput = (element: MathfieldElement, index: number) => {
+    // You can access the LaTeX value using element.value
+    console.log(`Question ${index + 1} answer:`, element.value);
+  };
 
   return (
     <div className="my-8 w-full">
@@ -131,6 +148,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
                 <h4 className="mt-8 text-xl font-semibold mb-2">
                   Examiner Feedback:
                 </h4>
+                
                 <div className="space-y-3 text-left">
                   {Object.keys(score?.results_per_question)
                     .map((key) => [key, score?.results_per_question?.[key]])
@@ -142,21 +160,48 @@ function Theory({ exam }: { exam: ExamQuestions }) {
                         >
                           <p>
                             <span className="font-medium">The Question:</span>{" "}
-                            {value?.[1]?.question.text}
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: value?.[1]?.question.text?.replaceAll(
+                                  /(\frac.*?\}.*?\}|[0-9]+\^{[0-9]+}|\*)/g,
+                                  (match) => katex.renderToString(match.replace(/^\f/, "\\f"))
+                                ),
+                              }}
+                            />
                           </p>
                           <p>
                             <span className="font-medium">Your answer:</span>{" "}
-                            {value?.[1]?.student_response.slice(28)}
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: value?.[1]?.student_response ? 
+                                  convertLatexToMarkup(value?.[1]?.student_response, {
+                                    mathstyle: "displaystyle"
+                                  })
+                                  : ""
+                              }}
+                            />
                           </p>
                           <p>
-                            <span className="font-medium">Feedback :</span>{" "}
-                            {value?.[1]?.feedback}
+                            <span className="font-medium">Feedback:</span>{" "}
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: value?.[1]?.feedback?.replaceAll(
+                                  /(\frac.*?\}.*?\}|[0-9]+\^{[0-9]+}|\*)/g,
+                                  (match) => katex.renderToString(match.replace(/^\f/, "\\f"))
+                                ),
+                              }}
+                            />
                           </p>
                           <p>
-                            <span className="font-medium">
-                              Justification :{" "}
-                            </span>{" "}
-                            {value?.[1]?.justification}
+                            <span className="font-medium">Justification:</span>{" "}
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: value?.[1]?.justification?.replaceAll(
+                                  /(\frac.*?\}.*?\}|[0-9]+\^{[0-9]+}|\*)/g,
+                                  (match) => katex.renderToString(match.replace(/^\f/, "\\f"))
+                                ),
+                              }}
+                            />
                           </p>
                         </div>
                       );
@@ -205,13 +250,21 @@ function Theory({ exam }: { exam: ExamQuestions }) {
             </i>
             <label className="mt-7 block">
               <p>Answer:</p>
-              <textarea
+              <math-field
+                answer={value.text}
                 name={value.text}
-                className="w-full rounded-md p-2 h-36 border border-solid border-primary"
-                placeholder="Input your answer (show your workings)"
+                class="w-full rounded-md p-2 h-36 border border-solid border-primary"
+                style={{
+                  display: "block",
+                  minHeight: "144px", // equivalent to h-36
+                  caretColor: "var(--primary)",
+                  backgroundColor: "white",
+                }}
+                onInput={(evt) => handleMathFieldInput(evt.target as MathfieldElement, index)}
+                virtual-keyboard-mode="manual"
+                virtual-keyboard-theme="material"
                 required
-                // onChange={(e) => handleInput(e, index)}
-              ></textarea>
+              ></math-field>
             </label>
           </div>
         ))}

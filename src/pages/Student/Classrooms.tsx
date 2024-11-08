@@ -3,7 +3,10 @@ import { Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFindMyClassesQuery } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
-import { JoinClassroom } from "@/components/classroom/joinClassroom";
+//import { JoinClassroom } from "../../components/classroom/JoinClassroom";
+import { JoinClassroom } from "../../components/classroom/joinClassroom";
+
+
 
 export function StudentClassrooms() {
   const userInfo = useSelector((state) => state.user.userInfo);

@@ -31,8 +31,8 @@ export const RegisterSchema = z
     // }),
     email: z
       .string()
-      .email({ message: "Please input a valid email address" })
-      .max(30, { message: "Must contain at most 30 characters" }),
+      .email({ message: "Please input a valid email address" }),
+      
     role: z
       .string()
       .min(2, { message: "Select the gender" })

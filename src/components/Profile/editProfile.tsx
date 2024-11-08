@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { EditPasswordSchema, EditProfileSchema } from "@/lib/schema";
-import { Eye, EyeOff, Loader, Calendar as CalendarLucide } from "lucide-react";
+import { Eye, EyeOff, Loader, Calendar as CalendarLucide, Copy } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -30,7 +30,7 @@ import { useState } from "react";
 import { useUpdateProfileMutation } from "@/features/api/apiSlice";
 import { toast } from "sonner";
 
-export function EditProfileForm({ userInfo }) {
+export function EditProfileForm({ userInfo }: { userInfo: any }) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
   console.log({ userInfo });
@@ -42,8 +42,8 @@ export function EditProfileForm({ userInfo }) {
       email: userInfo?.email || "",
       fullName: userInfo?.fullName || "",
       gender: userInfo?.gender || "",
-      dob:
-        new Date(userInfo.dob.year, userInfo.dob.month, userInfo.dob.day) || "",
+      dob: new Date(userInfo.dob.year, userInfo.dob.month, userInfo.dob.day) || "",
+      license: userInfo?.license || "",
     },
   });
 
@@ -75,13 +75,16 @@ export function EditProfileForm({ userInfo }) {
         <div className="w-full space-y-3 mb-10">
           <div className="flex gap-3">
             <FormField
+            
               control={form.control}
               name="fullName"
               render={({ field }) => (
                 <FormItem className="space-y-0.5 w-full">
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input
+                    readOnly 
+                     placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,6 +98,7 @@ export function EditProfileForm({ userInfo }) {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
+                    readOnly 
                       placeholder="name@example.com"
                       {...field}
                       type="email"
@@ -111,21 +115,13 @@ export function EditProfileForm({ userInfo }) {
             render={({ field }) => (
               <FormItem className="space-y-0.5">
                 <FormLabel>Gender</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {/* <SelectLabel>Roles</SelectLabel> */}
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Input
+                    readOnly
+                    placeholder="Enter gender"
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -136,73 +132,68 @@ export function EditProfileForm({ userInfo }) {
             render={({ field }) => (
               <FormItem className="space-y-0.5">
                 <FormLabel>Country</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Country" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {/* <SelectLabel>Roles</SelectLabel> */}
-                    <SelectItem value="Nigeria">Nigeria</SelectItem>
-                    <SelectItem value="England">England</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Input
+                    readOnly
+                    placeholder="Enter country"
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          
           <FormField
             control={form.control}
             name="dob"
             render={({ field }) => (
-              <FormItem className="flex flex-col space-y-0.5">
+              <FormItem className="space-y-0.5">
                 <FormLabel>Date of birth</FormLabel>
-                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarLucide className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={(e) => {
-                        field.onChange(e);
-                        setIsCalendarOpen(false);
-                      }}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1940-01-01")
-                      }
-                      defaultMonth={new Date(2024, 6)}
-                      captionLayout="dropdown-buttons"
-                      fromYear={1980}
-                      toYear={2025}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <FormControl>
+                  <Input
+                    readOnly
+                    value={field.value ? format(field.value, "PPP") : ""}
+                    placeholder="Date of birth"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+<FormField
+              control={form.control}
+                name="license"
+              render={({ field }) => (
+                <FormItem className="space-y-0.5 w-full">
+                  <FormLabel>License Number</FormLabel>
+                  <FormControl className="text-sm">
+                    <div className="relative">
+                      <Input 
+                        value={userInfo?.license || ''} 
+                        readOnly 
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full"
+                        onClick={() => {
+                          navigator.clipboard.writeText(userInfo?.license || '')
+                            .then(() => toast.success("License number copied to clipboard"))
+                            .catch(() => toast.error("Failed to copy license number"));
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
         </div>
         <Button disabled={isLoading} className="w-fit self-end" size="sm">
           {isLoading && (

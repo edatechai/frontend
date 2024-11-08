@@ -3,16 +3,17 @@ import {
   useCreateClassRoomMutation,
   useGetAllClassRoomsQuery,
   useDeleteClassRoomMutation,
+  useGetAllClassRoomByAccountIdQuery,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
 
 const Index = () => {
+  const userInfo = useSelector((state) => state?.user?.userInfo);
   const [createClassRoom, { isLoading, data }] = useCreateClassRoomMutation();
-  const { data: classRooms, isLoading: isLoadingClassRooms } =
-    useGetAllClassRoomsQuery();
+  const { data: classRooms, isLoading: isLoadingClassRooms } = useGetAllClassRoomByAccountIdQuery(userInfo?.accountId);
   const [deleteClassRoom, { isLoading: isDeleting }] =
     useDeleteClassRoomMutation();
-  const userInfo = useSelector((state) => state?.user?.userInfo);
+ 
   const dialogRef = useRef(null);
 
   console.log("all class rooms", classRooms);

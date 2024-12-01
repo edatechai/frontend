@@ -20,7 +20,6 @@ jobs:
 
       - name: npm install and build
         run: |
-          cd frontend  # Navigate to frontend directory
           npm install
           npm run build
       
@@ -28,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: dist  # Specify the correct dist path
+          path: dist  # Just the dist directory
 
   deploy:
     runs-on: ubuntu-latest

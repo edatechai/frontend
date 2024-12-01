@@ -162,7 +162,7 @@ export function EditProfileForm({ userInfo }: { userInfo: any }) {
             )}
           />
 
-<FormField
+              <FormField
               control={form.control}
                 name="license"
               render={({ field }) => (
@@ -194,6 +194,43 @@ export function EditProfileForm({ userInfo }: { userInfo: any }) {
                 </FormItem>
               )}
             />
+
+
+<FormField
+              control={form.control}
+                name="license"
+              render={({ field }) => (
+                <FormItem className="space-y-0.5 w-full">
+                  <FormLabel>Username</FormLabel>
+                  <FormControl className="text-sm">
+                    <div className="relative">
+                      <Input 
+                        value={userInfo?.username || ''} 
+                        readOnly 
+                        className="pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full"
+                        onClick={() => {
+                          navigator.clipboard.writeText(userInfo?.username || '')
+                            .then(() => toast.success("Username copied to clipboard"))
+                            .catch(() => toast.error("Failed to copy username"));
+                        }}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+
+
         </div>
         <Button disabled={isLoading} className="w-fit self-end" size="sm">
           {isLoading && (

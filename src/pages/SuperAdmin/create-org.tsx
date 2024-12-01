@@ -59,7 +59,7 @@ const LicenseModal = ({
           <strong>Category:</strong> {license.category}
         </p>
         <p>
-          <strong>Number of Licenses:</strong> {license.numberOfLicense}
+          <strong>Number of Licenses:</strong> {license.license.length}
         </p>
 
         <div className="overflow-x-auto mt-10">
@@ -179,6 +179,10 @@ const Index = () => {
     setIsModalVisible(true);
   };
 
+  const handleDeleteAccountAndUsers = (id) => {
+    console.log("this is the id", id);
+  };
+
   return (
     <div className="flex lg:max-w-full px-8 py-5">
       <div className="justify-between">
@@ -235,11 +239,17 @@ const Index = () => {
                       <td>{item.category}</td>
                       <td>{item.numberOfLicense}</td>
                       <td>
-                        <span
+                        {/* <span
                           className="badge badge-ghost badge-sm cursor-pointer"
                           onClick={() => handleViewLicense(item)}
                         >
                           View License
+                        </span> */}
+                        <span
+                          className="badge badge-ghost badge-sm cursor-pointer"
+                          onClick={() => handleDeleteAccountAndUsers(item._id)}
+                        >
+                          Delete Organization
                         </span>
                       </td>
                     </tr>

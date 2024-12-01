@@ -46,15 +46,22 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
   const watchRole = form.watch("role");
 
   async function onSubmit(body: z.infer<typeof RegisterSchema>) {
+    console.log("body", body)
     try {
+
       const response = await CreateUser(body);
       if (response.error) {
         toast.error("Registration failed", {
           description: response?.error?.data?.message,
         });
       } else {
-        toast(response.data.message);
-        toggle();
+        if(response.data.statusMsg == "verify your email"){
+          alert(response.data.message)
+          toggle();
+        }else{
+          toast(response.data.message);
+          toggle();
+        }
       }
     } catch (error) {
       toast.error("Registration failed", {
@@ -80,7 +87,7 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
@@ -92,21 +99,8 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem className="space-y-0.5">
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} type="email" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
+        /> */}
+         <FormField
           control={form.control}
           name="role"
           render={({ field }) => (
@@ -129,6 +123,23 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
             </FormItem>
           )}
         />
+        
+        {watchRole !== "student" && (
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="space-y-0.5">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="name@example.com" {...field} type="email" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+       
         <FormField
           control={form.control}
           name="gender"

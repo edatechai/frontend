@@ -7,19 +7,20 @@ import {
   useFindMyClassesQuery,
 } from "../../features/api/apiSlice";
 import { useSelector } from "react-redux";
-import { useAddChildMutation } from "../../features/api/apiSlice";
+import { useAddChildMutation, useRemoveChildMutation } from "../../features/api/apiSlice";
 import { DataTable } from "../table/data-table";
 import { childColumns } from "../table/columns";
 import { Button } from "../ui/button";
 
 const ParentDashboard = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const dialogRef = useRef(null);
+  const dialogRef = useRef();
   const [childlicense, setChildlicense] = useState("");
   const [currentData, setCurrentData] = useState("");
 
   const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray);
   const [addChild, { isLoading: isAdding }] = useAddChildMutation();
+  const [removeChild, { isLoading: isRemoving }] = useRemoveChildMutation();
   const [addSubjectPriority, { isLoading: isAdding2 }] =
     useAddSubjectPriorityMutation();
   const { data: classes } = useFindMyClassesQuery(currentData);
@@ -35,16 +36,34 @@ const ParentDashboard = () => {
       id: userInfo?._id,
       childlicense,
     };
-    const res = await addChild(payload);
+    const res = await addChild(payload).unwrap();
     console.log(res);
     if (res.error) {
       alert(res.error.data.message);
-      setChildlicense("");
       return dialogRef.current.close();
     }
     alert("child added successfully");
     setChildlicense("");
+    // reload the page
+    window.location.reload();
     dialogRef.current.close();
+  };
+
+  const handleRemoveChild = async () => {
+    const payload = {
+      id: userInfo?._id,
+      childlicense,
+    };
+    const res = await removeChild(payload).unwrap();
+    if (res.error) {
+      alert(res.error.data.message);
+      return dialogRef.current.close();
+    }
+    alert("child unlinked successfully");
+    setChildlicense("");
+    dialogRef.current.close();
+    // reload the page
+    window.location.reload();
   };
 
   const AddSubjectPriority = async () => {
@@ -73,6 +92,7 @@ const ParentDashboard = () => {
 
   return (
     <div className="min-w-screen lg:max-w-[100%] px-8 py-5 overflow-hidden">
+
       <dialog id="my_modal_3" className="modal" ref={dialogRef}>
         <div className="modal-box">
           <form method="dialog">
@@ -194,6 +214,42 @@ const ParentDashboard = () => {
         </div>
       </dialog>
 
+      <dialog id="my_modal_7" className="modal" ref={dialogRef}>
+        <div className="modal-box">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
+          </form>
+          <h3 className="font-bold text-lg">Unlink a child</h3>
+
+          <div className="mt-4">
+            <div className="font-medium py-2">License code</div>
+            <label className="input input-bordered flex items-center gap-2">
+              <input
+                value={childlicense}
+                disabled={isRemoving}
+                onChange={(e) => setChildlicense(e.target.value)}
+                type="text"
+                className="w-full"
+                placeholder="Enter license code"
+              />
+            </label>
+          </div>
+
+          <div className="mt-4">
+            <button onClick={handleRemoveChild} className="btn min-w-full">
+              {isRemoving ? (
+                <div className="flex justify-center">Loading...</div>
+              ) : (
+                "Submit"
+              )}
+            </button>
+          </div>
+        </div>
+      </dialog>
+
       <div>
         <h2 className="text-slate900  text-[20px] font-[600]">
           Parent Dashboard
@@ -209,6 +265,11 @@ const ParentDashboard = () => {
           onClick={() => document.getElementById("my_modal_3").showModal()}
         >
           Link a child
+        </Button>
+        <Button
+          onClick={() => document.getElementById("my_modal_7").showModal()}
+        >
+          Unlink a child
         </Button>
       </div>
 

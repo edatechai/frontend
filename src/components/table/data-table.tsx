@@ -35,6 +35,8 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
+  isError: boolean;
+  error: any;
   pageSize?: number;
   noData?: string;
 }
@@ -45,6 +47,8 @@ export function DataTable<TData, TValue>({
   pageSize = 10,
   noData = "Nothing to show",
   isLoading = false,
+  isError = false,
+  error = null,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState([]);

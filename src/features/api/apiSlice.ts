@@ -19,8 +19,7 @@ export const apiSlice = createApi({
     // baseUrl: "https://edatbackend.azurewebsites.net/",
     //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    baseUrl:
-      "https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/",
+    baseUrl: "https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -71,6 +70,19 @@ export const apiSlice = createApi({
       //invalidatesTags: ["CreateAccount", "AllAccounts"],
     }),
 
+    getUsersByAccountId: builder.query({
+      query: (accountId) => `/api/users/getUsersByAccountId/${accountId}`,
+      providesTags: ["User"],
+    }),
+
+    validateEmailAndRegisterUser: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/validateEmailAndRegisterUser",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
     createAccount: builder.mutation({
       query: (payload) => ({
         url: "/api/account/createAccount",
@@ -78,6 +90,49 @@ export const apiSlice = createApi({
         body: payload,
       }),
       invalidatesTags: ["CreateAccount", "AllAccounts"],
+    }),
+
+    // its a delete request
+    deleteLicense: builder.mutation({
+      query: (payload) => ({
+        url: `/api/account/deleteLicense/${payload.id}/${payload.licenseCode}`,
+        method: "DELETE",
+        body: payload,
+      }),
+      invalidatesTags: ["AllAccounts"],
+    }),
+
+    deleteAccountAndUsers: builder.mutation({
+      query: (id) => ({
+        url: `/api/account/deleteAccountAndUsers/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AllAccounts"],
+    }),
+
+    addMoreLicenses: builder.mutation({
+      query: (payload) => ({
+        url: `/api/account/addMoreLicenses/${payload.id}/${payload.numberOfLicense}`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["AllAccounts"],
+    }),
+
+    forgotPassword: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/forgot-password",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    resetPassword: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/reset-password",
+        method: "POST",
+        body: payload,
+      }),
     }),
 
     getAllAccounts: builder.query({
@@ -328,7 +383,14 @@ export const apiSlice = createApi({
 
     getAllChildren: builder.query({
       query: (ids) => `/api/users/getAllChildren?ids=${ids.join(",")}`,
-      providesTags: ["AddChild"],
+      providesTags: (result) => 
+        // Add more specific tags for better cache control
+        result 
+          ? [
+              ...result.map(({ id }) => ({ type: 'AddChild' as const, id })),
+              { type: 'AddChild' as const, id: 'LIST' }
+            ]
+          : [{ type: 'AddChild', id: 'LIST' }],
     }),
 
     addChild: builder.mutation({
@@ -337,7 +399,24 @@ export const apiSlice = createApi({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["AddChild"],
+      // Invalidate both the specific child and the full list
+      invalidatesTags: (result, error, { childId }) => [
+        { type: 'AddChild', id: childId },
+        { type: 'AddChild', id: 'LIST' }
+      ],
+    }),
+
+    removeChild: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/removeChildLicense",
+        method: "POST",
+        body: payload,
+      }),
+      // Invalidate both the specific child and the full list
+      invalidatesTags: (result, error, { childId }) => [
+        { type: 'AddChild', id: childId },
+        { type: 'AddChild', id: 'LIST' }
+      ],
     }),
 
     updatePassScore: builder.mutation({
@@ -538,7 +617,13 @@ export const {
   useRecommendObjectivesQuery,
   useUpdateNumberOfLearningObjectiveMutation,
   useUpdateProfileMutation,
-
+  useValidateEmailAndRegisterUserMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+  useDeleteLicenseMutation,
+  useDeleteAccountAndUsersMutation,
+  useGetUsersByAccountIdQuery,
+  useAddMoreLicensesMutation,
   //classRoom
   useCreateClassRoomMutation,
   useGetAllClassRoomsQuery,
@@ -549,6 +634,7 @@ export const {
   useFindMyClassesTeacherQuery,
   useGetAllChildrenQuery,
   useAddChildMutation,
+  useRemoveChildMutation,
   useUpdatePassScoreMutation,
   useUpdateBioMutation,
   useGenerateStudentReportMutation,

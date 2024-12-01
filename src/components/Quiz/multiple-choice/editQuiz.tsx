@@ -1,42 +1,19 @@
+import { Dispatch, SetStateAction, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useUpdateQuizMutation } from "@/features/api/apiSlice";
-import { EditQuizSchema } from "@/lib/schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Select } from "@radix-ui/react-select";
 import { Loader } from "lucide-react";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
+import { useSelector } from "react-redux";
 
 const EditQuiz = ({
   question,
   index,
   setEdittedIndexes,
   edittedIndexes,
+  
 }: {
   question: {
     _id: string;
@@ -46,167 +23,190 @@ const EditQuiz = ({
     optionC: string;
     optionD: string;
     answer: string;
-    // difficultyLevel: string;
+    subject: string;
+    _doc: {
+      answer: string;
+      _id: string;
+    };
   };
   index: number;
   edittedIndexes: string[];
   setEdittedIndexes: Dispatch<SetStateAction<string[]>>;
+  userInfo: any;
 }) => {
-  const [updateQuiz, { isLoading }] = useUpdateQuizMutation();
-  const form = useForm<z.infer<typeof EditQuizSchema>>({
-    resolver: zodResolver(EditQuizSchema),
-    defaultValues: { ...question },
-  });
+  // State for each field
+  const [questionContent, setQuestionContent] = useState(question.question);
+  const [optionA, setOptionA] = useState(question.optionA);
+  const [optionB, setOptionB] = useState(question.optionB);
+  const [optionC, setOptionC] = useState(question.optionC);
+  const [optionD, setOptionD] = useState(question.optionD);
+  const [answer, setAnswer] = useState(question.answer);
+  const [_id, setId] = useState();
+  const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
 
-  //   useEffect(() => {
-  //     // first;
-  //   }, [edittedIndexes]);
+  
 
-  async function onSubmit(body: z.infer<typeof EditQuizSchema>) {
+  // Quill modules configuration
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "image", "formula"], // Added formula for math equations
+      ["clean"],
+    ],
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+
+  // Supported formats
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "link",
+    "image",
+    "formula",
+  ];
+
+  const handleSubmit = async () => {
+    console.log("this is question", question)
+   
+    // setId(question._id );
+    // setAnswer(question.answer);
+    const stripHtml = (html: string) => {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    };
+
+    const payload = {
+      _id: question?._doc?._id || question?._id, 
+      question: stripHtml(questionContent),
+      optionA: stripHtml(optionA),
+      optionB: stripHtml(optionB),
+      optionC: stripHtml(optionC),
+      optionD: stripHtml(optionD),
+      answer: stripHtml(answer),
+      teacherInfo: {
+        country: userInfo.country,
+        username: userInfo.username,
+        email: userInfo.email,
+        teacherId: userInfo._id,
+        fullName: userInfo.fullName,
+        accountId: userInfo.accountId,
+        gender: userInfo.gender,
+        subject: question?.subject,
+      },
+      before: question
+    };
+
     try {
-      const response = await updateQuiz(body);
-      console.log({ response });
-      if (response.error) {
-        toast.error("Quiz update failed", {
-          description: response?.error?.data?.message,
-        });
+      // Helper function to strip HTML tags
+      
+      
+      console.log("payload", payload);
+      
+      // TODO: Implement your update logic here
+      const result =  await updateQuiz(payload);
+      console.log("result", result)
+      // status is 200 show result.data.message
+      if (result.data.status) {
+        setEdittedIndexes((prev) => [...prev, question._id]);
+        toast.success(result.data.message);
       } else {
-        setEdittedIndexes((prev) => [...prev, body._id]);
-        toast.success("Quiz editted successfully");
+        toast.error(result.data.message);
       }
     } catch (error) {
-      toast.error("Registration failed", {
-        description: "Something went wrong",
-      });
-      console.log("error", error);
+      console.error(error);
+        // Add error toast
+      toast.error("There was an error updating the question");
     }
-  }
+  };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={`mt-4 ${
-          edittedIndexes.indexOf(question._id) !== -1
-            ? "bg-red-700 border-8 border-green-700"
-            : ""
-        }`}
-      >
-        <Card className="" key={question._id}>
-          <CardHeader>
-            <CardTitle>Question {index + 1}</CardTitle>
-            <CardDescription>
-              Review the questions and answers. Edit if neccessary.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex gap-3 flex-col">
-            <FormField
-              control={form.control}
-              name="question"
-              render={({ field }) => (
-                <FormItem className="space-y-0.5">
-                  <FormLabel>Question</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+    <Card className="mt-4">
+      <CardHeader>
+        <CardTitle>Question {index + 1}</CardTitle>
+        <CardDescription>Edit question and options using the rich text editor</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <label className="block mb-2 font-medium">Question</label>
+          <ReactQuill
+            theme="snow"
+            value={questionContent}
+            onChange={setQuestionContent}
+            modules={modules}
+            formats={formats}
+          />
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+        <div>
+            <label className="block mb-2 font-medium">Answer</label>
+            <ReactQuill
+              theme="snow"
+              value={answer}
+              onChange={setAnswer}
+              modules={modules}
+              formats={formats}
             />
-            <div className="grid md:grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="optionA"
-                render={({ field }) => (
-                  <FormItem className="space-y-0.5">
-                    <FormLabel>Option A</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="optionB"
-                render={({ field }) => (
-                  <FormItem className="space-y-0.5">
-                    <FormLabel>Option B</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="optionC"
-                render={({ field }) => (
-                  <FormItem className="space-y-0.5">
-                    <FormLabel>Option C</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="optionD"
-                render={({ field }) => (
-                  <FormItem className="space-y-0.5">
-                    <FormLabel>Option D</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="answer"
-              render={({ field }) => (
-                <FormItem className="space-y-0.5">
-                  <FormLabel>Correct answer</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select answer" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="A">A</SelectItem>
-                        <SelectItem value="B">B</SelectItem>
-                        <SelectItem value="C">C</SelectItem>
-                        <SelectItem value="D">D</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+          <br/>
+          <div>
+            <label className="block mb-2 font-medium">Option A</label>
+            <ReactQuill
+              theme="snow"
+              value={optionA}
+              onChange={setOptionA}
+              modules={modules}
+              formats={formats}
             />
-            <Button disabled={isLoading} className="self-end">
-              {isLoading && (
-                <span className="mr-2 animate-spin">
-                  <Loader />
-                </span>
-              )}
-              Submit
-            </Button>
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
+          </div>
+          <div>
+            <label className="block mb-2 font-medium">Option B</label>
+            <ReactQuill
+              theme="snow"
+              value={optionB}
+              onChange={setOptionB}
+              modules={modules}
+              formats={formats}
+            />
+          </div>
+          <div>
+            <label className="block mb-2 font-medium">Option C</label>
+            <ReactQuill
+              theme="snow"
+              value={optionC}
+              onChange={setOptionC}
+              modules={modules}
+              formats={formats}
+            />
+          </div>
+          <div>
+            <label className="block mb-2 font-medium">Option D</label>
+            <ReactQuill
+              theme="snow"
+              value={optionD}
+              onChange={setOptionD}
+              modules={modules}
+              formats={formats}
+            />
+          </div>
+        </div>
+
+        <Button onClick={handleSubmit} className="mt-4">
+          Save Changes
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

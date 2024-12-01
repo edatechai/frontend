@@ -46,6 +46,8 @@ const TeacherRoom = () => {
     subject: state.data.subject,
     country: userInfo.country,
   });
+
+  console.log("this is userInfo", userInfo)
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
   // const { data: AllQuiz } = useFindAllQuizQuery();
   // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
@@ -350,6 +352,7 @@ const TeacherRoom = () => {
                     question={question}
                     setEdittedIndexes={setEdittedIndexes}
                     edittedIndexes={edittedIndexes}
+                    userInfo={userInfo}
                   />
                 );
               } else return <></>;

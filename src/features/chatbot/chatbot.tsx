@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useChatMutation } from "../api/apiSlice";
 import Chatbox from "./chatbox";
+import { any } from "zod";
+import { useSelector } from "react-redux";
 
 interface ChatBotProps {
   userInfo: any; // Replace 'any' with the actual type of userInfo
@@ -20,8 +22,10 @@ interface ConversationItem {
   currentIndex: number;
 }
 
-function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
-  const [chat, { isLoading }] = useChatMutation();
+function ChatBot({ rec, onClose }: ChatBotProps) {
+  
+  const [chat, { isLoading, error: chatError }] = useChatMutation();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
   console.log("this is user info", userInfo, rec?.questions[0].question);
   const [question, setQuestion] = useState("");
   const [isInitializing, setIsInitializing] = useState(true);
@@ -38,43 +42,78 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
       role: "assistant",
       content: "",
     },
-  ]);
+  ]); 
+  
+  // useEffect(() => {
+   
+  //   if(userInfo){
+  //   if (isChatVisible) {
+  //     console.log("this is userInfo", userInfo);
+  //     if (userInfo) {
+  //       initializeChat(userInfo);
+  //     } else {
+  //       alert("Please login to continue");
+  //     }
+  //     }
+  //   }else{
+  //     // wait for few seconds and check again
+  //     setTimeout(() => {
+  //       initializeChat(userInfo);
+  //     }, 3000);
+  //   }
+  // }, [isChatVisible, userInfo]);
 
-  const payload = {
-    name: userInfo?.fullName,
-    country: userInfo?.country,
-    learningObjective: rec?.objectives[0]?.objective,
-    aspiration: userInfo?.bioData[0]?.career_aspirations,
-    interests: userInfo?.bioData[0]?.subjects_of_interest,
-    strengths: "",
-    learningStyle: userInfo?.bioData[0]?.learning_style_preferences,
-    strugglingTopic: rec?.objectives[0]?.objective,
-    relatedTopic: rec?.objectives[0]?.objective,
-    neurodiversity: userInfo?.neurodiversity,
-    userId: userInfo?._id,
-  };
-  console.log("this is payload", payload);
+ 
+  useEffect(() => {
+    if(userInfo){
+      initializeChat(userInfo);
+    }
+  }, [userInfo]);
 
-  const initializeChat = async () => {
+  const initializeChat = async (userInfo: any) => {
+    const userInfoPayload = {
+      name: userInfo?.fullName,
+      country: userInfo?.country,
+      learningObjective: rec?.objectives[0]?.objective,
+      aspiration: userInfo?.bioData[0]?.career_aspirations,
+      interests: userInfo?.bioData[0]?.subjects_of_interest,
+      strengths: "",
+      learningStyle: userInfo?.bioData[0]?.learning_style_preferences,
+      strugglingTopic: rec?.objectives[0]?.objective,
+      relatedTopic: rec?.objectives[0]?.objective,
+      neurodiversity: userInfo?.neurodiversity,
+      userId: userInfo?._id,
+    };
+    // if userInfo is not present, return
+    const payload = {
+      studentInfo: userInfoPayload
+    };
+
+   
+
+    console.log("this is payload", payload);
+    
     try {
       setIsInitializing(true);
       const response = await chat(payload);
       console.log("this is response", response);
       setConversation(response?.data.conversation);
       setAskedQuestions(response?.data.askedQuestions);
-    } catch (error) {
-      console.error("Error initializing chat:", error);
+    } catch (error: any) {
+      console.error("Error initializing chat:", chatError);
+      
     } finally {
       setIsInitializing(false);
     }
   };
   console.log({ conversation });
 
-  useEffect(() => {
-    if (isChatVisible) {
-      initializeChat();
-    }
-  }, [isChatVisible]);
+
+  // if(userInfo){
+  //   initializeChat(userInfo);
+  // }
+
+ 
 
   useEffect(() => {
     let h = [
@@ -128,19 +167,43 @@ function ChatBot({ userInfo, rec, onClose }: ChatBotProps) {
       const userMessage: Message = { role: "user", content: question };
       setConversation((prev) => [...prev, userMessage]);
       setQuestion("");
+
+
+      const userInfoPayload = {
+        name: userInfo?.fullName,
+        country: userInfo?.country,
+        learningObjective: rec?.objectives[0]?.objective,
+        aspiration: userInfo?.bioData[0]?.career_aspirations,
+        interests: userInfo?.bioData[0]?.subjects_of_interest,
+        strengths: "",
+        learningStyle: userInfo?.bioData[0]?.learning_style_preferences,
+        strugglingTopic: rec?.objectives[0]?.objective,
+        relatedTopic: rec?.objectives[0]?.objective,
+        neurodiversity: userInfo?.neurodiversity,
+        userId: userInfo?._id,
+      };
+      
+
       const payload = {
         userInput: question,
         conversation: [...conversation, userMessage],
         askedQuestions: askedQuestions,
+        studentInfo: userInfoPayload
+
       };
+      
       console.log("this is new payload", payload);
 
       try {
         const response = await chat(payload);
         console.log("this is response", response);
-        setConversation(response?.data.conversation);
-        setAskedQuestions(response?.data.askedQuestions);
-        scrollToBottom("smooth");
+        if (response?.error) {
+          alert(response?.error?.data?.error);
+        } else {
+          setConversation(response?.data.conversation);
+          setAskedQuestions(response?.data.askedQuestions);
+          scrollToBottom("smooth");
+        }
       } catch (error) {
         console.error("Error getting chat response:", error);
         // Handle error (e.g., show error message to user)

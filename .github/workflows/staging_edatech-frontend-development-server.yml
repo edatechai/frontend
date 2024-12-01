@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: frontend/dist  # Specify the correct dist path
+          path: dist  # Specify the correct dist path
 
   deploy:
     runs-on: ubuntu-latest

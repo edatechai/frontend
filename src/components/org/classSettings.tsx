@@ -2,6 +2,7 @@ import {
   useCreateArmMutation,
   useCreateSubjectMutation,
   useCreateYearGroupMutation,
+  useGetAccountByIdQuery,
 } from "@/features/api/apiSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
@@ -47,6 +48,8 @@ export const CreateArm = ({ userInfo, setShowArmDialog }) => {
   const form = useForm<z.infer<typeof ArmFormSchema>>({
     resolver: zodResolver(ArmFormSchema),
   });
+  console.log("userInfo", userInfo);
+
 
   async function onSubmit({ aim }: z.infer<typeof ArmFormSchema>) {
     try {
@@ -166,6 +169,8 @@ export const CreateYearGroup = ({ userInfo, setShowYearGroupDialog }) => {
 
 export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
   const [createSubject, { isLoading }] = useCreateSubjectMutation();
+  const { data: account } = useGetAccountByIdQuery(userInfo?.accountId);
+  console.log("account", account);
   const form = useForm<z.infer<typeof SubjectFormSchema>>({
     resolver: zodResolver(SubjectFormSchema),
   });
@@ -209,19 +214,66 @@ export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="Mathematics">Mathematics</SelectItem>
-                  <SelectItem value="English">English</SelectItem>
-                  <SelectItem value="Commerce">Commerce</SelectItem>
-                  <SelectItem value="Government">Government</SelectItem>
-                  <SelectItem value="Economics">Economics</SelectItem>
-                  <SelectItem value="Social Science">Social Science</SelectItem>
-                  <SelectItem value="Geography">Geography</SelectItem>
-                  <SelectItem value="Biology">Biology</SelectItem>
+                  {
+                    account?.country === "Nigeria" && (
+                      <>
+                        <SelectItem value="Accounting">Accounting</SelectItem>
+                        <SelectItem value="Agriculture science">
+                          Agriculture science
+                        </SelectItem>
+                        <SelectItem value="Biology">Biology</SelectItem>
+                        <SelectItem value="Business studies and commerce">
+                          Business studies and commerce
+                        </SelectItem>
+                        <SelectItem value="Chemistry">Chemistry</SelectItem>
+                        <SelectItem value="Christian religious knowledge">
+                          Christian religious knowledge
+                        </SelectItem>
+                        <SelectItem value="Civic education">
+                          Civic education
+                        </SelectItem>
+                        <SelectItem value="Economics">Economics</SelectItem>
+                        <SelectItem value="Engineering">Engineering</SelectItem>
+                        <SelectItem value="English">English</SelectItem>
+                        <SelectItem value="Further mathematics">
+                          Further mathematics
+                        </SelectItem>
+                        <SelectItem value="Geography">Geography</SelectItem>
+                        <SelectItem value="Government and politics">
+                          Government and politics
+                        </SelectItem>
+                        <SelectItem value="History">History</SelectItem>
+                        <SelectItem value="Islamic religious knowledge">
+                          Islamic religious knowledge
+                        </SelectItem>
+                        <SelectItem value="Mathematics">Mathematics</SelectItem>
+                        <SelectItem value="Physics">Physics</SelectItem>
+                        <SelectItem value="Science">Science</SelectItem>
+                        <SelectItem value="Technology">Technology</SelectItem>
+                      </>
+                    )
+                  }
+                  {
+                    account?.country === "United Kingdom" && (
+                      <>
+                        <SelectItem value="Biology">Biology</SelectItem>
+                        <SelectItem value="Chemistry">Chemistry</SelectItem>
+                        <SelectItem value="Economics">Economics</SelectItem>
+                        <SelectItem value="Further mathematics">
+                          Further mathematics
+                        </SelectItem>
+                        <SelectItem value="Mathematics">Mathematics</SelectItem>
+                        <SelectItem value="Physics">Physics</SelectItem>
+                        <SelectItem value="Science">Science</SelectItem>
+                      </>
+                    )
+                  }
+                  {/* <SelectItem value="Biology">Biology</SelectItem>
                   <SelectItem value="Chemistry">Chemistry</SelectItem>
                   <SelectItem value="Physics">Physics</SelectItem>
                   <SelectItem value="Further Mathematics">
                     Further Mathematics
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectContent>
               </Select>
               <FormMessage />

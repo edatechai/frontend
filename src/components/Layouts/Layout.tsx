@@ -10,6 +10,7 @@ import {
   BookOpen,
   Settings,
   File,
+  Key,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -125,6 +126,13 @@ export function Layout() {
           href: `/org-admin/org-settings`,
           icon: <Settings className="h-4 w-4" />,
           iconMobile: <Settings className="h-5 w-5" />,
+        },
+        {
+          id: 4,
+          name: "Active Licenses",
+          href: `/org-admin/active-licenses`,
+          icon: <Key className="h-4 w-4" />,
+          iconMobile: <Key className="h-5 w-5" />,
         },
       ]);
     }

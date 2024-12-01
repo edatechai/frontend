@@ -48,30 +48,38 @@ const Index = (props) => {
   const [quizResultId, setQuizResultId] = useState();
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [doneAnalysing, setDoneAnalysing] = useState(false);
-  let score = "";
+  const [realQuiz, setRealQuiz] = useState(null);
+  let score: any;
 
-  const data = props?.data?.data;
+  let ldata = props?.data?.data;
 
   const [quizRandomSelect] = useQuizRandomSelectMutation();
   const [updateQuizResult] = useUpdateQuizResultMutation();
+  let data: any;
 
   const getQuiz = async () => {
-    if (data) {
+    if (ldata) {
       const payload = {
-        objCode: data?.objCode,
-        numberOfQuestions: data?.numberOfQuestions,
+        objCode: ldata?.objCode,
+        numberOfQuestions: ldata?.numberOfQuestions,
       };
       const res = await quizRandomSelect(payload);
       console.log("me", res);
+      ldata = res?.data;
       if (res.data?.length > 0) {
+        
         setCurrentQuiz(res?.data[0]);
+       
       }
     }
   };
 
+
+  
+
   useEffect(() => {
     getQuiz();
-  }, [data]);
+  }, [ldata]);
 
   const handleAnswerSelect = (answer) => {
     // console.log(isQuizCompleted)
@@ -88,6 +96,8 @@ const Index = (props) => {
   // };
 
   const handleNextQuestion = () => {
+    //console.log("this iscurrentQuiz", currentQuiz);
+   
     const isCorrect =
       selectedAnswer.toLowerCase() === currentQuiz?.answer.toLowerCase();
 
@@ -134,9 +144,9 @@ const Index = (props) => {
       setCorrectAnswers(correctAnswers + 1);
     }
     setSelectedAnswer("");
-    if (currentIndex < data.questionsAndAnswers.length - 1) {
+    if (currentIndex < data?.length - 1) {
       setCurrentIndex(currentIndex + 1);
-      setCurrentQuiz(data.questionsAndAnswers[currentIndex + 1]);
+      setCurrentQuiz(data[currentIndex + 1]);
     } else {
       setShowGrade(true);
       setIsQuizCompleted(true);
@@ -147,7 +157,7 @@ const Index = (props) => {
     setCorrectAnswers(0);
     setSelectedAnswer("");
     setCurrentIndex(0);
-    setCurrentQuiz(data.questionsAndAnswers[0]);
+    setCurrentQuiz(data[0]);
     setShowGrade(false);
     setQuizResults([]);
     getQuiz();
@@ -433,24 +443,26 @@ const Index = (props) => {
         userInfo,
         quizResults,
         scorePercentage: score,
-        classId: data?.classId,
-        classRoomName: data?.classRoomName,
-        topic: data?.topic,
-        objCode: data?.objCode,
-        category: data?.category,
-        accountId: data?.accountId,
+        classId: ldata?.classId,
+        classRoomName: ldata?.classRoomName,
+        topic: ldata?.topic,
+        objCode: ldata?.objCode,
+        category: ldata?.category,
+        accountId: ldata?.accountId,
         userId: userInfo?._id,
-        objective: data?.objective,
-        subject: data?.subject,
+        objective: ldata?.objective,
+        subject: ldata?.subject,
       };
+      console.log("done", payload);
       handleQuizResult(payload);
     }
   }, [isQuizCompleted]);
 
   const Grade = () => {
-    const scorePercentage =
-      (correctAnswers / data?.questionsAndAnswers.length) * 100;
+    console.log("correctAnswers", correctAnswers, ldata?.numberOfQuestions);
+    const scorePercentage = (correctAnswers / parseInt(ldata?.numberOfQuestions)) * 100;
     score = scorePercentage;
+    console.log("score", score);
     //setNewScore(scorePercentage)
     const handleNextPage = () => {
       if (currentPage < Math.ceil(analyzedData.length / itemsPerPage) - 1) {
@@ -546,7 +558,7 @@ const Index = (props) => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink>
-                <Link to={`/student/classrooms/${data.classId}`}>Quizzes</Link>
+                <Link to={`/student/classrooms/${ldata.classId}`}>Quizzes</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

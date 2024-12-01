@@ -38,6 +38,7 @@ import Strengths from "./pages/Parent/Strengths";
 import StudentsReport from "./pages/Teacher/Report";
 import ClassReport from "./components/teacher/classReport";
 import Classrooms from "./pages/Org/classrooms";
+import ActiveLicenses from "./pages/Org/ActiveLicenses";
 // import store from "./app/store";
 
 const App = () => {
@@ -112,6 +113,7 @@ const App = () => {
             <Route path="/org-admin/classrooms" element={<OrgSettings />} />
             <Route path="/org-admin/under-development" element={<UnderDev />} />
             <Route path="/org-admin/class-room" element={<ClassRoom />} />
+            <Route path="/org-admin/active-licenses" element={<ActiveLicenses />} />
           </Route>
 
           {/* Student layout */}

@@ -88,11 +88,7 @@ export const LoginForm = () => {
           <span className="text-red-400 text-xs">
             <i>{errors?.password?.message}</i>
           </span>
-          <div className="w-full text-right">
-            <p className="underline underline-offset-4 hover:text-primary text-xs">
-              Forgot Password?
-            </p>
-          </div>
+          
         </div>
         <Button disabled={isLoading}>
           {isLoading && (

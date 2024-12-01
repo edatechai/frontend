@@ -113,6 +113,7 @@ export type org = {
     email: string;
     fullName?: string;
     role?: string;
+    username?: string;
   }[];
 };
 
@@ -405,8 +406,13 @@ export const licenseColumns: ColumnDef<licenses>[] = [
     header: "Parent License",
   },
   {
-    accessorKey: "licenseLimit",
-    header: "License Limit",
+    accessorKey: "username",
+    header: "Username",
+    cell: ({ row }) => {
+      if (!row.original.username) {
+        return <span>Not assigned</span>;
+      } else return <span>{row.original.username}</span>;
+    }
   },
   {
     accessorKey: "fullName",
@@ -452,6 +458,19 @@ export const licenseColumns: ColumnDef<licenses>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
+
+            {license.username && (
+            <DropdownMenuItem
+              onClick={() => {
+                navigator.clipboard.writeText(license.username);
+                toast("Username copied!");
+              }}
+            >
+              Copy username
+            </DropdownMenuItem>
+            )}
+
+
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(license.licenseCode);
@@ -460,6 +479,7 @@ export const licenseColumns: ColumnDef<licenses>[] = [
             >
               Copy license code
             </DropdownMenuItem>
+
             <DropdownMenuItem
               onClick={() => {
                 navigator.clipboard.writeText(license.parentLicense);

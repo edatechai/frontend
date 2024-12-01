@@ -14,7 +14,8 @@ export const RegisterSchema = z
     username: z
       .string()
       .min(4, { message: "Can not be less than 4 characters" })
-      .max(20, { message: "Can not be more than 20 characters" }),
+      .max(20, { message: "Can not be more than 20 characters" })
+      .optional(),
     password: z
       .string()
       .min(8, { message: "Can not be less than 8 characters" })
@@ -31,7 +32,10 @@ export const RegisterSchema = z
     // }),
     email: z
       .string()
-      .email({ message: "Please input a valid email address" }),
+      .email({ message: "Please input a valid email address" })
+      .optional(),
+
+      
       
     role: z
       .string()
@@ -51,7 +55,7 @@ export const RegisterSchema = z
     license: z
       .string()
       .min(2, { message: "Can not be less than 2 characters" })
-      .max(20, { message: "Can not be more than 20 characters" }),
+      .max(50, { message: "Can not be more than 50 characters" }),
   })
   .superRefine(({ confirmPassword, password }, ctx) => {
     if (confirmPassword !== password) {

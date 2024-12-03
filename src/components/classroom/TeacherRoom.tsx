@@ -63,6 +63,17 @@ const TeacherRoom = () => {
   const [selectedObjective, setSelectedObjective] = useState(null);
   const [followUp, setFollowUp] = useState("");
 
+  const checkIfExceededLimit = async () => {
+    const monthlyLimit = state?.data?.monthlyRequestCount
+    console.log("this is monthly limit", monthlyLimit)
+    if(monthlyLimit >= 1){
+      toast.error("You have exceeded your monthly limit try again next month")
+    }else{
+      setOpenExamTypeDialog(true);
+      setOpenDropdown(false);
+    }
+  }
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -274,10 +285,11 @@ const TeacherRoom = () => {
               >
                 Multiple choice questions
               </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => {
-                  setOpenExamTypeDialog(true);
-                  setOpenDropdown(false);
+                  checkIfExceededLimit()
+                 
                 }}
               >
                 Exam styled questions

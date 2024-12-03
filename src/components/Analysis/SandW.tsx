@@ -199,15 +199,26 @@ export function SandW({ classId, clas }: { classId: string }) {
             <CardDescription>2024</CardDescription>
           </CardHeader>
           <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto">
-            <ChartContainer config={chartConfig}>
-              <BarChart accessibilityLayer data={chartDatas}>
+            <ChartContainer config={chartConfig} className="min-w-[600px]">
+              <BarChart 
+                accessibilityLayer 
+                data={chartDatas}
+                width={600}
+                height={300}
+              >
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="name"
                   tickLine={false}
-                  tickMargin={10}
+                  tickMargin={0}
                   axisLine={false}
-                  // tickFormatter={(value) => value.slice(0, 3)}
+                  tickFormatter={(value) => value}
+                  interval={0}
+                  
+                  
+                 
+                  width={300}
+
                 />
                 <ChartTooltip
                   cursor={false}
@@ -235,44 +246,9 @@ export function SandW({ classId, clas }: { classId: string }) {
               </BarChart>
             </ChartContainer>
           </CardContent>
-          {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-            <div className="flex gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </CardFooter> */}
+        
         </Card>
-        {/* <Card>
-          <CardHeader className="items-center pb-4">
-            <CardTitle>Radar Chart</CardTitle>
-            <CardDescription>2024</CardDescription>
-          </CardHeader>
-          <CardContent className="w-[calc(100vw-32px)] md:w-[calc(100vw-252px)] lg:w-[calc((100vw-364px)/2)] overflow-x-auto p-0">
-            <ChartContainer
-              config={chartConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <RadarChart data={chartDatas}>
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="line" />}
-                />
-                <PolarAngleAxis dataKey="name" />
-                <PolarGrid />
-                <Legend />
-                <Radar
-                  dataKey="country"
-                  fill="var(--color-country)"
-                  fillOpacity={0.6}
-                />
-                <Radar dataKey="class" fill="var(--color-class)" />
-                <Radar dataKey="student" fill="var(--color-student)" />
-              </RadarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card> */}
+      
       </div>
     </>
   );

@@ -28,6 +28,7 @@ import {
 import { Link } from "react-router-dom";
 import TextWithLineBreaks from "../others/textWithLineBreaks";
 import { latexToHTML } from "@/lib/utils";
+import Mathlive from "mathlive";
 
 const Index = (props) => {
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -49,9 +50,11 @@ const Index = (props) => {
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [doneAnalysing, setDoneAnalysing] = useState(false);
   const [realQuiz, setRealQuiz] = useState(null);
+  const [newData2, setNewData2] = useState([]);
   let score: any;
 
   let ldata = props?.data?.data;
+  let newdata: any = [];
 
   const [quizRandomSelect] = useQuizRandomSelectMutation();
   const [updateQuizResult] = useUpdateQuizResultMutation();
@@ -66,8 +69,9 @@ const Index = (props) => {
       const res = await quizRandomSelect(payload);
       console.log("me", res);
       ldata = res?.data;
+      
       if (res.data?.length > 0) {
-        
+        setNewData2(res?.data);
         setCurrentQuiz(res?.data[0]);
        
       }
@@ -96,7 +100,9 @@ const Index = (props) => {
   // };
 
   const handleNextQuestion = () => {
-    //console.log("this iscurrentQuiz", currentQuiz);
+    // alert("this is currentQuiz", currentQuiz);
+    console.log("this is newdata", newData2);
+    console.log("selectedAnswer", selectedAnswer);
    
     const isCorrect =
       selectedAnswer.toLowerCase() === currentQuiz?.answer.toLowerCase();
@@ -143,10 +149,10 @@ const Index = (props) => {
     if (isCorrect) {
       setCorrectAnswers(correctAnswers + 1);
     }
-    setSelectedAnswer("");
-    if (currentIndex < data?.length - 1) {
+    // setSelectedAnswer("");
+    if (currentIndex < newData2?.length - 1) {
       setCurrentIndex(currentIndex + 1);
-      setCurrentQuiz(data[currentIndex + 1]);
+      setCurrentQuiz(newData2[currentIndex + 1]);
     } else {
       setShowGrade(true);
       setIsQuizCompleted(true);
@@ -276,8 +282,20 @@ const Index = (props) => {
           <h4
             className="rounded bg-[#EBF0FC] px-4 py-5 font-medium first-letter:uppercase"
             dangerouslySetInnerHTML={{
-              __html: latexToHTML(currentQuiz?.question),
+              __html: currentQuiz?.question?.replaceAll(
+                /\frac.*?\}.*?\}/g,
+                //
+                (match) => {
+                  const m = match.replace(/^\f/, "\\f");
+                  console.log({ mm: m.slice(0), m });
+                  return katex.renderToString(match.replace(/^\f/, "\\f"));
+                }
+              ),
             }}
+            // dangerouslySetInnerHTML={{
+            //   __html: latexToHTML(currentQuiz?.question),
+             
+            // }}
           ></h4>
         )}
         <div>
@@ -723,13 +741,15 @@ const Index = (props) => {
               )}
             </div>
           ))}
-          <Button
-            variant="outline"
-            onClick={handleAnalyzeResult}
-            disabled={isLoading}
-          >
-            {isLoading ? "Analyzing your mistakes ..." : "Analyze Mistake(s)"}
-          </Button>
+          {correctAnswers < ldata?.numberOfQuestions && (
+            <Button
+              variant="outline"
+              onClick={handleAnalyzeResult}
+              disabled={isLoading}
+            >
+              {isLoading ? "Analyzing your mistakes ..." : "Analyze Mistake(s)"}
+            </Button>
+          )}
         </div>
 
         {/* <div className="mt-8 text-black">

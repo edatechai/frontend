@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AITaskSchema } from "@/lib/schema";
 import { z } from "zod";
+import { useNavigate } from "react-router-dom";
 
 const examBoards = [
   "AQA - Assessment and Qualifications Alliance",
@@ -46,6 +47,7 @@ export default function Examstyled({
     resolver: zodResolver(AITaskSchema),
   });
 
+  const navigation = useNavigate()
   console.log({ errors });
 
   const onSubmit = async ({
@@ -82,14 +84,16 @@ export default function Examstyled({
       if (res.ok) {
         openDialog(false);
         toast("Exam task created successfully");
+        alert("Exam task created successfully")
+        window.location.href = "/teacher"
       } else {
         toast.error("Request failed.", {
-          description: "Something went wrong",
+          description: "Something went wrong, please try again",
         });
       }
     } catch (err) {
       toast.error("Request failed.", {
-        description: "Something went wrong",
+        description: "Something went wrong, please try again",
       });
     }
   };

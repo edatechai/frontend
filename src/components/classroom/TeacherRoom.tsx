@@ -41,13 +41,14 @@ import EditQuiz from "../Quiz/multiple-choice/editQuiz";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state: any) => state?.user.userInfo);
   const { data: allObjectives } = useFindAllObjectivesQuery({
-    subject: state.data.subject,
-    country: userInfo.country,
+    subject: state?.data?.subject,
+    country: userInfo?.country,
   });
 
   console.log("this is userInfo", userInfo)
+  console.log("this is class data", state?.data)
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
   // const { data: AllQuiz } = useFindAllQuizQuery();
   // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
@@ -64,11 +65,22 @@ const TeacherRoom = () => {
   const [followUp, setFollowUp] = useState("");
 
   const checkIfExceededLimit = async () => {
-    const monthlyLimit = state?.data?.monthlyRequestCount
-    console.log("this is monthly limit", monthlyLimit)
-    if(monthlyLimit >= 1){
-      toast.error("You have exceeded your monthly limit try again next month")
-    }else{
+    const monthlyLimit = state?.data?.monthlyRequestCount;
+    const lastRequestMonth = state?.data?.lastRequestMonth;
+    const lastRequestYear = state?.data?.lastRequestYear;
+    console.log("this is lastRequestMonth", lastRequestMonth);
+    console.log("this is lastRequestYear", lastRequestYear);
+    console.log("this is monthlyLimit", monthlyLimit);
+
+    const isNewMonth = () => {
+      const currentDate = new Date();
+      return lastRequestMonth !== currentDate.getMonth() + 1 || // Months are 0-indexed in JavaScript
+             lastRequestYear !== currentDate.getFullYear();
+    };
+
+    if (monthlyLimit >= 1 && !isNewMonth()) {
+      toast.error("You have exceeded your monthly limit try again next month");
+    } else {
       setOpenExamTypeDialog(true);
       setOpenDropdown(false);
     }

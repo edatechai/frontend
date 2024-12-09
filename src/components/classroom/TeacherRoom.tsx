@@ -38,6 +38,13 @@ import {
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import EditQuiz from "../Quiz/multiple-choice/editQuiz";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
@@ -63,6 +70,9 @@ const TeacherRoom = () => {
   const [filteredObjectives, setFilteredObjectives] = useState([]);
   const [selectedObjective, setSelectedObjective] = useState(null);
   const [followUp, setFollowUp] = useState("");
+  const [quizDuration, setQuizDuration] = useState("");
+  const [customDuration, setCustomDuration] = useState("");
+  const [isCustomDuration, setIsCustomDuration] = useState(false);
 
   const checkIfExceededLimit = async () => {
     const monthlyLimit = state?.data?.monthlyRequestCount;
@@ -152,6 +162,7 @@ const TeacherRoom = () => {
       followUp,
       teacherId: userInfo?._id,
       teacherName: userInfo?.fullName,
+      quizDuration: isCustomDuration ? customDuration : quizDuration,
     };
 
     const response = await createQuiz(payload);
@@ -198,7 +209,7 @@ const TeacherRoom = () => {
             <DialogTitle>Create Quiz</DialogTitle>
             {/* <DialogDescription className="flex gap-3 pt-5 flex-col">
             </DialogDescription> */}
-            <div className="modal-box w-11/12 max-w-5xl">
+            <div className=" ">
               <div className="mt-4">
                 <Label className="form-control w-full min-w-full">
                   <div className="label mt-4">
@@ -207,12 +218,12 @@ const TeacherRoom = () => {
                     </span>
                   </div>
 
-                  <Label className="input input-bordered flex items-center gap-2 relative">
+                  
                     <Input
                       value={search}
                       onChange={handleSearchChange}
                       type="text"
-                      className="w-full"
+                      className=""
                       placeholder="Search"
                     />
                     {filteredObjectives?.length > 0 && (
@@ -228,14 +239,14 @@ const TeacherRoom = () => {
                         ))}
                       </ul>
                     )}
-                  </Label>
+                 
 
                   <div className="label mt-4">
                     <span className="label-text font-medium">
                       Number of questions
                     </span>
                   </div>
-                  <Label className="input input-bordered flex items-center gap-2">
+                 
                     <Input
                       value={numberOfQuestions}
                       onChange={(e) => setNumberOfQuestions(e.target.value)}
@@ -243,7 +254,63 @@ const TeacherRoom = () => {
                       className="w-full"
                       placeholder="Number of questions"
                     />
-                  </Label>
+
+                    {/* how long is the quiz */}
+                    <div className="label mt-4">
+                      <span className="label-text font-medium">
+                        How long is the quiz in minutes
+                      </span>
+                    </div>
+                    {isCustomDuration ? (
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          value={customDuration}
+                          onChange={(e) => {
+                            setCustomDuration(e.target.value);
+                            setQuizDuration(e.target.value);
+                          }}
+                          placeholder="Enter minutes"
+                          className="w-full"
+                        />
+                        <Button 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsCustomDuration(false);
+                            setCustomDuration("");
+                            setQuizDuration("");
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <Select 
+                        value={quizDuration} 
+                        onValueChange={(value) => {
+                          if (value === 'custom') {
+                            setIsCustomDuration(true);
+                          } else {
+                            setQuizDuration(value);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select duration in minutes" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5 minutes</SelectItem>
+                          <SelectItem value="10">10 minutes</SelectItem>
+                          <SelectItem value="15">15 minutes</SelectItem>
+                          <SelectItem value="20">20 minutes</SelectItem>
+                          <SelectItem value="30">30 minutes</SelectItem>
+                          <SelectItem value="45">45 minutes</SelectItem>
+                          <SelectItem value="60">60 minutes</SelectItem>
+                          <SelectItem value="custom">Custom duration...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                 
 
                   <div className="label mt-4">
                     <span className="label-text font-medium">

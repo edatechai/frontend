@@ -33,6 +33,7 @@ import Mathlive from "mathlive";
 const Index = (props) => {
   const [currentQuiz, setCurrentQuiz] = useState(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [totalDifficultyLevel, setTotalDifficultyLevel] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showGrade, setShowGrade] = useState(false);
@@ -49,6 +50,7 @@ const Index = (props) => {
   const [quizResultId, setQuizResultId] = useState();
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [doneAnalysing, setDoneAnalysing] = useState(false);
+  const [correctDifficultyLevel, setCorrectDifficultyLevel] = useState(0);
   const [realQuiz, setRealQuiz] = useState(null);
   const [newData2, setNewData2] = useState([]);
   let score: any;
@@ -56,21 +58,94 @@ const Index = (props) => {
   let ldata = props?.data?.data;
   let newdata: any = [];
 
+ 
+
   const [quizRandomSelect] = useQuizRandomSelectMutation();
   const [updateQuizResult] = useUpdateQuizResultMutation();
   let data: any;
+
+  const [timeRemaining, setTimeRemaining] = useState(null);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (ldata?.quizDuration && !timeRemaining) {
+      // Convert minutes to milliseconds
+      const durationInMs = ldata.quizDuration * 60 * 1000;
+      setTimeRemaining(durationInMs);
+    }
+   
+  }, [ldata]);
+
+  useEffect(() => {
+    if (timeRemaining && timeRemaining > 0 && !showGrade) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1000) { // Less than 1 second remaining
+            clearInterval(timerRef.current);
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1000;
+        });
+      }, 1000);
+
+      return () => clearInterval(timerRef.current);
+    }
+  }, [timeRemaining, showGrade]);
+
+  const handleTimeUp = () => {
+    // Create results for all unanswered questions
+    const finalResults = newData2?.map((quiz, index) => {
+      // Use existing result if question was answered
+      const existingResult = quizResults[index];
+      if (existingResult) {
+        return existingResult;
+      }
+
+      // Create a new result for unanswered question
+      return {
+        question: quiz.question,
+        selectedAnswer: "",
+        correctAnswer: quiz.answer,
+        correctOption: quiz.answer.toLowerCase() === "a" ? quiz.optionA :
+                      quiz.answer.toLowerCase() === "b" ? quiz.optionB :
+                      quiz.answer.toLowerCase() === "c" ? quiz.optionC :
+                      quiz.answer.toLowerCase() === "d" ? quiz.optionD : "",
+        isCorrect: false,
+        wrongOption: "",
+        difficultyLevel: parseInt(quiz.difficultyLevel) || 0,
+      };
+    });
+
+    // Update quiz results with all questions (answered and unanswered)
+    setQuizResults(finalResults);
+    
+    // Calculate final score based on only answered questions
+    const finalCorrectAnswers = finalResults.filter(result => result.isCorrect).length;
+    setCorrectAnswers(finalCorrectAnswers);
+    
+    // Show the grade view
+    setShowGrade(true);
+    setIsQuizCompleted(true);
+  };
 
   const getQuiz = async () => {
     if (ldata) {
       const payload = {
         objCode: ldata?.objCode,
         numberOfQuestions: ldata?.numberOfQuestions,
+        followUp: ldata?.followUp,
+        quizDuration: ldata?.quizDuration,
       };
       const res = await quizRandomSelect(payload);
       console.log("me", res);
       ldata = res?.data;
       
       if (res.data?.length > 0) {
+        // map the new data to get the difficulty level of each question and sum them together
+        const totalDifficultyLevel = res?.data.reduce((sum, question) => sum + parseInt(question.difficultyLevel), 0);
+        setTotalDifficultyLevel(totalDifficultyLevel);
+        console.log("totalDifficultyLevel", totalDifficultyLevel);
         setNewData2(res?.data);
         setCurrentQuiz(res?.data[0]);
        
@@ -144,15 +219,37 @@ const Index = (props) => {
 
     console.log({ result });
 
-    setQuizResults([...quizResults, result]);
+    // If there's already a result for this question, update it instead of adding new
+    const updatedResults = [...quizResults];
+    if (currentIndex < updatedResults.length) {
+      // Remove previous correct answer count if it was correct
+      if (updatedResults[currentIndex]?.isCorrect) {
+        setCorrectAnswers(correctAnswers - 1);
+      }
+      // Add new correct answer count if current is correct
+      if (isCorrect) {
+        setCorrectAnswers(correctAnswers + 1);
 
-    if (isCorrect) {
-      setCorrectAnswers(correctAnswers + 1);
+        
+      }
+      updatedResults[currentIndex] = result;
+      setQuizResults(updatedResults);
+    } else {
+      // Add new result if we're on a new question
+      setQuizResults([...quizResults, result]);
+      if (isCorrect) {
+        setCorrectAnswers(correctAnswers + 1);
+        setCorrectDifficultyLevel(correctDifficultyLevel + parseInt(newData2[currentIndex].difficultyLevel) || 0 );
+       // setCorrectDifficultyLevel(correctDifficultyLevel + parseInt(newData2[currentIndex + 1].difficultyLevel) || 0 );
+      }
     }
-    // setSelectedAnswer("");
+
     if (currentIndex < newData2?.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setCurrentQuiz(newData2[currentIndex + 1]);
+    
+      
+    
     } else {
       setShowGrade(true);
       setIsQuizCompleted(true);
@@ -274,9 +371,22 @@ const Index = (props) => {
     );
   };
 
+  const handlePreviousQuestion = () => {
+    if (currentIndex > 0) {
+      // Go back to previous question
+      setCurrentIndex(currentIndex - 1);
+      setCurrentQuiz(newData2[currentIndex - 1]);
+      
+      // Set the previously selected answer for this question
+      const previousResult = quizResults[currentIndex - 1];
+      setSelectedAnswer(previousResult?.selectedAnswer || "");
+    }
+  };
+
   const QuizContent = () => {
     return (
       <div className="bg-background rounded-lg md:px-24 p-3 md:pt-14 md:pb-20 space-y-6">
+        <Timer />
         <h3 className="text-2xl font-medium capitalize">{data?.objective}</h3>
         {currentQuiz?.question && (
           <h4
@@ -386,37 +496,19 @@ const Index = (props) => {
             </label>
           </div>
         </div>
-        {/* <div className="flex justify-between">
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowGrade(true)}
-          >
-            Finish quiz
-          </button>
-          <button className="btn btn-primary" onClick={handleNextQuestion}>
-            Next question
-          </button>
-        </div> */}
         <div className="relative md:pt-9">
-          {/* {currentQuestion > 0 && ( */}
-          {/* <Button
+          <Button
             variant="outline"
-            onClick={() => {
-              setCurrentQuiz(data.questionsAndAnswers[currentIndex - 1]);
-              setCurrentIndex(currentIndex - 1);
-            }}
+            onClick={handlePreviousQuestion}
             className="absolute"
             type="button"
-            disabled={currentIndex == 0}
+            disabled={currentIndex === 0}
           >
             Previous
-          </Button> */}
+          </Button>
 
           <Button
             onClick={handleNextQuestion}
-            // disabled={
-            //   !values?.[`question_${currentQuestion}`] || isQuizCompleted
-            // }
             className="absolute right-0"
             type="button"
           >
@@ -428,22 +520,30 @@ const Index = (props) => {
   };
 
   const Timer = () => {
+    if (!timeRemaining && timeRemaining !== 0) return null;
+
+    const minutes = Math.floor(timeRemaining / (60 * 1000));
+    const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
+
+    const getTimerColor = () => {
+      if (timeRemaining <= 60000) { // Last minute
+        return 'text-red-500';
+      } else if (timeRemaining <= 180000) { // Last 3 minutes
+        return 'text-yellow-500';
+      }
+      return 'text-slate-300';
+    };
+
     return (
       <div className="bg-black text-white rounded-lg p-4 w-full mt-10">
         <div className="text-sm font-semibold justify-start text-slate-300">
           Timer
         </div>
-        <div className="text-2xl font-bold text-slate-300">00:59:32</div>
+        <div className={`text-2xl font-bold ${getTimerColor()}`}>
+          {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+        </div>
       </div>
     );
-    // return (
-    //   <div className="bg-black text-white rounded-lg p-4 w-full mt-10">
-    //     <div className="text-sm font-semibold justify-start text-slate-300">Timer</div>
-    //     <div className="text-2xl font-bold text-slate-300">
-    //       {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
-    //     </div>
-    //   </div>
-    // );
   };
 
   const handleQuizResult = async (payload) => {
@@ -478,7 +578,11 @@ const Index = (props) => {
 
   const Grade = () => {
     console.log("correctAnswers", correctAnswers, ldata?.numberOfQuestions);
-    const scorePercentage = (correctAnswers / parseInt(ldata?.numberOfQuestions)) * 100;
+    console.log("totalDifficultyLevel", totalDifficultyLevel);
+    console.log("quizResults", quizResults);
+    console.log("correctDifficultyLevel", correctDifficultyLevel);
+    const scorePercentage = (((correctAnswers + correctDifficultyLevel) / totalDifficultyLevel) * 100).toFixed(2);
+    console.log("scorePercentage", scorePercentage);
     score = scorePercentage;
     console.log("score", score);
     //setNewScore(scorePercentage)
@@ -592,8 +696,8 @@ const Index = (props) => {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                You got {correctAnswers} out of{" "}
-                {data?.questionsAndAnswers.length} correct.
+               
+                {data?.questionsAndAnswers.length} 
               </DialogTitle>
               <DialogDescription className="flex gap-3 pt-5 items-center">
                 <div className="">Score: </div>
@@ -770,6 +874,14 @@ const Index = (props) => {
       </div>
     );
   };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className={`flex ${isLoading ? "blur-lg" : ""}`}>

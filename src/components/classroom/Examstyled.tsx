@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AITaskSchema } from "@/lib/schema";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const examBoards = [
   "AQA - Assessment and Qualifications Alliance",
@@ -50,11 +51,14 @@ export default function Examstyled({
   const navigation = useNavigate()
   console.log({ errors });
 
+  const [customDuration, setCustomDuration] = useState(false);
+
   const onSubmit = async ({
     exam_board,
     estimated_time: exam_length,
     total_questions: num_questions,
     total_score: total_marks,
+   
   }: z.infer<typeof AITaskSchema>) => {
     const payload = {
       class_id: classId,
@@ -133,11 +137,39 @@ export default function Examstyled({
 
             <Label>
               Estimated Time (In Minutes)
-              <Input
-                type="text"
+              <select
+                className="w-full h-14 mt-1 border-border bg-transparent border-solid border rounded-md pl-[10px] pr-8"
                 {...register("estimated_time")}
-                className="mt-1"
-              />
+                onChange={(e) => {
+                  if (e.target.value === "custom") {
+                    setCustomDuration(true);
+                  } else {
+                    setCustomDuration(false);
+                    register("estimated_time").onChange(e);
+                  }
+                }}
+              >
+                <option value="">--Select Duration--</option>
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="90">1 hour 30 minutes</option>
+                <option value="120">2 hours</option>
+                <option value="150">2 hours 30 minutes</option>
+                <option value="180">3 hours</option>
+                <option value="custom">Custom Duration</option>
+              </select>
+              
+              {customDuration && (
+                <Input
+                  type="number"
+                  placeholder="Enter duration in minutes"
+                  className="mt-2"
+                  {...register("estimated_time")}
+                />
+              )}
+              
               <i className="text-red-400 text-xs block">
                 {errors?.estimated_time?.message}
               </i>

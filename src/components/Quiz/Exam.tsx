@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { toast } from "sonner";
 import katex from "katex";
 import { FaSpinner } from "react-icons/fa";
@@ -24,6 +24,46 @@ function Theory({ exam }: { exam: ExamQuestions }) {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [score, setScore] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [timeLeft, setTimeLeft] = useState<number>(exam?.exam_question?.exam_length * 60);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      handleSubmit(new Event('submit') as FormEvent<HTMLFormElement>);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  useEffect(() => {
+    // Add visibility change handler
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handleSubmit(new Event('submit') as FormEvent);
+        toast("Exam auto-submitted due to tab switch", {
+          description: "Switching tabs during an exam is not allowed",
+        });
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []); // Empty dependency array since we want this to run once
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   function closeDialog(x: boolean) {
     if (!x) {
@@ -32,19 +72,29 @@ function Theory({ exam }: { exam: ExamQuestions }) {
     }
   }
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement> | FormEvent) => {
     e.preventDefault();
+    
+    if (isLoading) return;
+    
     setIsLoading(true);
 
-    // Get all math-field elements from the form
-    const mathFields = Array.from(e.target.querySelectorAll('math-field')) as MathfieldElement[];
+    // Get all math-field elements from the document instead of the form
+    const mathFields = Array.from(document.querySelectorAll('math-field')) as MathfieldElement[];
     
-    // Get their LaTeX values
-    const answers = mathFields.map(field => field.value);   
+    // If no math fields found, handle the error gracefully
+    if (!mathFields.length) {
+      setIsLoading(false);
+      toast("No answers found to submit", {
+        style: { color: "red" },
+      });
+      return;
+    }
 
-    // const answers = Object.values(
-    //   Object.fromEntries(new FormData(e.target as HTMLFormElement).entries())
-    // );
+    // Get their LaTeX values
+    const answers = mathFields.map(field => field.value);
 
     const prepend = answers.map(
       (val, i) =>
@@ -99,7 +149,11 @@ function Theory({ exam }: { exam: ExamQuestions }) {
   };
 
   return (
-    <div className="my-8 w-full">
+    <div className="my-8  mt-10 mb-10">
+      <div className="mb-10 top-4 right-4 bg-black text-white px-4 py-2 rounded-md font-bold w-fit ml-auto">
+        Time Remaining: {formatTime(timeLeft)}
+      </div>
+
       {!!score && (
         <Dialog open={!!score} onOpenChange={closeDialog}>
           <DialogContent className="h-[90vh] overflow-y-auto">

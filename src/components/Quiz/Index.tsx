@@ -576,12 +576,14 @@ const Index = (props) => {
     }
   }, [isQuizCompleted]);
 
+  console.log('this is the correct dfL', correctDifficultyLevel, correctAnswers, totalDifficultyLevel)
+
   const Grade = () => {
     console.log("correctAnswers", correctAnswers, ldata?.numberOfQuestions);
     console.log("totalDifficultyLevel", totalDifficultyLevel);
     console.log("quizResults", quizResults);
     console.log("correctDifficultyLevel", correctDifficultyLevel);
-    const scorePercentage = (((correctAnswers + correctDifficultyLevel) / totalDifficultyLevel) * 100).toFixed(2);
+    const scorePercentage = ((correctDifficultyLevel / totalDifficultyLevel) * 100).toFixed(2);
     console.log("scorePercentage", scorePercentage);
     score = scorePercentage;
     console.log("score", score);

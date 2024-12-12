@@ -27,7 +27,11 @@ export const LoginForm = () => {
 
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
-      const response = await Login(data);
+      const trimmedData = {
+        loginIdentifier: data.loginIdentifier.trim(),
+        password: data.password.trim()
+      };
+      const response = await Login(trimmedData);
       if (response.error) {
         toast.error("Login failed", {
           description: response?.error?.data?.message,

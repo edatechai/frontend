@@ -48,8 +48,16 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
   async function onSubmit(body: z.infer<typeof RegisterSchema>) {
     console.log("body", body)
     try {
+      const trimmedData = {
+        ...body,
+        fullName: body.fullName.trim(),
+        email: body.email?.trim(),  // Optional chaining since email is conditional
+        password: body.password.trim(),
+        confirmPassword: body.confirmPassword.trim(),
+        license: body.license.trim()
+      };
 
-      const response = await CreateUser(body);
+      const response = await CreateUser(trimmedData);
       if (response.error) {
         toast.error("Registration failed", {
           description: response?.error?.data?.message,

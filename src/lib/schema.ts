@@ -56,6 +56,9 @@ export const RegisterSchema = z
       .string()
       .min(2, { message: "Can not be less than 2 characters" })
       .max(50, { message: "Can not be more than 50 characters" }),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
   })
   .superRefine(({ confirmPassword, password }, ctx) => {
     if (confirmPassword !== password) {

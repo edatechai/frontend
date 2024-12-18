@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TbCurrencyNaira } from 'react-icons/tb';
 //import Cardone from '../components/cards/cardone';
 import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation } from '../../features/api/apiSlice';
-
+import countryList from "react-select-country-list";
 const LicenseModal = ({ isVisible, onClose, license }) => {
   console.log("this is data ", license);
   if (!isVisible) return null;
@@ -140,6 +140,7 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
 
 
 const Index = () => {
+  const options = useMemo(() => countryList().getData(), []);
   const [accountName, SetAccountName] = useState('');
   const [contactFullName, setContactFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -147,6 +148,7 @@ const Index = () => {
   const [category, setCategory] = useState('');
   const [numberOfLicense, setNumberOfLicense] = useState('');
   const [licenseStatus, setLicenseStatus] = useState('active');
+  const [country, setCountry] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -179,7 +181,11 @@ const Index = () => {
       category,
       numberOfLicense,
       licenseStatus,
+      country: country?.label,
+      countryCode: country?.value
     };
+
+    console.log("this is the country", payload);
 
     try {
       const response = await createAccount(payload);
@@ -471,6 +477,24 @@ const Index = () => {
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>
+
+                <div className="mt-4">
+                <div className="text-md font-sm py-2">Counrtry</div>
+                <select
+                  onChange={(e) =>
+                    setCountry(
+                      options.find((country) => country.value == e.target.value)
+                    )
+                  }
+                  className="select select-bordered w-full min-w-full"
+                >
+                  {options.map((val) => (
+                    <option value={val.value} key={val.value}>
+                      {val.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
                 <div className='mt-4'>
                   <button

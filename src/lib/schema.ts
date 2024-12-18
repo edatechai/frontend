@@ -5,70 +5,31 @@ export const LoginSchema = z.object({
   password: z.string(),
 });
 
-export const RegisterSchema = z
-  .object({
-    fullName: z
-      .string()
-      .min(4, { message: "Can not be less than 4 characters" })
-      .max(40, { message: "Can not be more than 40 characters" }),
-    username: z
-      .string()
-      .min(4, { message: "Can not be less than 4 characters" })
-      .max(20, { message: "Can not be more than 20 characters" })
-      .optional(),
-    password: z
-      .string()
-      .min(8, { message: "Can not be less than 8 characters" })
-      .max(20, { message: "Can not be more than 20 characters" }),
-    //   .regex(new RegExp(/^(?=.*[a-zA-Z0-9])(?=.*[^a-zA-Z0-9]).{8,}$/), {
-    //     message: "Must include alphanumeric and non-alphanumeric characters",
-    //   }),
-    confirmPassword: z
-      .string()
-      .min(8, { message: "Can not be less than 8 characters" })
-      .max(20, { message: "Can not be more than 20 characters" }),
-    // .regex(new RegExp(/^(?=.*[a-zA-Z0-9])(?=.*[^a-zA-Z0-9]).{8,}$/), {
-    //   message: "Must include alphanumeric and non-alphanumeric characters",
-    // }),
-    email: z
-      .string()
-      .email({ message: "Please input a valid email address" })
-      .optional(),
-
-      
-      
-    role: z
-      .string()
-      .min(2, { message: "Select the gender" })
-      .max(30, { message: "Too long!" }),
-    dob: z.date({
-      required_error: "A date of birth is required.",
-    }),
-    gender: z.string({
-      required_error: "Gender is required.",
-    }),
-    country: z.string({
-      required_error: "Country is required.",
-    }),
-    neurodiversity: z.string().optional(),
-
-    license: z
-      .string()
-      .min(2, { message: "Can not be less than 2 characters" })
-      .max(50, { message: "Can not be more than 50 characters" }),
-    terms: z.boolean().refine((val) => val === true, {
-      message: "You must accept the terms and conditions",
-    }),
-  })
-  .superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
-      ctx.addIssue({
-        code: "custom",
-        message: "The passwords do not match",
-        path: ["confirmPassword"],
-      });
-    }
-  });
+export const RegisterSchema = z.object({
+  fullName: z.string().min(1, "Full Name is required"),
+  role: z.enum(["teacher", "student", "parent"]),
+  email: z.string().email().optional(),
+  gender: z.enum(["Male", "Female"]),
+  country: z.string(),
+  neurodiversity: z.string().optional(),
+  dob: z.date().optional(),
+  ageRange: z.string().optional(),
+  license: z.string().min(10, "License key must be at least 10 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+  terms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms and conditions",
+  }),
+}).refine((data) => {
+  if (data.role === "student") {
+    return data.dob !== undefined;
+  } else {
+    return data.ageRange !== undefined;
+  }
+}, {
+  path: ["dob", "ageRange"],
+  message: "Required field based on role",
+});
 
 export const EditPasswordSchema = z
   .object({

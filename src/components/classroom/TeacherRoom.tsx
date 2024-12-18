@@ -73,6 +73,8 @@ const TeacherRoom = () => {
   const [quizDuration, setQuizDuration] = useState("");
   const [customDuration, setCustomDuration] = useState("");
   const [isCustomDuration, setIsCustomDuration] = useState(false);
+  const [quizStart, setQuizStart] = useState("");
+  const [quizEnd, setQuizEnd] = useState("");
 
   const checkIfExceededLimit = async () => {
     const monthlyLimit = state?.data?.monthlyRequestCount;
@@ -163,6 +165,8 @@ const TeacherRoom = () => {
       teacherId: userInfo?._id,
       teacherName: userInfo?.fullName,
       quizDuration: isCustomDuration ? customDuration : quizDuration,
+      scheduledDate: quizStart ? quizStart : null,
+      quizEnd,
     };
 
     const response = await createQuiz(payload);
@@ -310,6 +314,25 @@ const TeacherRoom = () => {
                         </SelectContent>
                       </Select>
                     )}
+
+
+
+              {/* Scheduled Inputs */}
+              <div className="mt-4">
+                <Label className="form-control w-full min-w-full">
+                  <div className="label mt-4">
+                    <span className="label-text font-medium">
+                      Do you want to schedule this quiz for a later date and time?
+                    </span>
+                  </div>
+                  <Input
+                    type="datetime-local"
+                    value={quizStart}
+                    onChange={(e) => setQuizStart(e.target.value)}
+                    className="w-full"
+                  />
+                </Label>
+              </div>
                  
 
                   <div className="label mt-4">
@@ -325,6 +348,10 @@ const TeacherRoom = () => {
                   ></textarea>
                 </Label>
               </div>
+
+
+              
+
               <Button
                 onClick={handleSubmit}
                 className="mt-4 w-full"

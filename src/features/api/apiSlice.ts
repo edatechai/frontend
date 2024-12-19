@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+
 const getToken = () => {
   const token = localStorage.getItem("Token");
   if (!token) {
@@ -7,6 +8,7 @@ const getToken = () => {
   }
   return token;
 };
+
 
 // Define our single API slice object
 //https://edatbackend.azurewebsites.net/
@@ -20,7 +22,7 @@ export const apiSlice = createApi({
     //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    baseUrl: "https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net",
+    baseUrl: "https://server.edatech.io",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {

@@ -76,6 +76,23 @@ const TeacherRoom = () => {
   const [quizStart, setQuizStart] = useState("");
   const [quizEnd, setQuizEnd] = useState("");
 
+  // Ref for the dropdown list
+  const dropdownRef = useRef<HTMLUListElement>(null);
+
+  // Handler to scroll the dropdown list up
+  const scrollUp = () => {
+    if (dropdownRef.current) {
+      dropdownRef.current.scrollBy({ top: -40, behavior: "smooth" });
+    }
+  };
+
+  // Handler to scroll the dropdown list down
+  const scrollDown = () => {
+    if (dropdownRef.current) {
+      dropdownRef.current.scrollBy({ top: 40, behavior: "smooth" });
+    }
+  };
+
   const checkIfExceededLimit = async () => {
     const monthlyLimit = state?.data?.monthlyRequestCount;
     const lastRequestMonth = state?.data?.lastRequestMonth;
@@ -222,7 +239,7 @@ const TeacherRoom = () => {
                     </span>
                   </div>
 
-                  
+                  <div className="relative">
                     <Input
                       value={search}
                       onChange={handleSearchChange}
@@ -231,109 +248,131 @@ const TeacherRoom = () => {
                       placeholder="Search"
                     />
                     {filteredObjectives?.length > 0 && (
-                      <ul className="absolute left-0 top-full bg-white border border-gray-300 w-full  overflow-y-auto">
-                        {filteredObjectives.map((objective, index) => (
-                          <li
-                            key={index}
-                            className="p-4 cursor-pointer first-letter:capitalize hover:bg-gray-100"
-                            onClick={() => handleObjectiveSelect(objective)}
-                          >
-                            {objective?.objective}
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="absolute left-0 top-full bg-white border border-gray-300 w-full overflow-hidden z-10">
+                        {/* Scroll Up Button */}
+                        <button
+                          type="button"
+                          onClick={scrollUp}
+                          className="w-full text-center py-1 bg-gray-200 hover:bg-gray-300"
+                          aria-label="Scroll Up"
+                        >
+                          ▲
+                        </button>
+
+                        {/* Dropdown List */}
+                        <ul
+                          ref={dropdownRef}
+                          className="max-h-60 overflow-y-auto"
+                        >
+                          {filteredObjectives.map((objective, index) => (
+                            <li
+                              key={index}
+                              className="p-4 cursor-pointer first-letter:capitalize hover:bg-gray-100"
+                              onClick={() => handleObjectiveSelect(objective)}
+                            >
+                              {objective?.objective}
+                            </li>
+                          ))}
+                        </ul>
+
+                        {/* Scroll Down Button */}
+                        <button
+                          type="button"
+                          onClick={scrollDown}
+                          className="w-full text-center py-1 bg-gray-200 hover:bg-gray-300"
+                          aria-label="Scroll Down"
+                        >
+                          ▼
+                        </button>
+                      </div>
                     )}
-                 
+                  </div>
 
                   <div className="label mt-4">
                     <span className="label-text font-medium">
                       Number of questions
                     </span>
                   </div>
-                 
-                    <Input
-                      value={numberOfQuestions}
-                      onChange={(e) => setNumberOfQuestions(e.target.value)}
-                      type="text"
-                      className="w-full"
-                      placeholder="Number of questions"
-                    />
+                  <Input
+                    value={numberOfQuestions}
+                    onChange={(e) => setNumberOfQuestions(e.target.value)}
+                    type="text"
+                    className="w-full"
+                    placeholder="Number of questions"
+                  />
 
-                    {/* how long is the quiz */}
-                    <div className="label mt-4">
-                      <span className="label-text font-medium">
-                        How long is the quiz in minutes
-                      </span>
-                    </div>
-                    {isCustomDuration ? (
-                      <div className="flex gap-2">
-                        <Input
-                          type="number"
-                          value={customDuration}
-                          onChange={(e) => {
-                            setCustomDuration(e.target.value);
-                            setQuizDuration(e.target.value);
-                          }}
-                          placeholder="Enter minutes"
-                          className="w-full"
-                        />
-                        <Button 
-                          variant="outline" 
-                          onClick={() => {
-                            setIsCustomDuration(false);
-                            setCustomDuration("");
-                            setQuizDuration("");
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <Select 
-                        value={quizDuration} 
-                        onValueChange={(value) => {
-                          if (value === 'custom') {
-                            setIsCustomDuration(true);
-                          } else {
-                            setQuizDuration(value);
-                          }
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select duration in minutes" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="5">5 minutes</SelectItem>
-                          <SelectItem value="10">10 minutes</SelectItem>
-                          <SelectItem value="15">15 minutes</SelectItem>
-                          <SelectItem value="20">20 minutes</SelectItem>
-                          <SelectItem value="30">30 minutes</SelectItem>
-                          <SelectItem value="45">45 minutes</SelectItem>
-                          <SelectItem value="60">60 minutes</SelectItem>
-                          <SelectItem value="custom">Custom duration...</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-
-
-
-              {/* Scheduled Inputs */}
-              <div className="mt-4">
-                <Label className="form-control w-full min-w-full">
+                  {/* how long is the quiz */}
                   <div className="label mt-4">
                     <span className="label-text font-medium">
-                      Do you want to schedule this quiz for a later date and time?
+                      How long is the quiz in minutes
                     </span>
                   </div>
-                  <Input
-                    type="datetime-local"
-                    value={quizStart}
-                    onChange={(e) => setQuizStart(e.target.value)}
-                    className="w-full"
-                  />
-                </Label>
-              </div>
-                 
+                  {isCustomDuration ? (
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        value={customDuration}
+                        onChange={(e) => {
+                          setCustomDuration(e.target.value);
+                          setQuizDuration(e.target.value);
+                        }}
+                        placeholder="Enter minutes"
+                        className="w-full"
+                      />
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsCustomDuration(false);
+                          setCustomDuration("");
+                          setQuizDuration("");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <Select 
+                      value={quizDuration} 
+                      onValueChange={(value) => {
+                        if (value === 'custom') {
+                          setIsCustomDuration(true);
+                        } else {
+                          setQuizDuration(value);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select duration in minutes" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5 minutes</SelectItem>
+                        <SelectItem value="10">10 minutes</SelectItem>
+                        <SelectItem value="15">15 minutes</SelectItem>
+                        <SelectItem value="20">20 minutes</SelectItem>
+                        <SelectItem value="30">30 minutes</SelectItem>
+                        <SelectItem value="45">45 minutes</SelectItem>
+                        <SelectItem value="60">60 minutes</SelectItem>
+                        <SelectItem value="custom">Custom duration...</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {/* Scheduled Inputs */}
+                  <div className="mt-4">
+                    <Label className="form-control w-full min-w-full">
+                      <div className="label mt-4">
+                        <span className="label-text font-medium">
+                          Do you want to schedule this quiz for a later date and time?
+                        </span>
+                      </div>
+                      <Input
+                        type="datetime-local"
+                        value={quizStart}
+                        onChange={(e) => setQuizStart(e.target.value)}
+                        className="w-full"
+                      />
+                    </Label>
+                  </div>
 
                   <div className="label mt-4">
                     <span className="label-text font-medium">
@@ -348,9 +387,6 @@ const TeacherRoom = () => {
                   ></textarea>
                 </Label>
               </div>
-
-
-              
 
               <Button
                 onClick={handleSubmit}

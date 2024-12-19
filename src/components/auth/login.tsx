@@ -28,8 +28,8 @@ export const LoginForm = () => {
   async function onSubmit(data: z.infer<typeof LoginSchema>) {
     try {
       const trimmedData = {
-        loginIdentifier: data.loginIdentifier.trim(),
-        password: data.password.trim()
+        loginIdentifier: data.loginIdentifier.trim().toLowerCase(),
+        password: data.password.trim(),
       };
       const response = await Login(trimmedData);
       if (response.error) {

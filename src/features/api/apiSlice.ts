@@ -22,6 +22,7 @@ export const apiSlice = createApi({
     //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
+    //https://server.edatech.io
     baseUrl: "https://server.edatech.io",
     prepareHeaders: async (headers) => {
       const token = getToken();

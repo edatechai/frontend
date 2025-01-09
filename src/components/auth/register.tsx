@@ -396,7 +396,7 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
                   <button
                     type="button"
                     onClick={() => setIsTermsOpen(true)}
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline ml-1"
                   >
                     Terms and Conditions
                   </button>

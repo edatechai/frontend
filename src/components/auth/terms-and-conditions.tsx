@@ -626,7 +626,7 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
             </>
           )}
         </div>
-        <Button onClick={onClose} className="mt-4">
+        <Button onClick={onClose} className="mt-4  mr-4">
           Close
         </Button>
         <PDFDownloadLink

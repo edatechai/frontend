@@ -56,7 +56,8 @@ const TeacherRoom = () => {
 
   console.log("this is userInfo", userInfo)
   console.log("this is class data", state?.data)
-  const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
+  const [createQuiz] = useCreateQuizMutation();
+  const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
   // const { data: AllQuiz } = useFindAllQuizQuery();
   // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
   const [openExamTypeDialog, setOpenExamTypeDialog] = useState(false);
@@ -168,6 +169,7 @@ const TeacherRoom = () => {
 
   const handleSubmit = async () => {
     // Submit handler logic
+    setIsLoadingQuiz(true);
     const payload = {
       classRoomName: state?.data?.classTitle,
       classId: state?.data?._id,
@@ -197,14 +199,17 @@ const TeacherRoom = () => {
       });
 
       console.log("data here", getAllQ);
+      setIsLoadingQuiz(false);
 
       toast(response.data.message);
+     
       setOpenQuizDialog(false);
       setOpenEditQuizDialog(true);
     } else {
       toast.error("Error creating quiz", {
         description: response.data.message,
       });
+      setIsLoadingQuiz(false);
     }
   };
 

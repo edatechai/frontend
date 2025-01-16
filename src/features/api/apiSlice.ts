@@ -607,6 +607,14 @@ export const apiSlice = createApi({
       query: (accountId) => `/api/classroom/getAllAimsByAccountID/${accountId}`,
       providesTags: ["Arm"],
     }),
+    quizNextQuestion: builder.mutation({
+      query: (data) => ({
+        url: '/api/quiz/nextQuestion',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ["Quiz"],
+    }),
   }),
 });
 
@@ -681,6 +689,7 @@ export const {
   useGetQuizResultByUserIdQuery,
   useGetStrengthsAndweaknessesMutation,
   useGetAllQuizMutation,
+  useQuizNextQuestionMutation,
   // useGetAllQuizByObjCodeQuery,
   useUpdateQuizMutation,
   useLazyGetAllQuizByObjCodeQuery,

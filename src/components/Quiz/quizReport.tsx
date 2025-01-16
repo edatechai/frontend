@@ -15,36 +15,41 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 
-const QuizReport = ({ quizResults }) => {
+const QuizReport = ({ quizResults }: { quizResults: any }) => {
+  // Helper function to safely convert latex to HTML
+  const safeLatexToHTML = (text: string | undefined) => {
+    return text ? latexToHTML(text) : '';
+  };
+
   return (
     <Sheet>
       <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
         View Report
       </SheetTrigger>
       <SheetContent className="sm:w-[540px] overflow-auto">
-        <SheetHeader className="overflow-y-scroll  text-left">
+        <SheetHeader className="overflow-y-scroll text-left">
           <SheetTitle>Quiz Report</SheetTitle>
           <SheetDescription>
-            {quizResults.map((val, index: number) => (
+            {quizResults?.map((val: any, index: number) => (
               <Card className="mb-3" key={index}>
                 <CardHeader>
                   <CardTitle>Question {index + 1}</CardTitle>
                   <div
                     className="text-sm text-muted-foreground"
                     dangerouslySetInnerHTML={{
-                      __html: latexToHTML(val.question),
+                      __html: safeLatexToHTML(val?.question),
                     }}
                   ></div>
                 </CardHeader>
                 <CardContent>
-                  {val.isCorrect ? (
+                  {val?.isCorrect ? (
                     <p className="text-green-700 font-medium">
                       You choose the right answer
                     </p>
                   ) : (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: latexToHTML(val.wrongOption),
+                        __html: safeLatexToHTML(val?.wrongOption),
                       }}
                     ></span>
                   )}
@@ -52,17 +57,17 @@ const QuizReport = ({ quizResults }) => {
                     <span className="font-medium">Correct option:</span>{" "}
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: latexToHTML(val.correctOption),
+                        __html: safeLatexToHTML(val?.correctOption),
                       }}
                     />
                   </p>
                   <p>
                     <span className="font-medium">Correct answer:</span>{" "}
-                    {val.correctAnswer}
+                    {val?.correctAnswer || ''}
                   </p>
                   <p className="capitalize">
                     <span className="font-medium">Your answer:</span>{" "}
-                    <span className="capitalize">{val.selectedAnswer}</span>
+                    <span className="capitalize">{val?.selectedAnswer || ''}</span>
                   </p>
                 </CardContent>
               </Card>

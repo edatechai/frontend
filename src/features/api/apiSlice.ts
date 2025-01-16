@@ -23,7 +23,7 @@ export const apiSlice = createApi({
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://server.edatech.io
-    baseUrl: "https://server.edatech.io",
+    baseUrl: "http://localhost:5000",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -607,6 +607,14 @@ export const apiSlice = createApi({
       query: (accountId) => `/api/classroom/getAllAimsByAccountID/${accountId}`,
       providesTags: ["Arm"],
     }),
+    quizNextQuestion: builder.mutation({
+      query: (data) => ({
+        url: '/api/quiz/nextQuestion',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ["Quiz"],
+    }),
   }),
 });
 
@@ -681,6 +689,7 @@ export const {
   useGetQuizResultByUserIdQuery,
   useGetStrengthsAndweaknessesMutation,
   useGetAllQuizMutation,
+  useQuizNextQuestionMutation,
   // useGetAllQuizByObjCodeQuery,
   useUpdateQuizMutation,
   useLazyGetAllQuizByObjCodeQuery,

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -6,6 +5,7 @@ import {
   useQuizRandomSelectMutation,
   useCreateQuizResultMutation,
   useUpdateQuizResultMutation,
+  useQuizNextQuestionMutation,
 } from "../../features/api/apiSlice";
 import { Button } from "../ui/button";
 import { FaRegCirclePlay, FaRegCircleStop } from "react-icons/fa6";
@@ -32,34 +32,35 @@ import { latexToHTML } from "@/lib/utils";
 import Mathlive from "mathlive";
 
 const Index = (props) => {
+  const [sessionId, setSessionId] = useState(null);
   const [currentQuiz, setCurrentQuiz] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [quizResults, setQuizResults] = useState([]);
+  const [showGrade, setShowGrade] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalDifficultyLevel, setTotalDifficultyLevel] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [correctDifficultyLevel, setCorrectDifficultyLevel] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showGrade, setShowGrade] = useState(false);
-  const [quizResults, setQuizResults] = useState([]);
-  const userInfo = useSelector((state) => state.user.userInfo);
   const [analyzedData, setAnalyzedData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 1; // Show one item per page
+  const itemsPerPage = 1;
   const [analyzeResult, { isLoading }] = useAnalyzeResultMutation();
-  // const [currentWordIndex, setCurrentWordIndex] = useState(-1); // Track the current word index
-  // const [speakingText, setSpeakingText] = useState(""); // Track the text being spoken
-  const utteranceRef = useRef(null); // Ref to hold the SpeechSynthesisUtterance
+  const [quizNextQuestion] = useQuizNextQuestionMutation();
+  const utteranceRef = useRef(null);
   const [createQuizResult] = useCreateQuizResultMutation();
   const [quizResultId, setQuizResultId] = useState();
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [doneAnalysing, setDoneAnalysing] = useState(false);
-  const [correctDifficultyLevel, setCorrectDifficultyLevel] = useState(0);
   const [realQuiz, setRealQuiz] = useState(null);
+  const userInfo = useSelector((state) => state.user.userInfo)
   const [newData2, setNewData2] = useState([]);
+  const [scorePercentage, setScorePercentage] = useState(0);
   let score: any;
 
   let ldata = props?.data?.data;
+  console.log("this is our ldata right here:", ldata);
   let newdata: any = [];
-
- 
+  
 
   const [quizRandomSelect] = useQuizRandomSelectMutation();
   const [updateQuizResult] = useUpdateQuizResultMutation();
@@ -68,20 +69,20 @@ const Index = (props) => {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const timerRef = useRef(null);
 
+  const [quizResultHandled, setQuizResultHandled] = useState(false);
+
   useEffect(() => {
     if (ldata?.quizDuration && !timeRemaining) {
-      // Convert minutes to milliseconds
       const durationInMs = ldata.quizDuration * 60 * 1000;
       setTimeRemaining(durationInMs);
     }
-   
   }, [ldata]);
 
   useEffect(() => {
     if (timeRemaining && timeRemaining > 0 && !showGrade) {
       timerRef.current = setInterval(() => {
         setTimeRemaining(prev => {
-          if (prev <= 1000) { // Less than 1 second remaining
+          if (prev <= 1000) {
             clearInterval(timerRef.current);
             handleTimeUp();
             return 0;
@@ -95,15 +96,12 @@ const Index = (props) => {
   }, [timeRemaining, showGrade]);
 
   const handleTimeUp = () => {
-    // Create results for all unanswered questions
     const finalResults = newData2?.map((quiz, index) => {
-      // Use existing result if question was answered
       const existingResult = quizResults[index];
       if (existingResult) {
         return existingResult;
       }
 
-      // Create a new result for unanswered question
       return {
         question: quiz.question,
         selectedAnswer: "",
@@ -114,18 +112,23 @@ const Index = (props) => {
                       quiz.answer.toLowerCase() === "d" ? quiz.optionD : "",
         isCorrect: false,
         wrongOption: "",
+        options: selectedAnswer.toLowerCase() === "a" ? quiz.optionA :
+                       selectedAnswer.toLowerCase() === "b" ? quiz.optionB :
+                       selectedAnswer.toLowerCase() === "c" ? quiz.optionC :
+                       selectedAnswer.toLowerCase() === "d" ? quiz.optionD : "",
+
         difficultyLevel: parseInt(quiz.difficultyLevel) || 0,
+        selectedOption: selectedAnswer.toLowerCase() === "a" ? quiz.optionA :
+                       selectedAnswer.toLowerCase() === "b" ? quiz.optionB :
+                       selectedAnswer.toLowerCase() === "c" ? quiz.optionC :
+                       selectedAnswer.toLowerCase() === "d" ? quiz.optionD : "",
+
       };
     });
 
-    // Update quiz results with all questions (answered and unanswered)
     setQuizResults(finalResults);
-    
-    // Calculate final score based on only answered questions
     const finalCorrectAnswers = finalResults.filter(result => result.isCorrect).length;
     setCorrectAnswers(finalCorrectAnswers);
-    
-    // Show the grade view
     setShowGrade(true);
     setIsQuizCompleted(true);
   };
@@ -139,121 +142,76 @@ const Index = (props) => {
         quizDuration: ldata?.quizDuration,
       };
       const res = await quizRandomSelect(payload);
-      console.log("me", res);
-      ldata = res?.data;
+      console.log("this is this res i am looking for", res);
       
-      if (res.data?.length > 0) {
-        // map the new data to get the difficulty level of each question and sum them together
-        const totalDifficultyLevel = res?.data.reduce((sum, question) => sum + parseInt(question.difficultyLevel), 0);
-        setTotalDifficultyLevel(totalDifficultyLevel);
-        console.log("totalDifficultyLevel", totalDifficultyLevel);
-        setNewData2(res?.data);
-        setCurrentQuiz(res?.data[0]);
-       
+      if (res.data) {
+        setSessionId(res.data.sessionId);
+        setCurrentQuiz(res.data);
+        setTotalDifficultyLevel(res.data.totalQuestions);
       }
     }
   };
-
-
-  
 
   useEffect(() => {
     getQuiz();
   }, [ldata]);
 
   const handleAnswerSelect = (answer) => {
-    // console.log(isQuizCompleted)
     setSelectedAnswer(answer);
-    // if (isQuizComplete()) {
-    //   setIsQuizCompleted(true);
-    // }
   };
 
-  // const handleTimeExpired = () => {
-  //   if (timedQuiz) {
-  //     setIsQuizCompleted(true);
-  //   }
-  // };
+  const handleNextQuestion = async () => {
+    if (!selectedAnswer) return;
 
-  const handleNextQuestion = () => {
-    // alert("this is currentQuiz", currentQuiz);
-    console.log("this is newdata", newData2);
-    console.log("selectedAnswer", selectedAnswer);
-   
-    const isCorrect =
-      selectedAnswer.toLowerCase() === currentQuiz?.answer.toLowerCase();
+    try {
+      const response = await quizNextQuestion({
+        sessionId,
+        userAnswer: selectedAnswer,
+        selectedOption: selectedAnswer.toLowerCase() === "a" ? currentQuiz.optionA :
+                       selectedAnswer.toLowerCase() === "b" ? currentQuiz.optionB :
+                       selectedAnswer.toLowerCase() === "c" ? currentQuiz.optionC :
+                       selectedAnswer.toLowerCase() === "d" ? currentQuiz.optionD : "",
+        difficultyLevel: currentQuiz?.difficultyLevel
+      });
 
-    const correctOptionValue =
-      currentQuiz?.answer.toLowerCase() === "a"
-        ? currentQuiz?.optionA
-        : currentQuiz?.answer.toLowerCase() === "b"
-        ? currentQuiz?.optionB
-        : currentQuiz?.answer.toLowerCase() === "c"
-        ? currentQuiz?.optionC
-        : currentQuiz?.answer.toLowerCase() === "d"
-        ? currentQuiz?.optionD
-        : "";
-
-    console.log({ correctOptionValue });
-
-    const wrongOptionValue =
-      selectedAnswer.toLowerCase() === "a"
-        ? currentQuiz?.optionA
-        : selectedAnswer.toLowerCase() === "b"
-        ? currentQuiz?.optionB
-        : selectedAnswer.toLowerCase() === "c"
-        ? currentQuiz?.optionC
-        : selectedAnswer.toLowerCase() === "d"
-        ? currentQuiz?.optionD
-        : "";
-
-    console.log({ wrongOptionValue });
-
-    const result = {
-      question: currentQuiz?.question,
-      selectedAnswer: selectedAnswer,
-      correctAnswer: currentQuiz?.answer,
-      correctOption: correctOptionValue,
-      isCorrect: isCorrect,
-      wrongOption: wrongOptionValue,
-    };
-
-    console.log({ result });
-
-    // If there's already a result for this question, update it instead of adding new
-    const updatedResults = [...quizResults];
-    if (currentIndex < updatedResults.length) {
-      // Remove previous correct answer count if it was correct
-      if (updatedResults[currentIndex]?.isCorrect) {
-        setCorrectAnswers(correctAnswers - 1);
-      }
-      // Add new correct answer count if current is correct
-      if (isCorrect) {
-        setCorrectAnswers(correctAnswers + 1);
+      if (response.data.complete) {
+        const results = response.data;
+        console.log("this is the results right here:", results);
+       // console.log("this is the results right here:", (results.answers.filter((answer:any) => answer.isCorrect).length/results.answers.length)*100);
+        setQuizResults(results.answers);
+        setScorePercentage(results.scorePercentage);
+        score = results.scorePercentage;
+        setCorrectAnswers(results.correctAnswers);
+        setShowGrade(true);
+        setIsQuizCompleted(true);
 
         
-      }
-      updatedResults[currentIndex] = result;
-      setQuizResults(updatedResults);
-    } else {
-      // Add new result if we're on a new question
-      setQuizResults([...quizResults, result]);
-      if (isCorrect) {
-        setCorrectAnswers(correctAnswers + 1);
-        setCorrectDifficultyLevel(correctDifficultyLevel + parseInt(newData2[currentIndex].difficultyLevel) || 0 );
-       // setCorrectDifficultyLevel(correctDifficultyLevel + parseInt(newData2[currentIndex + 1].difficultyLevel) || 0 );
-      }
-    }
+        const payload = {
+          userInfo,
+          quizResults: results.answers,
+          scorePercentage: results.scorePercentage,
+          classId: ldata?.classId,
+          classRoomName: ldata?.classRoomName,
+          topic: ldata?.topic,
+          objCode: ldata?.objCode,
+          category: ldata?.category,
+          accountId: ldata?.accountId,
+          userId: userInfo?._id,
+          objective: ldata?.objective,
+          subject: ldata?.subject,
+        };
 
-    if (currentIndex < newData2?.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setCurrentQuiz(newData2[currentIndex + 1]);
-    
+       console.log("this is our  payload right here:", payload);
       
-    
-    } else {
-      setShowGrade(true);
-      setIsQuizCompleted(true);
+
+
+        handleQuizResult(payload);
+      } else {
+        setCurrentQuiz(response.data);
+        setSelectedAnswer("");
+      }
+    } catch (error) {
+      console.error("Error submitting answer:", error);
     }
   };
 
@@ -265,122 +223,30 @@ const Index = (props) => {
     setShowGrade(false);
     setQuizResults([]);
     getQuiz();
-    // reload page
     window.location.reload();
   };
 
   const speak = (text) => {
-    // Stop any ongoing speech
     if (utteranceRef.current) {
       window.speechSynthesis.cancel();
     }
 
-    // const words = text.split(" "); // Split the text into words
-    let currentWord = 0; // Initialize current word index
-    // setSpeakingText(text); // Set the speaking text
-    // setCurrentWordIndex(0); // Reset the word index
-
+    let currentWord = 0;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1; // Set the speech rate to 0.8 (slower)
-    //utterance.pitch = 1.5; // Set the pitch to 1.2 (more human-like)
-    utteranceRef.current = utterance; // Set the ref to the current utterance
-    // Handle the boundary event to update the current word index
+    utterance.rate = 1;
+    utteranceRef.current = utterance;
     utterance.addEventListener("boundary", (event) => {
       if (event.name === "word") {
         currentWord++;
-        // setCurrentWordIndex(currentWord);
       }
     });
-
-    // Handle the end event to reset the word index
-    // utterance.addEventListener("end", () => {
-    //   setCurrentWordIndex(-1);
-    // });
 
     window.speechSynthesis.speak(utterance);
   };
 
-  // const speak = (text) => {
-  //   // Stop any ongoing speech
-  //   if (utteranceRef.current) {
-  //     window.speechSynthesis.cancel();
-  //   }
-
-  //   const words = text.split(' '); // Split the text into words
-  //   let currentWord = 0; // Initialize current word index
-  //   setSpeakingText(text); // Set the speaking text
-  //   setCurrentWordIndex(0); // Reset the word index
-
-  //   const utterance = new SpeechSynthesisUtterance(text);
-  //   utterance.rate = 0.8; // Set the speech rate to 0.8 (slower)
-  //   utterance.pitch = 1.2; // Set the pitch to 1.2 (more human-like)
-  //   //utterance.volume = 1; // Set the volume to 1 (maximum)
-  //   utterance.ref.current = utterance; // Set the ref to the current utterance
-
-  //   // Handle the boundary event to update the current word index
-  //   utterance.addEventListener('boundary', (event) => {
-  //     if (event.name === 'word') {
-  //       currentWord++;
-  //       setCurrentWordIndex(currentWord);
-  //     }
-  //   });
-
-  //   // Handle the end event to reset the word index
-  //   utterance.addEventListener('end', () => {
-  //     setCurrentWordIndex(-1);
-  //   });
-
-  //   window.speechSynthesis.speak(utterance);
-  // }
-
   const stopSpeech = () => {
     if (utteranceRef.current) {
       window.speechSynthesis.cancel();
-      // setCurrentWordIndex(-1);
-    }
-  };
-
-  const Sidebar = () => {
-    return (
-      <div className="w-64 bg-white shadow-lg p-4 max-h-screen  border-slate-300 border-[1px] rounded-lg min-w-[20%]">
-        <div className="flex items-center mb-6">
-          <div>
-            <div className="text-lg font-semibold">{data?.subject}</div>
-            <div className="text-sm text-gray-500">{data?.category}</div>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          {data?.questionsAndAnswers.map((i, index) => (
-            <div
-              onClick={() => {
-                setCurrentQuiz(i);
-                setCurrentIndex(index);
-              }}
-              key={index}
-              className={`p-4 rounded-lg cursor-pointer ${
-                index === currentIndex ? "bg-purple-200" : "bg-green-200"
-              }`}
-            >
-              <div className="font-semibold">Quiz {index + 1}</div>
-              <div className="text-sm text-gray-700">{`${data?.objective}`}</div>
-            </div>
-          ))}
-        </div>
-        <Timer />
-      </div>
-    );
-  };
-
-  const handlePreviousQuestion = () => {
-    if (currentIndex > 0) {
-      // Go back to previous question
-      setCurrentIndex(currentIndex - 1);
-      setCurrentQuiz(newData2[currentIndex - 1]);
-      
-      // Set the previously selected answer for this question
-      const previousResult = quizResults[currentIndex - 1];
-      setSelectedAnswer(previousResult?.selectedAnswer || "");
     }
   };
 
@@ -388,132 +254,51 @@ const Index = (props) => {
     return (
       <div className="bg-background rounded-lg md:px-24 p-3 md:pt-14 md:pb-20 space-y-6">
         <Timer />
-        <h3 className="text-2xl font-medium capitalize">{data?.objective}</h3>
+        <h3 className="text-2xl font-medium capitalize">{currentQuiz?.objective}</h3>
         {currentQuiz?.question && (
           <h4
             className="rounded bg-[#EBF0FC] px-4 py-5 font-medium first-letter:uppercase"
             dangerouslySetInnerHTML={{
-              __html: currentQuiz?.question?.replaceAll(
-                /\frac.*?\}.*?\}/g,
-                //
-                (match) => {
-                  const m = match.replace(/^\f/, "\\f");
-                  console.log({ mm: m.slice(0), m });
-                  return katex.renderToString(match.replace(/^\f/, "\\f"));
-                }
-              ),
+              __html: currentQuiz?.question
             }}
-            // dangerouslySetInnerHTML={{
-            //   __html: latexToHTML(currentQuiz?.question),
-             
-            // }}
           ></h4>
         )}
-        <div>
-          <div className="grid md:grid-cols-2 gap-3 mb-5 md:mb-0">
+        
+        <div className="grid md:grid-cols-2 gap-3 mb-5 md:mb-0">
+          {['a', 'b', 'c', 'd'].map((option) => (
             <label
+              key={option}
               className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
-                selectedAnswer === "a" && "bg-primary/20"
+                selectedAnswer === option && "bg-primary/20"
               } border-primary text-start items-center flex gap-3 cursor-pointer`}
-              onClick={() => handleAnswerSelect("a")}
+              onClick={() => handleAnswerSelect(option)}
             >
               <input
                 type="checkbox"
-                checked={selectedAnswer === "a"}
-                onChange={() => handleAnswerSelect("a")}
+                checked={selectedAnswer === option}
+                onChange={() => handleAnswerSelect(option)}
                 className="appearance-none"
               />
               <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                A
-              </span>{" "}
+                {option.toUpperCase()}
+              </span>
               <span
                 dangerouslySetInnerHTML={{
-                  __html: latexToHTML(currentQuiz?.optionA),
+                  __html: latexToHTML(currentQuiz?.[`option${option.toUpperCase()}`])
                 }}
               ></span>
             </label>
-            <label
-              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
-                selectedAnswer === "b" && "bg-primary/20"
-              } border-primary text-start items-center flex gap-3 cursor-pointer`}
-              onClick={() => handleAnswerSelect("b")}
-            >
-              <input
-                type="checkbox"
-                checked={selectedAnswer === "b"}
-                onChange={() => handleAnswerSelect("b")}
-                className="appearance-none"
-              />
-              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                B
-              </span>{" "}
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: latexToHTML(currentQuiz?.optionB),
-                }}
-              ></span>
-            </label>
-            <label
-              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
-                selectedAnswer === "c" && "bg-primary/20"
-              } border-primary text-start items-center flex gap-3 cursor-pointer`}
-              onClick={() => handleAnswerSelect("c")}
-            >
-              <input
-                type="checkbox"
-                checked={selectedAnswer === "c"}
-                onChange={() => handleAnswerSelect("c")}
-                className="appearance-none"
-              />
-              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                C
-              </span>{" "}
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: latexToHTML(currentQuiz?.optionC),
-                }}
-              ></span>
-            </label>
-            <label
-              className={`w-full py-4 rounded border text-foreground hover:border-lime-700 text-lg font-semibold ${
-                selectedAnswer === "d" && "bg-primary/20"
-              } border-primary text-start items-center flex gap-3 cursor-pointer`}
-              onClick={() => handleAnswerSelect("d")}
-            >
-              <input
-                type="checkbox"
-                checked={selectedAnswer === "d"}
-                onChange={() => handleAnswerSelect("d")}
-                className="appearance-none"
-              />
-              <span className="flex flex-none items-center justify-center size-7 text-xl font-medium bg-primary text-primary-foreground rounded-full">
-                D
-              </span>{" "}
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: latexToHTML(currentQuiz?.optionD),
-                }}
-              ></span>
-            </label>
-          </div>
+          ))}
         </div>
-        <div className="relative md:pt-9">
-          <Button
-            variant="outline"
-            onClick={handlePreviousQuestion}
-            className="absolute"
-            type="button"
-            disabled={currentIndex === 0}
-          >
-            Previous
-          </Button>
 
+        <div className="relative md:pt-9">
           <Button
             onClick={handleNextQuestion}
             className="absolute right-0"
             type="button"
+            disabled={!selectedAnswer}
           >
-            Next
+            {currentQuiz?.currentIndex === currentQuiz?.totalQuestions - 1 ? 'Finish' : 'Next'}
           </Button>
         </div>
       </div>
@@ -527,9 +312,9 @@ const Index = (props) => {
     const seconds = Math.floor((timeRemaining % (60 * 1000)) / 1000);
 
     const getTimerColor = () => {
-      if (timeRemaining <= 60000) { // Last minute
+      if (timeRemaining <= 60000) {
         return 'text-red-500';
-      } else if (timeRemaining <= 180000) { // Last 3 minutes
+      } else if (timeRemaining <= 180000) {
         return 'text-yellow-500';
       }
       return 'text-slate-300';
@@ -548,12 +333,16 @@ const Index = (props) => {
   };
 
   const handleQuizResult = async (payload) => {
+    if (quizResultHandled) return;
+    setQuizResultHandled(true);
+
     const response = await createQuizResult(payload);
     console.log("Response here: ", response.data.quizResultId);
     if (response?.data.status === true) {
       setQuizResultId(response?.data.quizResultId);
     }
   };
+
   const [quizScoreDIalogOpen, setQuizScoreDialogOpen] = useState(true);
 
   useEffect(() => {
@@ -577,18 +366,12 @@ const Index = (props) => {
     }
   }, [isQuizCompleted]);
 
-  console.log('this is the correct dfL', correctDifficultyLevel, correctAnswers, totalDifficultyLevel)
-
   const Grade = () => {
-    console.log("correctAnswers", correctAnswers, ldata?.numberOfQuestions);
-    console.log("totalDifficultyLevel", totalDifficultyLevel);
-    console.log("quizResults", quizResults);
-    console.log("correctDifficultyLevel", correctDifficultyLevel);
-    const scorePercentage = ((correctDifficultyLevel / totalDifficultyLevel) * 100).toFixed(2);
-    console.log("scorePercentage", scorePercentage);
-    score = scorePercentage;
-    console.log("score", score);
-    //setNewScore(scorePercentage)
+    // const scorePercentage = ((correctDifficultyLevel / totalDifficultyLevel) * 100).toFixed(2);
+    // score = scorePercentage;
+    // const scorePercentage = quizResults?.scorePercentage;
+    // score = scorePercentage;
+
     const handleNextPage = () => {
       if (currentPage < Math.ceil(analyzedData.length / itemsPerPage) - 1) {
         setCurrentPage(currentPage + 1);
@@ -614,8 +397,8 @@ const Index = (props) => {
       const newObject = {
         questions: failedResults,
         studentInfo: {
-          age: userInfo?.age,
-          learningObjectives: `${data?.category}: ${scorePercentage}`,
+          age: userInfo?.dob,
+          learningObjectives: `${ldata?.objective}: ${scorePercentage}`,
           neurodiversity: userInfo?.neurodiversity,
           gender: userInfo?.gender,
           userId: userInfo?._id,
@@ -623,6 +406,7 @@ const Index = (props) => {
         studentName: userInfo?.fullName,
       };
 
+      console.log("this is our newObject right here:", newObject);
       const response = await analyzeResult(newObject);
       const analyzedResponseData = response.data;
 
@@ -639,14 +423,10 @@ const Index = (props) => {
       setAnalyzedData(analyzedResponseData);
       setQuizResults(updatedQuizResults);
       setDoneAnalysing(true);
-      console.log("all good", quizResults);
       setQuizScoreDialogOpen(false);
 
-      document.getElementById("my_modal_3").close();
+       document.getElementById("my_modal_3").close();
     };
-
-    console.log("outside", quizResults);
-    console.log("quizResultId", quizResultId);
 
     const handleUpdateQuizResult = async () => {
       const payload = {
@@ -656,7 +436,6 @@ const Index = (props) => {
 
       const res = await updateQuizResult(payload);
       setDoneAnalysing(false);
-      console.log("all here", res);
     };
 
     useEffect(() => {
@@ -705,14 +484,14 @@ const Index = (props) => {
               <DialogDescription className="flex gap-3 pt-5 items-center">
                 <div className="">Score: </div>
                 <Progress value={scorePercentage} className="w-full h-2" />
-                <div>{scorePercentage}%</div>
+                <div>{Math.round(scorePercentage)}%</div>
               </DialogDescription>
-              {scorePercentage < 80 && (
+              {scorePercentage < 50 && (
                 <p className="text-red-600 py-3">
-                  You scored less than 80%. Do you want to retake the quiz?
+                  You scored less than 50%. Do you want to retake the quiz?
                 </p>
               )}
-              {scorePercentage < 80 && (
+              {scorePercentage < 50 && (
                 <DialogFooter>
                   <Button
                     variant="outline"
@@ -803,13 +582,6 @@ const Index = (props) => {
                     dangerouslySetInnerHTML={{
                       __html: latexToHTML(result?.question),
                     }}
-                    // dangerouslySetInnerHTML={{
-                    //   __html: result?.question?.replaceAll(
-                    //     /\\.*?\}.*?\}/g,
-                    //     //
-                    //     (match) => katex.renderToString(match)
-                    //   ),
-                    // }}
                   ></p>
                   <p className="text-sm">
                     Your answer: {result?.selectedAnswer?.toUpperCase()}
@@ -823,13 +595,6 @@ const Index = (props) => {
                       dangerouslySetInnerHTML={{
                         __html: latexToHTML(result?.correctOption),
                       }}
-                      // dangerouslySetInnerHTML={{
-                      //   __html: result?.correctOption?.replaceAll(
-                      //     /\.*?}.*?}/g,
-                      //     //
-                      //     (match) => katex.renderToString(match)
-                      //   ),
-                      // }}
                     ></p>
                   </span>
                 </div>
@@ -848,7 +613,9 @@ const Index = (props) => {
               )}
             </div>
           ))}
-          {correctAnswers < ldata?.numberOfQuestions && (
+          {
+            // if the score is less than 50, show the analyze result button
+            scorePercentage < 50 && (
             <Button
               variant="outline"
               onClick={handleAnalyzeResult}
@@ -858,22 +625,6 @@ const Index = (props) => {
             </Button>
           )}
         </div>
-
-        {/* <div className="mt-8 text-black">
-        <h2 className="text-xl font-semibold mb-4">Quiz Results</h2>
-        {quizResults.map((result, index) => (
-          <div key={index} className={`p-4 mb-4 rounded-lg ${result.isCorrect ? 'bg-green-200' : 'bg-red-200'}`}>
-            <div className="font-semibold text-[18px]">Question: {result.question}</div>
-            <div className="text-sm">Your answer: {result.selectedAnswer.toUpperCase()}</div>
-            <div className="text-sm">Correct answer: {result.correctAnswer.toUpperCase()}</div>
-            <div className="text-sm">Correct option: {result.correctOption}</div>
-            <div className="text-sm font-bold">{result.isCorrect ? 'Correct' : 'Wrong'}</div>
-            {result?.analysis && (
-              <div className="text-sm">Analysis: {result?.analysis}</div>
-            )}
-          </div>
-        ))}
-      </div> */}
       </div>
     );
   };
@@ -900,7 +651,6 @@ const Index = (props) => {
         </div>
       </dialog>
 
-      {/* <Sidebar /> */}
       <div className="px-4 min-h-screen w-full">
         {showGrade ? (
           <div className="flex">

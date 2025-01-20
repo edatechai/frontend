@@ -11,6 +11,7 @@ import {
   Settings,
   File,
   Key,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -102,6 +103,13 @@ export function Layout() {
           href: `/teacher/report`,
           icon: <LineChart className="h-4 w-4" />,
           iconMobile: <LineChart className="h-5 w-5" />,
+        },
+        {
+          id: 4,
+          name: "Quizzes",
+          href: `/teacher/quizzes`,
+          icon: <FileText className="h-4 w-4" />,
+          iconMobile: <FileText className="h-5 w-5" />,
         },
       ]);
     } else if (role == "org-admin") {

@@ -324,6 +324,11 @@ export const apiSlice = createApi({
       invalidatesTags: ["Quiz"],
     }),
 
+    getAllQuizzesByTeacherId: builder.query({
+      query: (id) => `/api/quiz/getAllQuizByTeacherId/${id}`,
+      providesTags: ["Quiz"],
+    }),
+
     // Analyze Result
     AnalyzeResult: builder.mutation({
       query: (payload) => ({
@@ -356,6 +361,10 @@ export const apiSlice = createApi({
     getQuizResultByUserId: builder.query({
       query: (id) => `/api/quiz/getQuizResultByUserId/${id}`,
       providesTags: ["Quiz"],
+    }),
+
+    getTest: builder.query({
+      query: () => "/api/quiz/test",
     }),
 
     getStrengthsAndweaknesses: builder.mutation({
@@ -690,6 +699,8 @@ export const {
   useGetStrengthsAndweaknessesMutation,
   useGetAllQuizMutation,
   useQuizNextQuestionMutation,
+  useGetTestQuery,
+  useGetAllQuizzesByTeacherIdQuery,
   // useGetAllQuizByObjCodeQuery,
   useUpdateQuizMutation,
   useLazyGetAllQuizByObjCodeQuery,

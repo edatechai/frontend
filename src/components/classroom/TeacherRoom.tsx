@@ -188,9 +188,10 @@ const TeacherRoom = () => {
       quizEnd,
     };
 
+    console.log("this is payload", payload);
+
     const response = await createQuiz(payload);
-    console.log(response);
-    console.log("heere", payload);
+   
     if (response.data.status === true) {
       const getAllQ = await getAllQuiz({
         lo: selectedObjective?.objective,

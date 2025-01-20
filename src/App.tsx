@@ -39,6 +39,7 @@ import StudentsReport from "./pages/Teacher/Report";
 import ClassReport from "./components/teacher/classReport";
 import Classrooms from "./pages/Org/classrooms";
 import ActiveLicenses from "./pages/Org/ActiveLicenses";
+import Quizzes from "./pages/Teacher/quizzes";
 // import store from "./app/store";
 
 const App = () => {
@@ -76,6 +77,7 @@ const App = () => {
             <Route path="/teacher/profile" element={<Profile />} />
             <Route path="/teacher" element={<TeachersClassroom />} />
             <Route path="/teacher/class" element={<TeacherRoom />} />
+            <Route path="/teacher/quizzes" element={<Quizzes />} />
             <Route path="/teacher/under-development" element={<UnderDev />} />
             <Route
               path="/teacher/class/create-report"

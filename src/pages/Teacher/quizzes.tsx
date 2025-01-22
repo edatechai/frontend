@@ -12,7 +12,7 @@ export default function Quizzes() {
   console.log(data);
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">My Quizzes</h1>
+      <h1 className="text-2xl font-bold mb-6">My Task</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data?.map((quiz) => (
           <div 
@@ -33,7 +33,7 @@ export default function Quizzes() {
                     setIsModalOpen(true);
                   }}
                 >
-                  View Details
+                  View Task Details
                 </div>
               </div>
             </div>

@@ -300,6 +300,11 @@ export const apiSlice = createApi({
       providesTags: ["Quiz"],
     }),
 
+    findAllQuizByIdForChild: builder.query({
+      query: ({id, childId}) => `/api/quiz/findQuizByClassIdForChild/${id}/${childId}`,
+      providesTags: ["Quiz"],
+    }),
+
     getAllQuizByObjCode: builder.query({
       query: ({ lo, country, objCode }) =>
         `/api/quiz/getAllQuizByObjCode?country=${country}&lo=${lo}&objCode=${objCode}`,
@@ -470,12 +475,13 @@ export const apiSlice = createApi({
     }),
 
     getChildSandW: builder.mutation({
-      query: ({ classId, userId }) => ({
+      query: ({ classId, userId, subject }) => ({
         url: `/api/quiz/childSW`,
         method: "POST",
         body: {
           classId,
           userId,
+          subject,
         },
       }),
     }),
@@ -691,6 +697,7 @@ export const {
   useCreateQuizMutation,
   useFindAllQuizQuery,
   useFindAllQuizByIdQuery,
+  useFindAllQuizByIdForChildQuery,
   useQuizRandomSelectMutation,
   useAnalyzeResultMutation,
   useCreateQuizResultMutation,

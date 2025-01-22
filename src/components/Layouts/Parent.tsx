@@ -6,6 +6,7 @@ import {
   Circle,
   Dumbbell,
   StickyNote,
+  FileText,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -122,6 +123,19 @@ export function ParentsLayout() {
                   >
                     <Dumbbell className="h-4 w-4" />
                     Strengths
+                  </NavLink>
+                  <NavLink
+                    to={`/parent/task/${wardId}`}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                        isActive
+                          ? "bg-muted text-foreground hover:bg-slate-200"
+                          : "text-primary-foreground hover:bg-blue-500"
+                      }`
+                    }
+                  >
+                    <FileText className="h-4 w-4" />
+                    Task
                   </NavLink>
                 </>
               )}

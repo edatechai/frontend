@@ -40,6 +40,8 @@ import ClassReport from "./components/teacher/classReport";
 import Classrooms from "./pages/Org/classrooms";
 import ActiveLicenses from "./pages/Org/ActiveLicenses";
 import Quizzes from "./pages/Teacher/quizzes";
+import Task from "./pages/Parent/Task";
+import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
 // import store from "./app/store";
 
 const App = () => {
@@ -155,6 +157,8 @@ const App = () => {
             <Route path="/parent/result/:childId" element={<ChildResult />} />
             <Route path="/parent/strengths/:childId" element={<Strengths />} />
             <Route path="/parent/report" element={<ParentReport />} />
+            <Route path="/parent/task/:childId" element={<Task />} />
+            <Route path="/parent/task/studentquizzes/:classId/:childId" element={<StudentQuizzes />} />
             <Route path="/dashboard/under-development" element={<UnderDev />} />
           </Route>
 

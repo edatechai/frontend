@@ -79,6 +79,7 @@ export default function Strengths() {
   const [classId, setClassId] = useState("");
   const { data: childClassrooms, isLoading: classroomsLoading } = useGetChildResultQuery(childId);
   const [getSW, { data, isLoading: swLoading }] = useGetChildSandWMutation();
+  console.log("childClassrooms", childClassrooms)
 
   useEffect(() => {
     if (classId) {
@@ -88,14 +89,16 @@ export default function Strengths() {
 
   let clas: any;
   if (classId) {
-    clas = childClassrooms?.data?.classRoomData?.filter((i) => classId === i._id)[0];
+    clas = childClassrooms?.data?.classRoomData?.filter((i: any) => classId === i._id)[0];
   }
+
+  console.log("class", clas)
 
   const sw = async () => {
     const v = await getSW({
       classId,
       userId: childId,
-      subject: clas?.classRoomName.split("_")[3],
+      subject: clas?.subject,
     });
     setChartdata(v);
   };

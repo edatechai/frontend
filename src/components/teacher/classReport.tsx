@@ -33,6 +33,16 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 
+// Add type for quiz results
+type QuizResult = {
+  question: string;
+  isCorrect: boolean;
+  wrongOption?: string;
+  correctOption: string;
+  correctAnswer: string;
+  selectedAnswer: string;
+};
+
 function findValue(array: typeof resultsMock, obj: string, name: string) {
   for (let i = 0; i < array.length; i++) {
     if (array[i]?.objective === obj && array[i].userInfo.fullName === name) {
@@ -51,15 +61,23 @@ function findResults(array: typeof resultsMock, obj: string, name: string) {
   return [];
 }
 
+// Update the sample type
 const sample = {
   fullName: "John Doe",
   results: [
     {
       learning_outcome: "laws of indices",
       score_percent: 70,
+      quizResults: [] as QuizResult[],
     },
   ],
 };
+
+// Add type for reduced average
+type ReducedAvg = {
+  obj: string;
+  results: number;
+}[];
 
 const getAvg = (
   array: {
@@ -76,7 +94,7 @@ const ClassReport = () => {
   const { classId } = useParams();
   const { data, isLoading } = useResultsByClassIdQuery(classId);
   const [results, setResults] = useState<(typeof sample)[]>([]);
-  const [reducedAvg, setReducedAvg] = useState([]);
+  const [reducedAvg, setReducedAvg] = useState<ReducedAvg>([]);
   const [objs, setObjs] = useState<string[]>([]);
 
   useEffect(() => {
@@ -181,12 +199,10 @@ const ClassReport = () => {
               <td className="font-semibold">All students</td>
               <td></td>
               {reducedAvg.map((avgScore) => (
-                <td>
-                  {" "}
+                <td key={avgScore.obj}>
                   <p
                     className="size-8 rounded-sm flex items-center justify-center m-0.5 font-semibold text-white"
                     style={{
-                      // width: `${+result.score_percent}%`,
                       backgroundColor: getColor(avgScore.results),
                     }}
                   >
@@ -196,7 +212,7 @@ const ClassReport = () => {
               ))}
             </tr>
             {results.map((val, i) => (
-              <tr>
+              <tr key={val.fullName}>
                 <td>
                   <p className="pr-2 capitalize">{val.fullName}</p>
                 </td>
@@ -204,7 +220,6 @@ const ClassReport = () => {
                   <p
                     className="size-8 rounded-sm flex items-center justify-center m-0.5 font-semibold text-white"
                     style={{
-                      // width: `${+result.score_percent}%`,
                       backgroundColor: getColor(getAvg(val.results)),
                     }}
                   >
@@ -217,14 +232,12 @@ const ClassReport = () => {
                       <HoverCardTrigger
                         className="size-8 rounded-sm flex items-center justify-center m-0.5 text-white text-lg"
                         style={{
-                          // width: `${+result.score_percent}%`,
                           backgroundColor: getColor(+result.score_percent),
                         }}
                       >
                         {result.score_percent != -5
                           ? result.score_percent.toFixed()
                           : "?"}
-                        {/* </p> */}
                       </HoverCardTrigger>
                       <HoverCardContent className="w-fit p-0">
                         {result.score_percent == -5 ? (
@@ -248,7 +261,7 @@ const ClassReport = () => {
                                           <div
                                             className="text-sm text-muted-foreground"
                                             dangerouslySetInnerHTML={{
-                                              __html: latexToHTML(val.question),
+                                              __html: latexToHTML(val.question || ''),
                                             }}
                                           ></div>
                                         </CardHeader>
@@ -260,9 +273,7 @@ const ClassReport = () => {
                                               </span>{" "}
                                               <span
                                                 dangerouslySetInnerHTML={{
-                                                  __html: latexToHTML(
-                                                    val.wrongOption
-                                                  ),
+                                                  __html: latexToHTML(val.wrongOption || ''),
                                                 }}
                                               ></span>
                                             </p>
@@ -277,9 +288,7 @@ const ClassReport = () => {
                                             </span>{" "}
                                             <span
                                               dangerouslySetInnerHTML={{
-                                                __html: latexToHTML(
-                                                  val.correctOption
-                                                ),
+                                                __html: latexToHTML(val.correctOption || ''),
                                               }}
                                             />
                                           </p>
@@ -287,14 +296,14 @@ const ClassReport = () => {
                                             <span className="font-medium">
                                               Correct answer:
                                             </span>{" "}
-                                            {val.correctAnswer}
+                                            {val.correctAnswer || 'N/A'}
                                           </p>
                                           <p className="capitalize">
                                             <span className="font-medium">
                                               Your answer:
                                             </span>{" "}
                                             <span className="capitalize">
-                                              {val.selectedAnswer}
+                                              {val.selectedAnswer || 'N/A'}
                                             </span>
                                           </p>
                                         </CardContent>

@@ -106,7 +106,7 @@ export function Layout() {
         },
         {
           id: 4,
-          name: "Quizzes",
+          name: "Task",
           href: `/teacher/quizzes`,
           icon: <FileText className="h-4 w-4" />,
           iconMobile: <FileText className="h-5 w-5" />,

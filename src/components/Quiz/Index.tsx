@@ -6,6 +6,7 @@ import {
   useCreateQuizResultMutation,
   useUpdateQuizResultMutation,
   useQuizNextQuestionMutation,
+  useGetPreviousQuestionMutation,
 } from "../../features/api/apiSlice";
 import { Button } from "../ui/button";
 import { FaRegCirclePlay, FaRegCircleStop } from "react-icons/fa6";
@@ -55,6 +56,7 @@ const Index = (props) => {
   const userInfo = useSelector((state) => state.user.userInfo)
   const [newData2, setNewData2] = useState([]);
   const [scorePercentage, setScorePercentage] = useState(0);
+  const [getPreviousQuestion] = useGetPreviousQuestionMutation();
   let score: any;
 
   let ldata = props?.data?.data;
@@ -215,6 +217,22 @@ const Index = (props) => {
     }
   };
 
+  const handlePrevious = async () => {
+    try {
+      const response = await getPreviousQuestion({
+        sessionId,
+        currentQuestionIndex: currentQuiz?.currentIndex
+      });
+
+      if (response.data) {
+        setCurrentQuiz(response.data);
+        setSelectedAnswer(""); // Reset selected answer for the previous question
+      }
+    } catch (error) {
+      console.error("Error getting previous question:", error);
+    }
+  };
+
   const handleRetakeQuiz = () => {
     setCorrectAnswers(0);
     setSelectedAnswer("");
@@ -292,14 +310,24 @@ const Index = (props) => {
         </div>
 
         <div className="relative md:pt-9">
-          <Button
-            onClick={handleNextQuestion}
-            className="absolute right-0"
-            type="button"
-            disabled={!selectedAnswer}
-          >
-            {currentQuiz?.currentIndex === currentQuiz?.totalQuestions - 1 ? 'Finish' : 'Next'}
-          </Button>
+          <div className="flex justify-between">
+            <Button
+              onClick={handlePrevious}
+              className="absolute left-0"
+              type="button"
+              disabled={currentQuiz?.currentIndex === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={handleNextQuestion}
+              className="absolute right-0"
+              type="button"
+              disabled={!selectedAnswer}
+            >
+              {currentQuiz?.currentIndex === currentQuiz?.totalQuestions - 1 ? 'Finish' : 'Next'}
+            </Button>
+          </div>
         </div>
       </div>
     );

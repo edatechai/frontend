@@ -354,6 +354,14 @@ export const apiSlice = createApi({
       // invalidatesTags: ["Quiz"],
     }),
 
+    getPreviousQuestion: builder.mutation({
+      query: (payload) => ({
+        url: "/api/quiz/previousQuestion",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Quiz"],
+    }),
     // Analyze Result
     updateQuizResult: builder.mutation({
       query: (payload) => ({
@@ -706,6 +714,7 @@ export const {
   useGetStrengthsAndweaknessesMutation,
   useGetAllQuizMutation,
   useQuizNextQuestionMutation,
+  useGetPreviousQuestionMutation,
   useGetTestQuery,
   useGetAllQuizzesByTeacherIdQuery,
   // useGetAllQuizByObjCodeQuery,

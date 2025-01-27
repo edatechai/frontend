@@ -163,6 +163,28 @@ export default function Strengths() {
             <p className="text-gray-500 text-sm">This may take a few moments</p>
           </div>
         </div>
+      ) : !chartDatas?.length ? (
+        <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
+          <Card className="bg-slate-50">
+            <CardContent className="flex flex-col items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
+                <p className="text-gray-600">There is no performance data available for this subject yet.</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-50">
+            <CardHeader>
+              <CardTitle>Comparative Performance Chart</CardTitle>
+              <CardDescription>2024</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center min-h-[300px]">
+              <div className="text-center">
+                <p className="text-gray-600">No chart data available</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2 lg:gap-8">
           <Card className="bg-slate-50">
@@ -178,51 +200,55 @@ export default function Strengths() {
                   <h4 className="text-xl font-medium">Strengths</h4>
                 </span>
                 <div className="space-y-3 mt-3">
-                  {data?.SW?.strengths.map((i, index: number) => (
-                    <div key={index}>
-                      <ul className="list-disc ml-8 font-medium">
-                       
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <li className="truncate cursor-pointer">
-                              {toTitleCase(i?.objective_name || "")}
-                            </li>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <p className="flex justify-between space-x-4">
-                              {toTitleCase(i?.objective_name || "")}
-                            </p>
-                            <p className="text-sm font-light">
-                              Your score:{" "}
-                              <span className="font-normal">
-                                {(i?.score).toFixed(0)}%
-                              </span>
-                            </p>
-                            <p className="text-sm font-light">
-                              Top{" "}
-                              <span className="font-normal">
-                                {Math.round(i?.national_percentile_rank)}%
-                              </span>{" "}
-                              of students in the country
-                            </p>
-                          </HoverCardContent>
-                        </HoverCard>
-                        <p className="text-sm font-light">
-                          Your score:{" "}
-                          <span className="font-normal">
-                            {(i?.score).toFixed(0)}%
-                          </span>
-                        </p>
-                        <p className="text-sm font-light">
-                          Top{" "}
-                          <span className="font-normal">
-                            {Math.round(i?.national_percentile_rank)}%
-                          </span>{" "}
-                          of students in the country
-                        </p>
-                      </ul>
-                    </div>
-                  ))}
+                  {data?.SW?.strengths?.length ? (
+                    data.SW.strengths.map((i, index: number) => (
+                      <div key={index}>
+                        <ul className="list-disc ml-8 font-medium">
+                         
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <li className="truncate cursor-pointer">
+                                {toTitleCase(i?.objective_name || "")}
+                              </li>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80">
+                              <p className="flex justify-between space-x-4">
+                                {toTitleCase(i?.objective_name || "")}
+                              </p>
+                              <p className="text-sm font-light">
+                                Your score:{" "}
+                                <span className="font-normal">
+                                  {(i?.score).toFixed(0)}%
+                                </span>
+                              </p>
+                              <p className="text-sm font-light">
+                                Top{" "}
+                                <span className="font-normal">
+                                  {Math.round(i?.national_percentile_rank)}%
+                                </span>{" "}
+                                of students in the country
+                              </p>
+                            </HoverCardContent>
+                          </HoverCard>
+                          <p className="text-sm font-light">
+                            Your score:{" "}
+                            <span className="font-normal">
+                              {(i?.score).toFixed(0)}%
+                            </span>
+                          </p>
+                          <p className="text-sm font-light">
+                            Top{" "}
+                            <span className="font-normal">
+                              {Math.round(i?.national_percentile_rank)}%
+                            </span>{" "}
+                            of students in the country
+                          </p>
+                        </ul>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-600 ml-8">No strengths identified yet</p>
+                  )}
                 </div>
               </div>
               <div className="">
@@ -235,51 +261,55 @@ export default function Strengths() {
                   </h4>
                 </span>
                 <div className="space-y-3 mt-3">
-                  {data?.SW?.weaknesses.map((i, index: number) => (
-                    <div key={index}>
-                      <ul className="list-disc ml-8 font-medium">
-                       
-                        <HoverCard>
-                          <HoverCardTrigger asChild>
-                            <li className="truncate cursor-pointer">
-                              {toTitleCase(i?.objective_name || "")}
-                            </li>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="w-80">
-                            <p className="flex justify-between space-x-4">
-                              {toTitleCase(i?.objective_name || "")}
-                            </p>
-                            <p className="text-sm font-light">
-                              Your score -
-                              <span className="font-normal">
-                                {(i?.score).toFixed(0)}%
-                              </span>
-                            </p>
-                            <p className="text-sm font-light">
-                              Top{" "}
-                              <span className="font-normal">
-                                {Math.round(i?.national_percentile_rank)}%
-                              </span>{" "}
-                              of students in the country
-                            </p>
-                          </HoverCardContent>
-                        </HoverCard>
-                        <p className="text-sm font-light">
-                          Your score:{" "}
-                          <span className="font-normal">
-                            {(i?.score).toFixed(0)}%
-                          </span>
-                        </p>
-                        <p className="text-sm font-light">
-                          Top{" "}
-                          <span className="font-normal">
-                            {Math.round(i?.national_percentile_rank)}%
-                          </span>{" "}
-                          of students in the country
-                        </p>
-                      </ul>
-                    </div>
-                  ))}
+                  {data?.SW?.weaknesses?.length ? (
+                    data.SW.weaknesses.map((i, index: number) => (
+                      <div key={index}>
+                        <ul className="list-disc ml-8 font-medium">
+                         
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <li className="truncate cursor-pointer">
+                                {toTitleCase(i?.objective_name || "")}
+                              </li>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80">
+                              <p className="flex justify-between space-x-4">
+                                {toTitleCase(i?.objective_name || "")}
+                              </p>
+                              <p className="text-sm font-light">
+                                Your score -
+                                <span className="font-normal">
+                                  {(i?.score).toFixed(0)}%
+                                </span>
+                              </p>
+                              <p className="text-sm font-light">
+                                Top{" "}
+                                <span className="font-normal">
+                                  {Math.round(i?.national_percentile_rank)}%
+                                </span>{" "}
+                                of students in the country
+                              </p>
+                            </HoverCardContent>
+                          </HoverCard>
+                          <p className="text-sm font-light">
+                            Your score:{" "}
+                            <span className="font-normal">
+                              {(i?.score).toFixed(0)}%
+                            </span>
+                          </p>
+                          <p className="text-sm font-light">
+                            Top{" "}
+                            <span className="font-normal">
+                              {Math.round(i?.national_percentile_rank)}%
+                            </span>{" "}
+                            of students in the country
+                          </p>
+                        </ul>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-600 ml-8">No areas needing improvement identified yet</p>
+                  )}
                 </div>
               </div>
             </CardContent>

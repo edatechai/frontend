@@ -128,6 +128,7 @@ const StudentQiuzzes = () => {
             </AccordionContent>
           </Card>
         </AccordionItem>
+
         <AccordionItem value="exams">
           <Card className="mt-5">
             <CardHeader>
@@ -141,7 +142,7 @@ const StudentQiuzzes = () => {
                   <Card key={i} className="flex flex-col justify-between">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
-                        {/* {val?.subject} */}
+                       
                         {val?.questions[0].learning_objectives[0]}
                       </CardTitle>
                     </CardHeader>
@@ -149,7 +150,7 @@ const StudentQiuzzes = () => {
                       <p className="text-slate-950 truncate text-xs">
                         {val?.questions.length} questions
                       </p>
-                      {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
+                     
                       <Link
                         to={`/student/classrooms/exam/${val._id}`}
                         state={{ data: val }}
@@ -164,6 +165,7 @@ const StudentQiuzzes = () => {
             </AccordionContent>
           </Card>
         </AccordionItem>
+        
       </Accordion>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
         {AllQuiz?.length === 0 && (

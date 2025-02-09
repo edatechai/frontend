@@ -57,10 +57,13 @@ const Index = (props) => {
   const [newData2, setNewData2] = useState([]);
   const [scorePercentage, setScorePercentage] = useState(0);
   const [getPreviousQuestion] = useGetPreviousQuestionMutation();
+  const [visibilityChange, setVisibilityChange] = useState(false)
+  const [forceSubmit, setForceSubmit] = useState(false)
+ 
   let score: any;
 
   let ldata = props?.data?.data;
-  console.log("this is our ldata right here:", ldata);
+
   let newdata: any = [];
   
 
@@ -97,42 +100,35 @@ const Index = (props) => {
     }
   }, [timeRemaining, showGrade]);
 
-  const handleTimeUp = () => {
-    const finalResults = newData2?.map((quiz, index) => {
-      const existingResult = quizResults[index];
-      if (existingResult) {
-        return existingResult;
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'hidden' && !showGrade) {
+        await handleNextQuestion(true);
+        setForceSubmit(true);
       }
+    };
 
-      return {
-        question: quiz.question,
-        selectedAnswer: "",
-        correctAnswer: quiz.answer,
-        correctOption: quiz.answer.toLowerCase() === "a" ? quiz.optionA :
-                      quiz.answer.toLowerCase() === "b" ? quiz.optionB :
-                      quiz.answer.toLowerCase() === "c" ? quiz.optionC :
-                      quiz.answer.toLowerCase() === "d" ? quiz.optionD : "",
-        isCorrect: false,
-        wrongOption: "",
-        options: selectedAnswer.toLowerCase() === "a" ? quiz.optionA :
-                       selectedAnswer.toLowerCase() === "b" ? quiz.optionB :
-                       selectedAnswer.toLowerCase() === "c" ? quiz.optionC :
-                       selectedAnswer.toLowerCase() === "d" ? quiz.optionD : "",
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [showGrade, sessionId, currentQuiz]);
 
-        difficultyLevel: parseInt(quiz.difficultyLevel) || 0,
-        selectedOption: selectedAnswer.toLowerCase() === "a" ? quiz.optionA :
-                       selectedAnswer.toLowerCase() === "b" ? quiz.optionB :
-                       selectedAnswer.toLowerCase() === "c" ? quiz.optionC :
-                       selectedAnswer.toLowerCase() === "d" ? quiz.optionD : "",
+  useEffect(() => {
+    const handleBeforeUnload = async (e) => {
+      if (!showGrade) {
+        e.preventDefault();
+        e.returnValue = '';
+        await handleNextQuestion(true);
+        setForceSubmit(true);
+      }
+    };
 
-      };
-    });
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [showGrade, sessionId, currentQuiz]);
 
-    setQuizResults(finalResults);
-    const finalCorrectAnswers = finalResults.filter(result => result.isCorrect).length;
-    setCorrectAnswers(finalCorrectAnswers);
-    setShowGrade(true);
-    setIsQuizCompleted(true);
+  const handleTimeUp =  async () => {
+
+
   };
 
   const getQuiz = async () => {
@@ -144,7 +140,7 @@ const Index = (props) => {
         quizDuration: ldata?.quizDuration,
       };
       const res = await quizRandomSelect(payload);
-      console.log("this is this res i am looking for", res);
+     
       
       if (res.data) {
         setSessionId(res.data.sessionId);
@@ -161,37 +157,41 @@ const Index = (props) => {
   const handleAnswerSelect = (answer) => {
     setSelectedAnswer(answer);
   };
+  
 
-  const handleNextQuestion = async () => {
-    if (!selectedAnswer) return;
 
+
+
+  const handleNextQuestion = async (force = false) => {
     try {
+      const isForced = forceSubmit || force;
+      
+      if (!selectedAnswer && !isForced) return;
+
       const response = await quizNextQuestion({
         sessionId,
-        userAnswer: selectedAnswer,
+        userAnswer: selectedAnswer || "",
         selectedOption: selectedAnswer.toLowerCase() === "a" ? currentQuiz.optionA :
                        selectedAnswer.toLowerCase() === "b" ? currentQuiz.optionB :
                        selectedAnswer.toLowerCase() === "c" ? currentQuiz.optionC :
                        selectedAnswer.toLowerCase() === "d" ? currentQuiz.optionD : "",
-        difficultyLevel: currentQuiz?.difficultyLevel
-      });
+        difficultyLevel: currentQuiz?.difficultyLevel,
+        forceComplete: isForced
+      }).unwrap();
 
-      if (response.data.complete) {
-        const results = response.data;
-        console.log("this is the results right here:", results);
-       // console.log("this is the results right here:", (results.answers.filter((answer:any) => answer.isCorrect).length/results.answers.length)*100);
-        setQuizResults(results.answers);
-        setScorePercentage(results.scorePercentage);
-        score = results.scorePercentage;
-        setCorrectAnswers(results.correctAnswers);
+      if (response.complete) {
         setShowGrade(true);
+        setQuizResults(response.answers || []);
+        setCorrectAnswers(response.correctAnswers || 0);
+        setScorePercentage(response.scorePercentage || 0);
+        score = response.scorePercentage;
         setIsQuizCompleted(true);
 
         
         const payload = {
           userInfo,
-          quizResults: results.answers,
-          scorePercentage: results.scorePercentage,
+          quizResults: response.answers,
+          scorePercentage: response.scorePercentage,
           classId: ldata?.classId,
           classRoomName: ldata?.classRoomName,
           topic: ldata?.topic,
@@ -209,13 +209,24 @@ const Index = (props) => {
 
         handleQuizResult(payload);
       } else {
-        setCurrentQuiz(response.data);
+        setCurrentQuiz(response);
         setSelectedAnswer("");
       }
     } catch (error) {
-      console.error("Error submitting answer:", error);
+      console.error("Error in handleNextQuestion:", error);
     }
   };
+
+
+
+
+
+
+
+
+
+
+
 
   const handlePrevious = async () => {
     try {
@@ -271,6 +282,11 @@ const Index = (props) => {
   const QuizContent = () => {
     return (
       <div className="bg-background rounded-lg md:px-24 p-3 md:pt-14 md:pb-20 space-y-6">
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800">
+          <p className="text-sm">
+            ⚠️ Important: Please stay on this page until you complete the quiz. If you leave or switch tabs, your quiz will be automatically submitted with your current answers.
+          </p>
+        </div>
         <Timer />
         <h3 className="text-2xl font-medium capitalize">{currentQuiz?.objective}</h3>
         {currentQuiz?.question && (
@@ -320,7 +336,7 @@ const Index = (props) => {
               Previous
             </Button>
             <Button
-              onClick={handleNextQuestion}
+              onClick={() => handleNextQuestion()}
               className="absolute right-0"
               type="button"
               disabled={!selectedAnswer}
@@ -372,6 +388,24 @@ const Index = (props) => {
   };
 
   const [quizScoreDIalogOpen, setQuizScoreDialogOpen] = useState(true);
+
+
+
+
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === 'hidden' && !showGrade) {
+  //       handleTimeUp();
+  //       setIsQuizCompleted(true);
+  //     }
+  //   };
+
+  //   document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange);
+  //   };
+  // }, [showGrade]);
 
   useEffect(() => {
     if (isQuizCompleted) {
@@ -656,6 +690,7 @@ const Index = (props) => {
       </div>
     );
   };
+
 
   useEffect(() => {
     return () => {

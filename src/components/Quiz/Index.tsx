@@ -550,7 +550,7 @@ const Index = (props) => {
               </DialogDescription>
               {scorePercentage < 50 && (
                 <p className="text-red-600 py-3">
-                  You scored less than 50%. Do you want to retake the quiz?
+                  You scored less than 50%.
                 </p>
               )}
               {scorePercentage < 50 && (
@@ -564,9 +564,9 @@ const Index = (props) => {
                       ? "Analyzing your mistakes ..."
                       : "Analyze Mistake(s)"}
                   </Button>
-                  <Button onClick={handleRetakeQuiz} type="submit">
+                  {/* <Button onClick={handleRetakeQuiz} type="submit">
                     Retake Quiz
-                  </Button>
+                  </Button> */}
                 </DialogFooter>
               )}
             </DialogHeader>

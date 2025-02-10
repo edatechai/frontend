@@ -434,14 +434,14 @@ const TeacherRoom = () => {
                 Multiple choice questions
               </DropdownMenuItem>
 
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() => {
                   checkIfExceededLimit()
                  
                 }}
               >
                 Exam styled questions
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             {/* <DropdownMenuSeparator /> */}
           </DropdownMenuContent>

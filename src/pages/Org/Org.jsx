@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { licenseColumns } from "../../components/table/columns";
 import { DataTable } from "../../components/table/data-table";
-import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
+import { useGetAccountByIdQuery, useGenerateUserGuideMutation } from "../../features/api/apiSlice";
 import jsPDF from "jspdf";
 import * as XLSX from 'xlsx';
 
@@ -21,6 +21,17 @@ const Index = () => {
       .catch((err) => {
         console.error("Failed to copy: ", err);
       });
+  };
+  const [generateUserGuide, { isLoading: isGenerating }] = useGenerateUserGuideMutation();
+
+  const handleGenerateUserGuide = async () => {
+   const response = await generateUserGuide(data?._id);
+   console.log("response", response);
+   if(response?.data?.success === true){
+    alert(response?.data?.message);
+   }else{
+    alert(response?.data?.message);
+   }
   };
 
   const handleExportToPDF = () => {
@@ -93,6 +104,15 @@ const Index = () => {
       <div className="flex justify-between items-center mb-4">
         <div className="text-xl font-medium">License Keys</div>
         <div className="space-x-2">
+          {data?.userGuideUrl ? (
+            <button onClick={() => window.open(data.userGuideUrl, '_blank')} className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
+              Download User Guide
+            </button>
+          ) : (
+            <button onClick={handleGenerateUserGuide} className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
+             {isGenerating ? "Generating..." : "Generate User Guide"}
+            </button>
+          )}
           <button onClick={handleExportToPDF} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
             Export to PDF
           </button>

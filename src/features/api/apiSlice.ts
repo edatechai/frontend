@@ -638,6 +638,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Quiz"],
     }),
+
+    generateUserGuide: builder.mutation({
+      query: (accountId) => ({
+        url: '/api/users/generateAndSendUserGuide',
+        method: 'POST',
+        body: { accountId },
+      }),
+    }),
   }),
 });
 
@@ -731,4 +739,7 @@ export const {
   //parent
   useGetChildResultQuery,
   useGetChildSandWMutation,
+
+  // org admin
+  useGenerateUserGuideMutation,
 } = apiSlice;

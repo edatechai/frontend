@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useState } from "react";
-import { useUpdateProfileMutation } from "@/features/api/apiSlice";
+import { useUpdatePasswordMutation, useUpdateProfileMutation } from "@/features/api/apiSlice";
 import { toast } from "sonner";
 
 export function EditProfileForm({ userInfo }: { userInfo: any }) {
@@ -247,20 +247,30 @@ export function EditProfileForm({ userInfo }: { userInfo: any }) {
 
 export function EditPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const isLoading = false;
-  // 1. Define your form.
+  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
+
   const form = useForm<z.infer<typeof EditPasswordSchema>>({
     resolver: zodResolver(EditPasswordSchema),
     defaultValues: {
-      //   username: "",
+      currentPassword: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof EditPasswordSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof EditPasswordSchema>) {
+    console.log("values", values);
+    const payload = {
+      oldPassword: values.currentPassword,
+      newPassworrd: values.password
+    }
+    console.log("payload", payload);
+    try {
+      const response = await updatePassword(payload);
+      console.log("response", response);
+    } catch (error) {
+      console.log("error", error);
+    }
   }
 
   return (
@@ -360,13 +370,13 @@ export function EditPasswordForm() {
             />
           </div>
         </div>
-        <Button disabled className="w-fit self-end" size="sm">
+        <Button disabled={isLoading} className="w-fit self-end" size="sm">
           {isLoading && (
             <span className="mr-2 animate-spin">
               <Loader />
             </span>
           )}
-          Register
+          Update Password
         </Button>
       </form>
     </Form>

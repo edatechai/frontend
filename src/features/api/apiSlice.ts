@@ -87,6 +87,13 @@ export const apiSlice = createApi({
       }),
     }),
 
+    updatePassword: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/updatePassword",
+        method: "POST",
+        body: payload,
+      }),
+    }),
     createAccount: builder.mutation({
       query: (payload) => ({
         url: "/api/account/createAccount",
@@ -455,10 +462,10 @@ export const apiSlice = createApi({
     }),
 
     updateBio: builder.mutation({
-      query: ({ id, bio }) => ({
+      query: ({ id, bio, newPassword, oldPassword }) => ({
         url: `/api/users/updateBio/${id}`,
         method: "PUT",
-        body: { bio },
+        body: { bio, newPassword, oldPassword },
       }),
       invalidatesTags: ["CurrentUser"],
     }),
@@ -667,6 +674,7 @@ export const {
   useDeleteAccountAndUsersMutation,
   useGetUsersByAccountIdQuery,
   useAddMoreLicensesMutation,
+  useUpdatePasswordMutation,
   //classRoom
   useCreateClassRoomMutation,
   useGetAllClassRoomsQuery,

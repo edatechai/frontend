@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TbCurrencyNaira } from 'react-icons/tb';
 //import Cardone from '../components/cards/cardone';
-import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation } from '../../features/api/apiSlice';
+import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation, useUpdateMonthlyRequestLimitMutation } from '../../features/api/apiSlice';
 import countryList from "react-select-country-list";
 const LicenseModal = ({ isVisible, onClose, license }) => {
   console.log("this is data ", license);
@@ -17,6 +17,7 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
   const totalPages = Math.ceil(license.license.length / recordsPerPage);
 
   const [deleteLicense, {isLoading, isError, isSuccess}] = useDeleteLicenseMutation()
+  const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
 
   const handleDeleteLicense = async(license, id)=>{
     console.log("license", license, id);
@@ -67,8 +68,7 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
         <p><strong>Email:</strong> {license.email}</p>
         <p><strong>Category:</strong> {license.category}</p>
         <p><strong>Number of Licenses:</strong> {license.license.length}</p>
-       
-
+        <p><strong>Monthly Request Limit:</strong> {license.monthlyRequestLimit}</p>
         <div className="overflow-x-auto mt-10">
           <table className="table">
             <thead>
@@ -153,12 +153,15 @@ const Index = () => {
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [monthlyRequestLimit, setMonthlyRequestLimit] = useState('');
 
   const [createAccount, { isloading, isError, isSuccess }] = useCreateAccountMutation();
   const [addMoreLicenses, { isLoading: isLoadingAddMoreLicenses, isError: isErrorAddMoreLicenses, isSuccess: isSuccessAddMoreLicenses }] = useAddMoreLicensesMutation();
   const { data, isLoading } = useGetAllAccountsQuery();
   console.log('this is data', data);
   const [item, setItem] = useState(null);
+  const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
+
  
 
   useEffect(() => {
@@ -241,6 +244,12 @@ const Index = () => {
     document.getElementById('my_modal_3').showModal()
   }
 
+  const handleUpdateMonthlyRequestLimit = (item) => {
+    console.log("this is the item", item);
+    setItem(item);
+    document.getElementById('my_modal_9').showModal()
+  }
+
   const handleAddMoreLicensesSubmit = async() => {
     // validate the number of license
     if(numberOfLicense < 1){
@@ -279,6 +288,29 @@ const Index = () => {
 
   console.log("this is the payload", payload);
 }
+
+const handleUpdateMonthlyRequestLimitSubmit = async() => {
+  console.log("this is the item", item);
+  const payload = {
+    id: item._id,
+    monthlyRequestLimit: monthlyRequestLimit
+  }
+
+  try {
+    const response = await updateMonthlyRequestLimit(payload)
+    console.log("response", response);
+    if(response.error){
+      alert(response.error.data.message);
+    } else {
+      setMonthlyRequestLimit('');
+      document.getElementById('my_modal_9').close()
+      alert("Monthly request limit updated successfully");
+    }
+  } catch (error) {
+    console.error("Error updating monthly request limit", error);
+  }
+  
+}
   
 
  
@@ -309,6 +341,31 @@ const Index = () => {
        disabled={isLoadingAddMoreLicenses}
        onClick={handleAddMoreLicensesSubmit} className='btn btn-primary'>
         {isLoadingAddMoreLicenses ? <span className="loading loading-spinner loading-md"></span> : "Add Licenses"}
+      </button>
+    </div>
+   
+  </div>
+</dialog>
+
+<dialog id="my_modal_9" className="modal">
+  <div className="modal-box">
+    <form method="dialog">
+      <div>{item?.accountName}</div>
+      {/* if there is a button in form, it will close the modal */}
+      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <h3 className="font-bold text-lg">Update Monthly Request Limit</h3>
+    <div className='flex flex-col gap-4'>
+      <div className='flex flex-col gap-2 mt-10'>
+        
+        <input
+        disabled={isLoadingUpdateMonthlyRequestLimit}
+         value={monthlyRequestLimit} onChange={(e) => setMonthlyRequestLimit(e.target.value)} type="text" id="monthlyRequestLimit" placeholder='Monthly Request Limit' className='input input-bordered w-full' />
+      </div>
+      <button
+       disabled={isLoadingUpdateMonthlyRequestLimit}
+       onClick={handleUpdateMonthlyRequestLimitSubmit} className='btn btn-primary'>
+        {isLoadingUpdateMonthlyRequestLimit ? <span className="loading loading-spinner loading-md"></span> : "Update Monthly Request Limit"}
       </button>
     </div>
    
@@ -367,6 +424,17 @@ const Index = () => {
                           
                           {openDropdownId === item._id && (
                             <ul className="absolute right-0 bottom-full  mb-1 w-48 bg-white border rounded-md shadow-lg m">
+                               <li>
+                                <button 
+                                  onClick={() => {
+                                    handleUpdateMonthlyRequestLimit(item);
+                                    setOpenDropdownId(null);
+                                  }}
+                                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                  Update Monthly Request Limit
+                                </button>
+                              </li>
                               <li>
                                 <button 
                                   onClick={() => {

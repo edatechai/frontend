@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { useUpdateBioMutation, useUpdatePasswordMutation } from "../../features/api/apiSlice";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+<<<<<<< HEAD
 
 const Index = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -40,6 +41,39 @@ const Index = () => {
       toast.error("No changes made");
       return;
     }
+=======
+import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
+
+const Index = () => {
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const [updateBio,] = useUpdateBioMutation();
+  const [updatePassword, { isLoading: isPasswordUpdating }] = useUpdatePasswordMutation();
+ 
+
+  const [bio, setBio] = useState(userInfo?.bio);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isBioLoading, setIsBioLoading] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
+
+  console.log({ userInfo });
+
+  const handlePasswordUpdate = async () => {
+    console.log({password, confirmPassword, currentPassword});
+    // check if what is in the bio is the same as the userInfo?.bio
+    if (password === undefined && confirmPassword === undefined && currentPassword === undefined) {
+      toast.error("there is nothing to update");
+      return;
+    }
+   
+>>>>>>> 69ce9fe2 (new one)
     if (password !== confirmPassword) {
       toast.error("New passwords don't match");
       return;
@@ -49,6 +83,7 @@ const Index = () => {
       return; 
     }
     try {
+<<<<<<< HEAD
       const res = await updateBio({ id: userInfo?._id, bio: bio, newPassword: password, oldPassword: currentPassword}).unwrap();
       console.log(res);
       if (res.status === true) {
@@ -81,6 +116,64 @@ const Index = () => {
     const res = await updatePassword(payload).unwrap();
     console.log("res", res);
   };
+=======
+      setIsLoading(true);
+      const payload = {
+        id: userInfo?._id,
+        newPassword: password,
+        oldPassword: currentPassword
+      };
+     // const res = await updateBio(payload).unwrap();
+      const res = await axios.post(`https://server.edatech.io/api/users/updatePassword/${userInfo?._id}`, payload);
+      console.log("this is the response", res);
+      if (res.status === 200) {
+        setIsLoading(false);
+        toast.success("Password updated successfully");
+        setPassword("");
+        setConfirmPassword("");
+        setCurrentPassword("");
+      }
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleBioUpdate = async () => {
+    
+    console.log({bio});
+    if (bio === userInfo?.bio) {
+      toast.error("No changes made");
+      return;
+    }
+    const payload = {
+      id: userInfo?._id,
+      bio: bio
+    }
+    try {
+      setIsBioLoading(true);
+      const res = await axios.post(`https://server.edatech.io/api/users/updatebio/${userInfo?._id}`, payload);
+      console.log("this is the response", res);
+      if (res.status === 200) {
+        toast.success("Bio updated successfully");
+        setIsBioLoading(false);
+        // wait 3 seconds before reloading the page
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      
+      }
+    } catch (error: any) {
+      setIsBioLoading(false);
+      toast.error(error.response.data.message);
+    }
+
+
+    
+  }
+
+ 
+>>>>>>> 69ce9fe2 (new one)
 
   return (
     <div className="rounded p-7 bg-background">
@@ -117,7 +210,11 @@ const Index = () => {
           <h3 className="text-2xl text-[#CACED8]">Edit Profile</h3>
           {userInfo?.bio && (
             <div className="mt-7 font-light border-primary/10 rounded border-[20px] p-3">
+<<<<<<< HEAD
               {userInfo?.bio}
+=======
+              {bio}
+>>>>>>> 69ce9fe2 (new one)
             </div>
           )}
           <p className="mt-7">
@@ -133,6 +230,7 @@ const Index = () => {
             className="textarea textarea-bordered w-full min-h-[200px] mt-7"
             placeholder="your goals and aspirations"
           ></textarea>
+<<<<<<< HEAD
           {/* add the password  update input form here */}
           <div>
             <h3 className="text-2xl mt-7 text-[#CACED8]">Edit Password</h3>
@@ -151,6 +249,72 @@ const Index = () => {
 
           <Button className="w-full mt-7" onClick={handleUpdate} disabled={isLoading}>
             {isLoading ? "Updating Bio..." : userInfo?.bio ? "Update Bio" : "Submit"}
+=======
+
+          <Button className="w-full mt-7" onClick={handleBioUpdate} disabled={isBioLoading}>
+            {isBioLoading ? "Updating Bio..." : "Update Bio"}
+          </Button>
+
+
+
+
+          {/* add the password  update input form here */}
+          <div>
+            <h3 className="text-2xl mt-7 text-[#CACED8]">Edit Password</h3>
+            <div className="relative">
+              <Input
+              value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="mt-7 pr-10"
+                type={showPasswords.current ? "text" : "password"}
+                placeholder="Current Password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
+                className="absolute right-3 top-1/4 text-gray-500 hover:text-gray-700"
+              >
+                {showPasswords.current ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            <div className="relative">
+              <Input
+              value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-7 pr-10"
+                type={showPasswords.new ? "text" : "password"}
+                placeholder="New Password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
+                className="absolute right-3 top-1/4 text-gray-500 hover:text-gray-700"
+              >
+                {showPasswords.new ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            <div className="relative">
+              <Input
+              value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-7 pr-10"
+                type={showPasswords.confirm ? "text" : "password"}
+                placeholder="Confirm New Password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
+                className="absolute right-3 top-1/4  text-gray-500 hover:text-gray-700"
+              >
+                {showPasswords.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
+          
+
+          <Button className="w-full mt-7" onClick={handlePasswordUpdate} disabled={isLoading}>
+            {isLoading ? "Updating Password..." : "Update Password"}
+>>>>>>> 69ce9fe2 (new one)
           </Button>
         </TabsContent>
       

@@ -10,38 +10,6 @@ import { useSelector } from "react-redux";
 import { useUpdateBioMutation, useUpdatePasswordMutation } from "../../features/api/apiSlice";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
-<<<<<<< HEAD
-
-const Index = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const [updateBio, { isLoading }] = useUpdateBioMutation();
-  const [updatePassword, { isLoading: isPasswordUpdating }] = useUpdatePasswordMutation();
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [bio, setBio] = useState();
-  const [password, setPassword] = useState();
-  const [confirmPassword, setConfirmPassword] = useState();
-  const [currentPassword, setCurrentPassword] = useState();
-
-  console.log({ userInfo });
-
-  const handleUpdate = async () => {
-
-    console.log({bio, password, confirmPassword, currentPassword});
-    // check if what is in the bio is the same as the userInfo?.bio
-    if (bio === undefined && password === undefined && confirmPassword === undefined && currentPassword === undefined) {
-      toast.error("there is nothing to update");
-      return;
-    }
-    if (bio === userInfo?.bio) {
-      toast.error("No changes made");
-      return;
-    }
-=======
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -73,7 +41,6 @@ const Index = () => {
       return;
     }
    
->>>>>>> 69ce9fe2 (new one)
     if (password !== confirmPassword) {
       toast.error("New passwords don't match");
       return;
@@ -83,40 +50,6 @@ const Index = () => {
       return; 
     }
     try {
-<<<<<<< HEAD
-      const res = await updateBio({ id: userInfo?._id, bio: bio, newPassword: password, oldPassword: currentPassword}).unwrap();
-      console.log(res);
-      if (res.status === true) {
-        toast.success("Bio updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating pass score:", error);
-      toast.error(error as string);
-    }
-  };
-
-  const handlePasswordUpdate = async (e: FormEvent) => {
-    e.preventDefault(); // Prevents the default form submission behavior
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
-    }
-
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long");
-      return;
-    }
-
-    const payload = {
-      oldPassword: passwordData.currentPassword,
-      newPassword: passwordData.newPassword,
-    };
-
-    const res = await updatePassword(payload).unwrap();
-    console.log("res", res);
-  };
-=======
       setIsLoading(true);
       const payload = {
         id: userInfo?._id,
@@ -173,7 +106,6 @@ const Index = () => {
   }
 
  
->>>>>>> 69ce9fe2 (new one)
 
   return (
     <div className="rounded p-7 bg-background">
@@ -210,11 +142,7 @@ const Index = () => {
           <h3 className="text-2xl text-[#CACED8]">Edit Profile</h3>
           {userInfo?.bio && (
             <div className="mt-7 font-light border-primary/10 rounded border-[20px] p-3">
-<<<<<<< HEAD
-              {userInfo?.bio}
-=======
               {bio}
->>>>>>> 69ce9fe2 (new one)
             </div>
           )}
           <p className="mt-7">
@@ -230,26 +158,6 @@ const Index = () => {
             className="textarea textarea-bordered w-full min-h-[200px] mt-7"
             placeholder="your goals and aspirations"
           ></textarea>
-<<<<<<< HEAD
-          {/* add the password  update input form here */}
-          <div>
-            <h3 className="text-2xl mt-7 text-[#CACED8]">Edit Password</h3>
-            <Input
-            onChange={(e)=> setCurrentPassword(e.target.value)}
-             className="mt-7" type="password" placeholder="Current Password" />
-            <Input
-            onChange={(e)=> setPassword(e.target.value)}
-             className="mt-7" type="password" placeholder="New Password" />
-            <Input  
-            onChange={(e)=> setConfirmPassword(e.target.value)}
-             className="mt-7" type="password" placeholder="Confirm New Password" />
-           
-          </div>
-          
-
-          <Button className="w-full mt-7" onClick={handleUpdate} disabled={isLoading}>
-            {isLoading ? "Updating Bio..." : userInfo?.bio ? "Update Bio" : "Submit"}
-=======
 
           <Button className="w-full mt-7" onClick={handleBioUpdate} disabled={isBioLoading}>
             {isBioLoading ? "Updating Bio..." : "Update Bio"}
@@ -314,7 +222,6 @@ const Index = () => {
 
           <Button className="w-full mt-7" onClick={handlePasswordUpdate} disabled={isLoading}>
             {isLoading ? "Updating Password..." : "Update Password"}
->>>>>>> 69ce9fe2 (new one)
           </Button>
         </TabsContent>
       

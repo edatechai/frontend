@@ -74,7 +74,7 @@ const LicenseModal = ({
               </tr>
             </thead>
             <tbody>
-              {currentRecords.map((item, index) => (
+              {currentRecords?.map((item:any, index:any) => (
                 <tr key={index}>
                   <td>{item.fullName ? item.fullName : "Not Assigned"}</td>
                   <td>{item.email ? item.email : "Not Assigned"}</td>

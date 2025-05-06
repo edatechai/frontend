@@ -430,7 +430,7 @@ export const apiSlice = createApi({
         // Add more specific tags for better cache control
         result 
           ? [
-              ...result.map(({ id }) => ({ type: 'AddChild' as const, id })),
+              ...result.map(({ id }: { id: string }) => ({ type: 'AddChild' as const, id })),
               { type: 'AddChild' as const, id: 'LIST' }
             ]
           : [{ type: 'AddChild', id: 'LIST' }],

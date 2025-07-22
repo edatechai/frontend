@@ -24,7 +24,8 @@ export const apiSlice = createApi({
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://server.edatech.io
     //http://51.21.244.112:5000/
-    baseUrl: "http://16.170.140.178",
+    //https://ai.edatech.ai/app
+    baseUrl: "http://localhost:5000/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -32,6 +33,7 @@ export const apiSlice = createApi({
       }
     },
   }),
+  
   tagTypes: [
     "CurrentUser",
     "CreateAccount",
@@ -323,8 +325,8 @@ export const apiSlice = createApi({
     }),
 
     getAllQuizByObjCode: builder.query({
-      query: ({ lo, country, objCode }) =>
-        `/api/quiz/getAllQuizByObjCode?country=${country}&lo=${lo}&objCode=${objCode}`,
+      query: ({ lo, country, objCode, page = 1, limit = 50 }) =>
+        `/api/quiz/getAllQuizByObjCode?country=${country}&lo=${lo}&objCode=${objCode}&page=${page}&limit=${limit}`,
       providesTags: ["Quiz"],
     }),
 

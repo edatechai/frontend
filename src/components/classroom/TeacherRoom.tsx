@@ -5,6 +5,7 @@ import {
   useFindAllObjectivesQuery,
   useCreateQuizMutation,
   useLazyGetAllQuizByObjCodeQuery,
+  useGetAccountByIdQuery
 } from "../../features/api/apiSlice";
 import {
   Dialog,
@@ -49,12 +50,13 @@ import {
 const TeacherRoom = () => {
   let { state } = useLocation();
   const userInfo = useSelector((state: any) => state?.user.userInfo);
+  const { data: schoolData } = useGetAccountByIdQuery(userInfo?.accountId);
   const { data: allObjectives } = useFindAllObjectivesQuery({
     subject: state?.data?.subject,
-    country: userInfo?.country,
+    country: schoolData?.country,
   });
 
-  console.log("this is userInfo", userInfo)
+  console.log("this is userInfo here me", userInfo)
   console.log("this is class data", state?.data)
   const [createQuiz] = useCreateQuizMutation();
   const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
@@ -193,19 +195,49 @@ const TeacherRoom = () => {
     const response = await createQuiz(payload);
    
     if (response.data.status === true) {
-      const getAllQ = await getAllQuiz({
+      console.log("Quiz created successfully, now fetching questions...");
+      console.log("Request params:", {
         lo: selectedObjective?.objective,
-        country: userInfo?.country,
+        country: schoolData?.country,
         objCode: selectedObjective?.objCode,
+        page: 1,
+        limit: 50
       });
 
-      console.log("data here", getAllQ);
-      setIsLoadingQuiz(false);
+      try {
+        const getAllQ = await getAllQuiz({
+          lo: selectedObjective?.objective,
+          country: schoolData?.country,
+          objCode: selectedObjective?.objCode,
+          page: 1,
+          limit: 50, // Start with smaller chunks for faster loading
+        });
 
-      toast(response.data.message);
-     
-      setOpenQuizDialog(false);
-      setOpenEditQuizDialog(true);
+        console.log("getAllQ response:", getAllQ);
+        console.log("getAllQ data:", getAllQ.data);
+        console.log("getAllQ error:", getAllQ.error);
+        console.log("getAllQ isLoading:", getAllQ.isLoading);
+        console.log("getAllQ isSuccess:", getAllQ.isSuccess);
+        console.log("getAllQ isError:", getAllQ.isError);
+
+        if (getAllQ.error) {
+          console.error("Error fetching questions:", getAllQ.error);
+          toast.error("Error fetching questions");
+        } else if (getAllQ.data) {
+          console.log("Questions fetched successfully:", getAllQ.data.length);
+          toast(response.data.message);
+          setOpenQuizDialog(false);
+          setOpenEditQuizDialog(true);
+        } else {
+          console.warn("No data received from getAllQuiz");
+          toast.warning("No questions found");
+        }
+      } catch (error) {
+        console.error("Exception in getAllQuiz:", error);
+        toast.error("Error fetching questions");
+      }
+
+      setIsLoadingQuiz(false);
     } else {
       toast.error("Error creating quiz", {
         description: response.data.message,

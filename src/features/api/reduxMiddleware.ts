@@ -7,9 +7,10 @@ unauthorizedMiddleware.startListening({
   matcher: isRejectedWithValue,
   effect: async (action, listenerApi) => {
     console.log({ action, listenerApi });
+    const publicPaths = ["/", "/complete-agent-signup"];
     if (
       (action?.payload?.status === 401 || action?.payload?.status === 400) &&
-      window.location.pathname != "/"
+      !publicPaths.includes(window.location.pathname)
     ) {
       window.location.href = "/";
     }

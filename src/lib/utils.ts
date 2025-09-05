@@ -61,3 +61,25 @@ export const latexToHTML = (latexString: string) =>
       return match; // Fallback in case of unexpected match
     }
   );
+
+// Best-effort cleanup for known artifacts in question/option payloads
+export const formatQuizHtml = (raw: string | undefined | null): string => {
+  if (!raw || typeof raw !== 'string') return '';
+  let s = raw;
+  // Fix currency artifacts like "₦}1,500" → "₦1,500"
+  s = s.replace(/([₦$€£])\}/g, '$1');
+  // Fix numeric artifacts like "2,!400" → "2,400" and "2,!700" → "2,700"
+  s = s.replace(/(\d),(?:!)(\d{3})/g, '$1,$2');
+  // Also handle any stray non-digit (rare) right after a thousands comma: "2,?400" → "2,400"
+  s = s.replace(/(\d),[^0-9](\d{3})/g, '$1,$2');
+  // Normalize Windows newlines
+  s = s.replace(/\r\n/g, '\n');
+  // Run basic LaTeX conversions
+  s = latexToHTML(s);
+  // Strip any script/style tags for safety
+  s = s.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
+  s = s.replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '');
+  // Remove inline event handlers like onclick="..."
+  s = s.replace(/ on[a-z]+="[^"]*"/gi, '');
+  return s;
+};

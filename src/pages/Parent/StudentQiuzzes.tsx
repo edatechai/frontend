@@ -97,7 +97,7 @@ const StudentQiuzzes = () => {
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 {!isLoading ? (
-                  AllQuiz?.map((val, i: number) => (
+                  AllQuiz?.map((val: any, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
@@ -110,9 +110,9 @@ const StudentQiuzzes = () => {
                           {val?.numberOfQuestions} questions
                         </p>
                         {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
-                        {/* <Link
-                          // to="/dashboard/quiz"
-                          to={`/dashboard/quiz?obj_code=${val?.questionsAndAnswers?.[0]?.objCode}&qs=${val?.questionsAndAnswers?.length}`}
+                        {/* Parent flow may not start quizzes here; if needed, we can link similarly:
+                        <Link
+                          to={`/dashboard/quiz?obj_code=${val?.objCode}&qs=${val?.numberOfQuestions}`}
                           state={{ data: val }}
                           className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
                         >

@@ -43,6 +43,7 @@ const EditQuiz = ({
   const [answer, setAnswer] = useState(question.answer);
   const [_id, setId] = useState();
   const [updateQuiz, { isLoading: isUpdating }] = useUpdateQuizMutation();
+  const [isSaving, setIsSaving] = useState(false);
   const userInfo = useSelector((state: any) => state.user.userInfo);
 
   
@@ -108,25 +109,35 @@ const EditQuiz = ({
     };
 
     try {
-      // Helper function to strip HTML tags
-      
-      
+      setIsSaving(true);
+      console.log("Starting update...");
       console.log("payload", payload);
       
-      // TODO: Implement your update logic here
-      const result =  await updateQuiz(payload);
-      console.log("result", result)
-      // status is 200 show result.data.message
-      if (result.data.status) {
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+      
+      const result = await Promise.race([updateQuiz(payload), timeoutPromise]);
+      console.log("Full result:", result);
+      console.log("result.data:", result.data);
+      console.log("result.error:", result.error);
+      
+      if (result.data?.status) {
         setEdittedIndexes((prev) => [...prev, question._id]);
-        toast.success(result.data.message);
+        toast.success(result.data.message || "Quiz updated successfully!");
+      } else if (result.error) {
+        console.error("API Error:", result.error);
+        toast.error(result.error.data?.message || "Failed to update quiz");
       } else {
-        toast.error(result.data.message);
+        console.error("Unexpected result format:", result);
+        toast.error(result.data?.message || "Failed to update quiz");
       }
     } catch (error) {
-      console.error(error);
-        // Add error toast
+      console.error("Catch block error:", error);
       toast.error("There was an error updating the question");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -202,8 +213,15 @@ const EditQuiz = ({
           </div>
         </div>
 
-        <Button onClick={handleSubmit} className="mt-4">
-          Save Changes
+        <Button onClick={handleSubmit} className="mt-4" disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save Changes"
+          )}
         </Button>
       </CardContent>
     </Card>

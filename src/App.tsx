@@ -11,6 +11,16 @@ import { ParentsLayout } from "./components/Layouts/Parent";
 import ParentDashboard from "./pages/Parent/Parent";
 import { useCurrentUserQuery } from "./features/api/apiSlice";
 import CreateOrg from "./pages/SuperAdmin/CreateOrg";
+import AgentManagement from "./pages/SuperAdmin/AgentManagement";
+import SchoolManagement from "./pages/SuperAdmin/SchoolManagement";
+import CompleteAgentSignup from "./pages/Auth/CompleteAgentSignup";
+import AgentDashboard from "./pages/Agent/AgentDashboard";
+import AgentLayout from "./components/Layouts/AgentLayout";
+import AgentDashboardOverview from "./pages/Agent/AgentDashboardOverview";
+import EarningsOverview from "./pages/Agent/EarningsOverview";
+import ActiveUsersAnalytics from "./pages/Agent/ActiveUsersAnalytics";
+import SchoolsManagement from "./pages/Agent/SchoolsManagement";
+import EarningsCalculatorPage from "./pages/Agent/EarningsCalculatorPage";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "./features/user/userSlice";
 import Profile from "./pages/Profile/Index";
@@ -74,6 +84,9 @@ const App = () => {
       // <Provider store={store}>
       <div className="overflow-x-hidden">
         <Routes>
+          {/* Public routes */}
+          <Route path="/complete-agent-signup" element={<CompleteAgentSignup />} />
+          
           {/* Teachers layout */}
           <Route element={<Layout />}>
             <Route path="/teacher/profile" element={<Profile />} />
@@ -91,12 +104,36 @@ const App = () => {
             {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
           </Route>
 
+          {/* Agent layout */}
+          <Route element={<AgentLayout />}>
+            <Route path="/agent" element={<AgentDashboardOverview />} />
+            <Route path="/agent/earnings" element={<EarningsOverview />} />
+            <Route path="/agent/analytics" element={<ActiveUsersAnalytics />} />
+            <Route path="/agent/schools" element={<SchoolsManagement />} />
+            <Route path="/agent/calculator" element={<EarningsCalculatorPage />} />
+            <Route path="/agent/profile" element={<Profile />} />
+            <Route path="/agent/under-development" element={<UnderDev />} />
+          </Route>
+          
+          {/* Legacy agent dashboard route */}
+          <Route element={<Layout />}>
+            <Route path="/agent-dashboard" element={<AgentDashboard />} />
+          </Route>
+
           {/* Super Admin layout */}
           <Route element={<SuperAdminLayout />}>
             <Route path="/super-admin" element={<SuperAdminDashboard />} />
             <Route
               path="/super-admin/create-organization"
               element={<CreateOrg />}
+            />
+            <Route
+              path="/super-admin/agent-management"
+              element={<AgentManagement />}
+            />
+            <Route
+              path="/super-admin/school-management"
+              element={<SchoolManagement />}
             />
             <Route path="/super-admin/profile" element={<Profile />} />
             <Route

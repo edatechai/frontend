@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "./deploy.sh",
+    "deploy:build": "npm run build && ./deploy.sh",
+    "deploy:check": "ssh -i ~/main-key.pem ubuntu@ec2-13-61-178-46.eu-north-1.compute.amazonaws.com 'ls -la /var/www/frontend'"
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",

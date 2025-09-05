@@ -29,7 +29,7 @@ import {
 } from "../ui/breadcrumb";
 import { Link } from "react-router-dom";
 import TextWithLineBreaks from "../others/textWithLineBreaks";
-import { latexToHTML } from "@/lib/utils";
+import { formatQuizHtml, latexToHTML } from "@/lib/utils";
 import Mathlive from "mathlive";
 
 const Index = (props) => {
@@ -293,7 +293,7 @@ const Index = (props) => {
           <h4
             className="rounded bg-[#EBF0FC] px-4 py-5 font-medium first-letter:uppercase"
             dangerouslySetInnerHTML={{
-              __html: currentQuiz?.question
+              __html: formatQuizHtml(currentQuiz?.question)
             }}
           ></h4>
         )}
@@ -318,7 +318,7 @@ const Index = (props) => {
               </span>
               <span
                 dangerouslySetInnerHTML={{
-                  __html: latexToHTML(currentQuiz?.[`option${option.toUpperCase()}`])
+                  __html: formatQuizHtml(currentQuiz?.[`option${option.toUpperCase()}`])
                 }}
               ></span>
             </label>
@@ -642,7 +642,7 @@ const Index = (props) => {
                   <p
                     className="font-semibold text-[18px]"
                     dangerouslySetInnerHTML={{
-                      __html: latexToHTML(result?.question),
+                      __html: formatQuizHtml(result?.question),
                     }}
                   ></p>
                   <p className="text-sm">
@@ -655,7 +655,7 @@ const Index = (props) => {
                     <p>Correct option:</p>
                     <p
                       dangerouslySetInnerHTML={{
-                        __html: latexToHTML(result?.correctOption),
+                        __html: formatQuizHtml(result?.correctOption),
                       }}
                     ></p>
                   </span>

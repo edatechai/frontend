@@ -78,7 +78,7 @@ export function SandW({ classId, clas }: { classId: string }) {
   const renderChartContent = () => {
     if (isLoading) {
       return(
-       <div className="flex justify-center items-center h-64">
+       <div className="flex justify-center items-center py-8">
         <div className="w-8 h-8 border-4 border-t-transparent border-blue-500 rounded-full animate-spin mr-2"></div>
         <div>Loading chart data...</div>
       </div>
@@ -87,34 +87,30 @@ export function SandW({ classId, clas }: { classId: string }) {
     
     if (!chartDatas || chartDatas.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center h-64 gap-2 text-gray-500">
+        <div className="flex flex-col items-center justify-center py-8 gap-2 text-gray-500">
           <OctagonAlert className="w-6 h-6" />
           <span>No chart data available</span>
         </div>
       );
     }
 
+    const chartWidth = Math.max(200, chartDatas.length * 200); // 200px per objective to show ~2 at a time
+
     return (
-      <ChartContainer config={chartConfig} className="min-w-[600px]">
+      <ChartContainer config={chartConfig} style={{ width: `${chartWidth}px`, height: 400 }}>
         <BarChart 
           accessibilityLayer 
           data={chartDatas}
-          width={600}
-          height={300}
+         width={chartWidth}
         >
           <CartesianGrid vertical={false} />
           <XAxis
-            dataKey="name"
+            dataKey="objective_name"
             tickLine={false}
             tickMargin={0}
             axisLine={false}
-            tickFormatter={(value) => value}
+            tickFormatter={(value) => value?.length > 15 ? value.slice(0, 15) + '…' : value}
             interval={0}
-            
-            
-           
-            width={300}
-
           />
           <ChartTooltip
             cursor={false}

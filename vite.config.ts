@@ -9,4 +9,20 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    exclude: [
+      "better-react-mathjax",
+      "mathlive",
+      "@reduxjs/toolkit/query/react"
+    ],
+    include: [
+      "react-redux",
+      "@reduxjs/toolkit"
+    ]
+  },
+  server: {
+    fs: {
+      strict: false
+    }
+  }
 });

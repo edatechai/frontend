@@ -62,9 +62,27 @@ const Index = () => {
   const toggleView = (view: ShowState) => setShow(view);
 
   return (
-   
-
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2 relative max-w-screen-2xl mx-auto">
+      {/* Logo section at top left */}
+      <div className="absolute top-4 left-4 z-10">
+        {/* <a 
+          href="https://edatech.ai" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-block hover:opacity-80 transition-opacity duration-200"
+        >
+          <img 
+            src="/edat_logo.png" 
+            alt="Edat Logo" 
+            className="h-10 w-auto mt-2"
+          />
+        </a> */}
+        {/* add return home button */}
+        <Button variant="link" onClick={() => window.location.href = 'https://edatech.ai'} className="px-0 text-lg">
+          Return Home
+        </Button>
+      </div>
+      
       <div className="flex items-center justify-center py-12 min-h-screen">
         {show === 'login' && (
           <div className="mx-auto grid w-[350px] gap-2">

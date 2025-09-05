@@ -26,7 +26,7 @@ const StudentRoom = (props) => {
     useFindAllObjectivesQuery();
   const [createQuiz, { isLoading: isLoadingQuiz }] = useCreateQuizMutation();
   const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo?._id);
-  const { data: AllQuiz } = useFindAllQuizByIdQuery(state?.data);
+  const { data: AllQuiz } = useFindAllQuizByIdQuery({ id: state?.data, page: 1, limit: 12 });
   const [RandomSelect, { data }] = useQuizRandomSelectMutation();
 
   console.log("here me", AllQuiz);
@@ -158,8 +158,7 @@ const StudentRoom = (props) => {
                       handleRandomSelect(i)
                     }} className="btn btn-primary">Take Quiz</button> */}
                       <Link
-                        //</div> to="/dashboard/quiz"
-                        to="/dashboard/quiz"
+                        to={`/dashboard/quiz?obj_code=${i?.objCode}&qs=${i?.numberOfQuestions}`}
                         state={{ data: i }}
                       >
                         <button className="btn">Take Quiz</button>

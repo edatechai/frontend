@@ -7,6 +7,7 @@ import { GrDocumentUpdate } from "react-icons/gr";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoIosLogOut } from "react-icons/io";
 import { LuUser } from "react-icons/lu";
+import { HiOutlineOfficeBuilding } from "react-icons/hi";
 import { useSelector } from "react-redux";
 
 const Sidebar = () => {
@@ -42,6 +43,16 @@ const Sidebar = () => {
             to="/dashboard/create-organization"
             label="Create Organization"
             icon={<GrDocumentUpdate />}
+          />
+          <SidebarButton
+            to="/super-admin/school-management"
+            label="School Management"
+            icon={<HiOutlineOfficeBuilding />}
+          />
+          <SidebarButton
+            to="/super-admin/agent-management"
+            label="Agent Management"
+            icon={<LuUserPlus />}
           />
           <SidebarButton
             click={() => alert("Page is under Development")}

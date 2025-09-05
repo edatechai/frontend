@@ -12,6 +12,7 @@ import {
   File,
   Key,
   FileText,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -110,6 +111,51 @@ export function Layout() {
           href: `/teacher/quizzes`,
           icon: <FileText className="h-4 w-4" />,
           iconMobile: <FileText className="h-5 w-5" />,
+        },
+      ]);
+    } else if (role == "agent") {
+      setMenus([
+        {
+          id: 1,
+          name: "Dashboard",
+          href: `/agent`,
+          icon: <Home className="h-4 w-4" />,
+          iconMobile: <Home className="h-5 w-5" />,
+        },
+        {
+          id: 2,
+          name: "User Management",
+          href: `/agent/under-development`,
+          icon: <Users className="h-4 w-4" />,
+          iconMobile: <Users className="h-5 w-5" />,
+        },
+        {
+          id: 3,
+          name: "Support Center",
+          href: `/agent/under-development`,
+          icon: <MessageSquare className="h-4 w-4" />,
+          iconMobile: <MessageSquare className="h-5 w-5" />,
+        },
+        {
+          id: 4,
+          name: "Reports",
+          href: `/agent/under-development`,
+          icon: <FileText className="h-4 w-4" />,
+          iconMobile: <FileText className="h-5 w-5" />,
+        },
+        {
+          id: 5,
+          name: "Profile",
+          href: `/profile`,
+          icon: <User className="h-4 w-4" />,
+          iconMobile: <User className="h-5 w-5" />,
+        },
+        {
+          id: 6,
+          name: "Settings",
+          href: `/agent/under-development`,
+          icon: <Settings className="h-4 w-4" />,
+          iconMobile: <Settings className="h-5 w-5" />,
         },
       ]);
     } else if (role == "org-admin") {

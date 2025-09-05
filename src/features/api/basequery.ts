@@ -10,8 +10,8 @@ const getToken = () => {
 };
 
 const baseQuery = fetchBaseQuery({
-  //baseUrl: "http://localhost:5000/",
-  baseUrl: "https://edatbackend.azurewebsites.net/",
+  baseUrl: "https://ai.edatech.ai/app",
+  
   prepareHeaders: async (headers) => {
     const token = getToken();
     if (token) {

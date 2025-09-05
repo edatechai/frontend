@@ -12,7 +12,7 @@ import {
   PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+
 
 import {
   Table,
@@ -22,14 +22,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Loader2 } from "lucide-react";
+
+
+interface ServerPagingProps {
+  page: number;
+  pages: number;
+  total?: number;
+  hasPrev?: boolean;
+  hasNext?: boolean;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -39,6 +46,7 @@ interface DataTableProps<TData, TValue> {
   error: any;
   pageSize?: number;
   noData?: string;
+  serverPaging?: ServerPagingProps;
 }
 
 export function DataTable<TData, TValue>({
@@ -49,12 +57,13 @@ export function DataTable<TData, TValue>({
   isLoading = false,
   isError = false,
   error = null,
+  serverPaging,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize,
+    pageIndex: serverPaging ? Math.max(0, (serverPaging.page || 1) - 1) : 0,
+    pageSize: serverPaging ? serverPaging.pageSize : pageSize,
   });
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const [rowSelection, setRowSelection] = useState({});
@@ -84,42 +93,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full">
       {pageSize > 6 && (
         <div className="flex items-center py-4 gap-4">
-          {/* <Input
-            placeholder="Filter objectives..."
-            value={
-              (table.getColumn("objective")?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("objective")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          /> */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column?.columnDef?.header as string}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
+        
         </div>
       )}
       <div className="border">
@@ -175,68 +149,87 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        <div className="flex items-center justify-end space-x-2 py-4 mr-2 text-sm">
-          <span className="flex items-center gap-1 grow ml-5">
-            <div>Page</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount().toLocaleString()}
-            </strong>
-          </span>
-          {pageSize > 6 && (
+        <div className="flex items-center justify-between space-x-2 py-4 px-2 text-sm">
+          <div className="flex items-center gap-2 opacity-80">
+            {isLoading && (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                <span aria-live="polite" className="sr-only">Loading…</span>
+              </>
+            )}
+            {serverPaging ? (
+              <span>
+                Page <strong>{serverPaging.page}</strong> of <strong>{serverPaging.pages}</strong>
+                {typeof serverPaging.total === 'number' && (
+                  <span> · Total {serverPaging.total}</span>
+                )}
+              </span>
+            ) : (
+              <span>
+                Page <strong>{table.getState().pagination.pageIndex + 1}</strong> of <strong>{table.getPageCount().toLocaleString()}</strong>
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
             <span className="hidden sm:block">
               Rows per page:
               <select
                 className="p-2 mx-2 rounded bg-white border border-border hover:bg-accent"
-                value={table.getState().pagination.pageSize}
+                value={serverPaging ? serverPaging.pageSize : table.getState().pagination.pageSize}
                 onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
+                  const n = Number(e.target.value);
+                  if (serverPaging) {
+                    serverPaging.onPageSizeChange(n);
+                  } else {
+                    table.setPageSize(n);
+                  }
                 }}
+                disabled={isLoading}
               >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option
-                    key={pageSize}
-                    value={pageSize}
-                    className="bg-white m-0"
-                  >
-                    {pageSize}
-                  </option>
+                {[5, 10, 20, 50].map((n) => (
+                  <option key={n} value={n} className="bg-white m-0">{n}</option>
                 ))}
               </select>
             </span>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.firstPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<<"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {"<"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {">"}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.lastPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {">>"}
-          </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (serverPaging ? serverPaging.onPageChange(1) : table.firstPage())}
+              disabled={serverPaging ? (!serverPaging.hasPrev || isLoading) : !table.getCanPreviousPage()}
+            >
+              {"<<"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (serverPaging ? serverPaging.onPageChange(Math.max(1, serverPaging.page - 1)) : table.previousPage())}
+              disabled={serverPaging ? (!serverPaging.hasPrev || isLoading) : !table.getCanPreviousPage()}
+            >
+              {"<"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (serverPaging ? serverPaging.onPageChange(serverPaging.page + 1) : table.nextPage())}
+              disabled={serverPaging ? (!serverPaging.hasNext || isLoading) : !table.getCanNextPage()}
+            >
+              {">"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => (serverPaging ? serverPaging.onPageChange(serverPaging.pages) : table.lastPage())}
+              disabled={serverPaging ? (!serverPaging.hasNext || isLoading) : !table.getCanNextPage()}
+            >
+              {">>"}
+            </Button>
+            {isLoading && (
+              <span className="flex items-center gap-2 pl-2 text-muted-foreground">
+                <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                Loading...
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

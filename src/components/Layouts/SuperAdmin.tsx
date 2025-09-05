@@ -9,6 +9,7 @@ import {
   LineChart,
   Menu,
   Circle,
+  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,19 @@ export function SuperAdminLayout() {
               >
                 <ListPlus className="h-4 w-4" />
                 Create Organisation
+              </NavLink>
+              <NavLink
+                to="/super-admin/agent-management"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                    isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
+                  }`
+                }
+              >
+                <Users className="h-4 w-4" />
+                Agent Management
               </NavLink>
               {/* <NavLink
                 to="/super-admin/under-development"
@@ -172,6 +186,19 @@ export function SuperAdminLayout() {
                 >
                   <ListPlus className="h-5 w-5" />
                   Create Organisation
+                </NavLink>
+                <NavLink
+                  to="/super-admin/agent-management"
+                  className={({ isActive }) =>
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 ${
+                      isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
+                    }`
+                  }
+                >
+                  <Users className="h-5 w-5" />
+                  Agent Management
                 </NavLink>
                 <NavLink
                   to="/super-admin/under-development"

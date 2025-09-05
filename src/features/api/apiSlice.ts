@@ -10,22 +10,15 @@ const getToken = () => {
 };
 
 
-// Define our single API slice object
-//https://edatbackend.azurewebsites.net/
 //http://localhost:5000
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "https://edat-backend.onrender.com",
     // baseUrl: "http://localhost:5000/",
-    // baseUrl: "https://edatbackend.azurewebsites.net/",
-    //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://server.edatech.io
+    
     //http://51.21.244.112:5000/
     //https://ai.edatech.ai/app
-    baseUrl: "http://localhost:5000/",
+    baseUrl: "https://ai.edatech.ai/app",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -39,6 +32,8 @@ export const apiSlice = createApi({
     "CreateAccount",
     "AllAccounts",
     "Account",
+    "AgentSchools",
+    "TierOptions",
     "ClassRoom",
     "Objectives",
     "Question",
@@ -50,6 +45,11 @@ export const apiSlice = createApi({
     "YearGroup",
     "Arm",
     "Subject",
+    "AgentEarnings",
+    "CommissionSettings",
+    "AllEarnings",
+    "ActiveUsers",
+    "SchoolActivity",
   ],
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -97,6 +97,196 @@ export const apiSlice = createApi({
         body: payload,
       }),
     }),
+
+    // Agent management endpoints
+    createAgent: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/createAgent",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    completeAgentSignup: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/completeAgentSignup",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    getAllAgents: builder.query({
+      query: () => "/api/users/getAllAgents",
+      providesTags: ["User"],
+    }),
+
+    updateAgentStatus: builder.mutation({
+      query: ({ agentId, isActive }) => ({
+        url: `/api/users/updateAgentStatus/${agentId}`,
+        method: "PUT",
+        body: { isActive },
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    resendAgentInvitation: builder.mutation({
+      query: (agentId) => ({
+        url: `/api/users/resendAgentInvitation/${agentId}`,
+        method: "POST",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    deleteAgent: builder.mutation({
+      query: (agentId) => ({
+        url: `/api/users/deleteAgent/${agentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["User"],
+    }),
+
+    // Agent school creation
+    createSchoolByAgent: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/agent/createSchool",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["CreateAccount", "AllAccounts", "AgentSchools"],
+    }),
+
+    // Get schools created by agent
+    getSchoolsByAgent: builder.query({
+      query: () => "/api/users/agent/schools",
+      providesTags: ["AgentSchools"],
+    }),
+
+    // Super admin school management
+    getPendingSchools: builder.query({
+      query: () => "/api/users/superadmin/schools/pending",
+      providesTags: ["AgentSchools"],
+    }),
+
+    approveSchool: builder.mutation({
+      query: ({ schoolId, tier }) => ({
+        url: `/api/users/superadmin/schools/${schoolId}/approve`,
+        method: "PUT",
+        body: tier ? { tier } : {},
+      }),
+      invalidatesTags: ["AgentSchools", "AllAccounts"],
+    }),
+
+    rejectSchool: builder.mutation({
+      query: ({ schoolId, reason }) => ({
+        url: `/api/users/superadmin/schools/${schoolId}/reject`,
+        method: "PUT",
+        body: { reason },
+      }),
+      invalidatesTags: ["AgentSchools", "AllAccounts"],
+    }),
+
+    transferSchool: builder.mutation({
+      query: ({ schoolId, newAgentId }) => ({
+        url: `/api/users/superadmin/schools/${schoolId}/transfer`,
+        method: "PUT",
+        body: { newAgentId },
+      }),
+      invalidatesTags: ["AgentSchools", "AllAccounts"],
+    }),
+
+    // Tier management
+    updateSchoolTier: builder.mutation({
+      query: ({ schoolId, tier }) => ({
+        url: `/api/users/superadmin/schools/${schoolId}/tier`,
+        method: "PUT",
+        body: { tier },
+      }),
+      invalidatesTags: ["AgentSchools", "AllAccounts"],
+    }),
+
+    getTierOptions: builder.query({
+      query: () => "/api/users/superadmin/tiers",
+      providesTags: ["TierOptions"],
+    }),
+
+    // Agent Earnings Endpoints
+    getAgentEarningsSummary: builder.query({
+      query: () => "/api/earnings/agent/summary",
+      providesTags: ["AgentEarnings"],
+    }),
+    getAgentEarningsBySchool: builder.query({
+      query: (params) => ({
+        url: "/api/earnings/agent/schools",
+        params,
+      }),
+      providesTags: ["AgentEarnings"],
+    }),
+    getAgentEarningsHistory: builder.query({
+      query: (params) => ({
+        url: "/api/earnings/agent/history",
+        params,
+      }),
+      providesTags: ["AgentEarnings"],
+    }),
+    calculateEarningsPreview: builder.mutation({
+      query: (payload) => ({
+        url: "/api/earnings/agent/calculate-preview",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+    getCommissionSettings: builder.query({
+      query: () => "/api/earnings/agent/commission-settings",
+      providesTags: ["CommissionSettings"],
+    }),
+    getActiveUsersStats: builder.query({
+      query: () => "/api/earnings/agent/active-users",
+      providesTags: ["ActiveUsers"],
+    }),
+    getSchoolActivityDetails: builder.query({
+      query: (schoolId) => `/api/earnings/agent/schools/${schoolId}/activity`,
+      providesTags: ["SchoolActivity"],
+    }),
+
+    // Super Admin Earnings Management
+    getAllEarningsOverview: builder.query({
+      query: () => "/api/earnings/superadmin/overview",
+      providesTags: ["AllEarnings"],
+    }),
+    updateCommissionSettings: builder.mutation({
+      query: (payload) => ({
+        url: "/api/earnings/superadmin/commission-settings",
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["CommissionSettings", "AgentEarnings"],
+    }),
+    assignSchoolService: builder.mutation({
+      query: ({ schoolId, ...payload }) => ({
+        url: `/api/earnings/superadmin/schools/${schoolId}/service`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["AgentEarnings", "AllEarnings"],
+    }),
+    updateStudentCount: builder.mutation({
+      query: ({ schoolId, ...payload }) => ({
+        url: `/api/earnings/superadmin/schools/${schoolId}/student-count`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["AgentEarnings", "AllEarnings"],
+    }),
+    markEarningsAsPaid: builder.mutation({
+      query: ({ earningsId, ...payload }) => ({
+        url: `/api/earnings/superadmin/earnings/${earningsId}/mark-paid`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["AgentEarnings", "AllEarnings"],
+    }),
+
     createAccount: builder.mutation({
       query: (payload) => ({
         url: "/api/account/createAccount",
@@ -206,7 +396,16 @@ export const apiSlice = createApi({
     }),
 
     findMyClasses: builder.query({
-      query: (id) => `/api/classroom/findMyClasses/${id}`,
+      query: (arg: string | { id: string; page?: number; limit?: number }) => {
+        if (typeof arg === "string") {
+          return `/api/classroom/findMyClasses/${arg}`;
+        }
+        const { id, page = 1, limit = 8 } = arg || ({} as any);
+        return {
+          url: `/api/classroom/findMyClasses/${id}`,
+          params: { page, limit },
+        };
+      },
       providesTags: ["ClassRoom"],
     }),
 
@@ -315,12 +514,44 @@ export const apiSlice = createApi({
     }),
 
     findAllQuizById: builder.query({
-      query: (id) => `/api/quiz/findQuizByClassId/${id}`,
+      query: (arg: string | { id?: string; _id?: string; classId?: string; page?: number; limit?: number }) => {
+        if (typeof arg === "string") {
+          return `/api/quiz/findQuizByClassId/${arg}`;
+        }
+        const id = (arg?.id || arg?._id || arg?.classId) as string;
+        const page = (arg as any)?.page ?? 1;
+        const limit = (arg as any)?.limit ?? 10;
+        return {
+          url: `/api/quiz/findQuizByClassId/${id}`,
+          params: { page, limit },
+        };
+      },
+      transformResponse: (response: any) => {
+        if (response && typeof response === 'object' && 'data' in response && 'pagination' in response) {
+          return { data: response.data, pagination: response.pagination };
+        }
+        if (Array.isArray(response)) return { data: response, pagination: null };
+        return response;
+      },
       providesTags: ["Quiz"],
     }),
 
     findAllQuizByIdForChild: builder.query({
-      query: ({id, childId}) => `/api/quiz/findQuizByClassIdForChild/${id}/${childId}`,
+      query: (arg: { id?: string; _id?: string; classId?: string; childId: string; page?: number; limit?: number }) => {
+        const id = (arg?.id || arg?._id || arg?.classId) as string;
+        const { childId, page = 1, limit = 10 } = arg || ({} as any);
+        return {
+          url: `/api/quiz/findQuizByClassIdForChild/${id}/${childId}`,
+          params: { page, limit },
+        };
+      },
+      transformResponse: (response: any) => {
+        if (response && typeof response === 'object' && 'data' in response && 'pagination' in response) {
+          return { data: response.data, pagination: response.pagination };
+        }
+        if (Array.isArray(response)) return { data: response, pagination: null };
+        return response;
+      },
       providesTags: ["Quiz"],
     }),
 
@@ -391,7 +622,10 @@ export const apiSlice = createApi({
       // invalidatesTags: ["Quiz"],
     }),
     getQuizResultByUserId: builder.query({
-      query: (id) => `/api/quiz/getQuizResultByUserId/${id}`,
+      query: ({ id, page = 1, limit = 5 }: { id: string; page?: number; limit?: number }) => ({
+        url: `/api/quiz/getQuizResultByUserId/${id}`,
+        params: { page, limit },
+      }),
       providesTags: ["Quiz"],
     }),
 
@@ -688,6 +922,33 @@ export const {
   useAddMoreLicensesMutation,
   useUpdatePasswordMutation,
   useUpdateMonthlyRequestLimitMutation,
+  useCreateAgentMutation,
+  useCompleteAgentSignupMutation,
+  useGetAllAgentsQuery,
+  useUpdateAgentStatusMutation,
+  useResendAgentInvitationMutation,
+  useDeleteAgentMutation,
+  useCreateSchoolByAgentMutation,
+  useGetSchoolsByAgentQuery,
+  useGetPendingSchoolsQuery,
+  useApproveSchoolMutation,
+  useRejectSchoolMutation,
+  useTransferSchoolMutation,
+  useUpdateSchoolTierMutation,
+  useGetTierOptionsQuery,
+  // Earnings
+  useGetAgentEarningsSummaryQuery,
+  useGetAgentEarningsBySchoolQuery,
+  useGetAgentEarningsHistoryQuery,
+  useCalculateEarningsPreviewMutation,
+  useGetCommissionSettingsQuery,
+  useGetActiveUsersStatsQuery,
+  useGetSchoolActivityDetailsQuery,
+  useGetAllEarningsOverviewQuery,
+  useUpdateCommissionSettingsMutation,
+  useAssignSchoolServiceMutation,
+  useUpdateStudentCountMutation,
+  useMarkEarningsAsPaidMutation,
   //classRoom
   useCreateClassRoomMutation,
   useGetAllClassRoomsQuery,

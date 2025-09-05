@@ -11,7 +11,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -36,7 +37,18 @@ type ExamQuestions = {
 
 const StudentQiuzzes = () => {
   const { classId } = useParams();
-  const { data: AllQuiz, isLoading } = useFindAllQuizByIdQuery(classId);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
+  const { data: quizPayload, isLoading, isFetching } = useFindAllQuizByIdQuery({ id: classId as string, page, limit });
+  const AllQuiz = (quizPayload as any)?.data ?? quizPayload;
+  const pagination = (quizPayload as any)?.pagination ?? null;
+  const [displayQuizzes, setDisplayQuizzes] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (Array.isArray(AllQuiz)) {
+      setDisplayQuizzes(AllQuiz);
+    }
+  }, [AllQuiz]);
   const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
@@ -81,7 +93,7 @@ const StudentQiuzzes = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h3 className="my-4 text-lg font-medium">
-        {AllQuiz?.[0]?.classRoomName}
+        {displayQuizzes?.[0]?.classRoomName}
       </h3>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="quizzes">
@@ -93,8 +105,8 @@ const StudentQiuzzes = () => {
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                {!isLoading ? (
-                  AllQuiz?.map((val, i: number) => (
+                {Array.isArray(displayQuizzes) && displayQuizzes.length > 0 ? (
+                  displayQuizzes.map((val: any, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
@@ -108,8 +120,7 @@ const StudentQiuzzes = () => {
                         </p>
                         {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
                         <Link
-                          // to="/dashboard/quiz"
-                          to={`/dashboard/quiz?obj_code=${val?.questionsAndAnswers?.[0]?.objCode}&qs=${val?.questionsAndAnswers?.length}`}
+                          to={`/dashboard/quiz?obj_code=${val?.objCode}&qs=${val?.numberOfQuestions}`}
                           state={{ data: val }}
                           className="text-primary hover:underline text-sm font-semibold whitespace-nowrap"
                         >
@@ -121,6 +132,30 @@ const StudentQiuzzes = () => {
                 ) : (
                   <p>Loading...</p>
                 )}
+
+                {/* Pagination inside the quizzes card */}
+                <div className="col-span-full flex items-center justify-between mt-2">
+                  <div className="text-sm opacity-80">
+                    Page {pagination?.page || page} of {pagination?.pages || 1}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isFetching && <Loader2 className="h-4 w-4 animate-spin opacity-70" />}
+                    <button
+                      className="px-3 py-1 border rounded disabled:opacity-50"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={isLoading || isFetching || (pagination && !pagination?.hasPrev) || page === 1}
+                    >
+                      Prev
+                    </button>
+                    <button
+                      className="px-3 py-1 border rounded disabled:opacity-50"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={isLoading || isFetching || (pagination && !pagination?.hasNext)}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
               </CardContent>
             </AccordionContent>
           </Card>
@@ -169,7 +204,7 @@ const StudentQiuzzes = () => {
 
       </Accordion>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
-        {AllQuiz?.length === 0 && (
+        {Array.isArray(AllQuiz) && AllQuiz.length === 0 && (
           <div className="text-center">No Quiz Found</div>
         )}
       </div>

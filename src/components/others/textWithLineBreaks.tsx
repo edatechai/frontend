@@ -1,10 +1,11 @@
 import { Fragment } from "react";
+import { formatQuizHtml } from "@/lib/utils";
 
 function TextWithLineBreaks({ texts }: { texts: string }) {
   console.log({ texts });
   const textWithBreaks = texts?.split("\n")?.map((text, index) => (
     <Fragment key={index}>
-      <p dangerouslySetInnerHTML={FormatBold(text)} />
+      <p dangerouslySetInnerHTML={FormatBold(formatQuizHtml(text))} />
     </Fragment>
   ));
 
@@ -15,7 +16,7 @@ export function TextWithLineBreaksRec({ texts }: { texts: string }) {
   console.log({ texts });
   const textWithBreaks = texts?.split("\\n")?.map((text, index) => (
     <Fragment key={index}>
-      {text}
+      <span dangerouslySetInnerHTML={{ __html: formatQuizHtml(text) }} />
       <br />
     </Fragment>
   ));

@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import {
   Accordion,
@@ -20,36 +20,73 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-type ExamQuestions = {
-  exam_questions: {
-    _id: string;
-    questions: {
-      number: string;
-      text: string;
-      marks: number;
-      learning_objectives: string[];
-      mark_scheme: string;
-    }[];
-    student_id: null;
-    class_id: "66a68cf94c92cafaed484b16";
-  }[];
-};
+// type ExamQuestions = {
+//   exam_questions: {
+//     _id: string;
+//     questions: {
+//       number: string;
+//       text: string;
+//       marks: number;
+//       learning_objectives: string[];
+//       mark_scheme: string;
+//     }[];
+//     student_id: null;
+//     class_id: string;
+//   }[];
+// };
 
 const StudentQiuzzes = () => {
   const { classId } = useParams();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(12);
-  const { data: quizPayload, isLoading, isFetching } = useFindAllQuizByIdQuery({ id: classId as string, page, limit });
+  const [limit] = useState(12);
+  const shouldSkip = !classId;
+  const { data: quizPayload, isLoading, isFetching } = useFindAllQuizByIdQuery(
+    { id: classId as string, page, limit },
+    { skip: shouldSkip, refetchOnMountOrArgChange: true }
+  );
   const AllQuiz = (quizPayload as any)?.data ?? quizPayload;
   const pagination = (quizPayload as any)?.pagination ?? null;
   const [displayQuizzes, setDisplayQuizzes] = useState<any[]>([]);
+  const lastAutoAdvancedPageRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (Array.isArray(AllQuiz)) {
-      setDisplayQuizzes(AllQuiz);
+    if (!Array.isArray(AllQuiz)) return;
+
+    // If current page is empty but pagination indicates more available items,
+    // auto-advance to the next page (likely page contains only completed quizzes)
+    if (
+      AllQuiz.length === 0 &&
+      pagination &&
+      pagination.total > 0 &&
+      pagination.hasNext &&
+      lastAutoAdvancedPageRef.current !== page &&
+      !isLoading &&
+      !isFetching
+    ) {
+      lastAutoAdvancedPageRef.current = page;
+      setPage((p) => p + 1);
+      return;
     }
-  }, [AllQuiz]);
-  const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
+
+    lastAutoAdvancedPageRef.current = null;
+    setDisplayQuizzes(AllQuiz);
+  }, [AllQuiz, pagination, page, isLoading, isFetching]);
+
+  const formatDateTime = (iso?: string) => {
+    if (!iso) return "";
+    try {
+      return new Date(iso).toLocaleString([], {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  };
+  // const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
   const getExamTasks = async () => {
@@ -59,9 +96,7 @@ const StudentQiuzzes = () => {
       );
       const tasks = await res.json();
       console.log({ tasks });
-      if (res.ok) {
-        setExamQuestions(tasks);
-      }
+      // if (res.ok) setExamQuestions(tasks);
     } catch (err) {
       console.log({ err });
     }
@@ -105,7 +140,11 @@ const StudentQiuzzes = () => {
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                {Array.isArray(displayQuizzes) && displayQuizzes.length > 0 ? (
+                {isLoading || isFetching ? (
+                  <div className="col-span-full flex items-center gap-2 text-sm opacity-80">
+                    <Loader2 className="h-4 w-4 animate-spin" /> Loading quizzes...
+                  </div>
+                ) : Array.isArray(displayQuizzes) && displayQuizzes.length > 0 ? (
                   displayQuizzes.map((val: any, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -115,9 +154,10 @@ const StudentQiuzzes = () => {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="flex items-center justify-between gap-5">
-                        <p className="text-slate-950 truncate text-xs">
-                          {val?.numberOfQuestions} questions
-                        </p>
+                        <div className="flex flex-col gap-1 text-xs text-slate-700">
+                          <p className="truncate">{val?.numberOfQuestions} questions</p>
+                          <p className="truncate">Created: {formatDateTime(val?.createdAt)}</p>
+                        </div>
                         {/* <p className="text-slate-800">Topic: {val?.topic}</p> */}
                         <Link
                           to={`/dashboard/quiz?obj_code=${val?.objCode}&qs=${val?.numberOfQuestions}`}
@@ -130,7 +170,7 @@ const StudentQiuzzes = () => {
                     </Card>
                   ))
                 ) : (
-                  <p>Loading...</p>
+                  <div className="col-span-full text-sm opacity-80">No Quiz Found</div>
                 )}
 
                 {/* Pagination inside the quizzes card */}

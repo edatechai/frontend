@@ -18,7 +18,7 @@ export const apiSlice = createApi({
     
     //http://51.21.244.112:5000/
     //https://ai.edatech.ai/app
-    baseUrl: "https://ai.edatech.ai/app",
+    baseUrl: "http://localhost:5000/",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -410,7 +410,16 @@ export const apiSlice = createApi({
     }),
 
     findMyClassesTeacher: builder.query({
-      query: (id) => `/api/classroom/findMyClassesTeacher/${id}`,
+      query: (arg: string | { id: string; page?: number; limit?: number }) => {
+        if (typeof arg === "string") {
+          return `/api/classroom/findMyClassesTeacher/${arg}`;
+        }
+        const { id, page = 1, limit = 8 } = arg || ({} as any);
+        return {
+          url: `/api/classroom/findMyClassesTeacher/${id}`,
+          params: { page, limit },
+        };
+      },
       providesTags: ["ClassRoom"],
     }),
 
@@ -420,7 +429,16 @@ export const apiSlice = createApi({
     }),
 
     resultsByClassId: builder.query({
-      query: (id) => `/api/quiz/getQuizResultByClassId/${id}`,
+      query: (arg: string | { id: string; page?: number; limit?: number }) => {
+        if (typeof arg === "string") {
+          return `/api/quiz/getQuizResultByClassId/${arg}`;
+        }
+        const { id, page = 1, limit = 20 } = arg || ({} as any);
+        return {
+          url: `/api/quiz/getQuizResultByClassId/${id}`,
+          params: { page, limit },
+        };
+      },
     }),
 
     //objectives
@@ -580,7 +598,16 @@ export const apiSlice = createApi({
     }),
 
     getAllQuizzesByTeacherId: builder.query({
-      query: (id) => `/api/quiz/getAllQuizByTeacherId/${id}`,
+      query: (arg: string | { id: string; page?: number; limit?: number }) => {
+        if (typeof arg === "string") {
+          return `/api/quiz/getAllQuizByTeacherId/${arg}`;
+        }
+        const { id, page = 1, limit = 10 } = arg || ({} as any);
+        return {
+          url: `/api/quiz/getAllQuizByTeacherId/${id}`,
+          params: { page, limit },
+        };
+      },
       providesTags: ["Quiz"],
     }),
 

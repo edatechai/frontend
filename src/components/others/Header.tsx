@@ -1,6 +1,7 @@
 import { Bell, BookText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 
 import {
   DropdownMenu,
@@ -10,30 +11,47 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import {
   apiSlice,
   useGetAllNotificationsByUserIdQuery,
   useMarkNotificationAsReadMutation,
 } from "../../features/api/apiSlice";
-import { ModeToggle } from "./mode-toggle";
 import { getInitialsFromFullName } from "@/lib/utils";
 
 const Header = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state: any) => state.user.userInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { data } = useGetAllNotificationsByUserIdQuery(userInfo?._id);
   const [markAsRead] = useMarkNotificationAsReadMutation();
   console.log({ data });
 
-  const unreadNotifications = data?.filter((val) => val.status == "unread");
+  const unreadNotifications = data?.filter((val: any) => val.status == "unread");
+
+  const handleNotificationClick = async (notification: any) => {
+    try {
+      // Mark as read
+      await markAsRead({
+        userId: userInfo._id,
+        notificationId: notification.id,
+      });
+      
+      // Close the dropdown
+      setIsNotificationOpen(false);
+      
+      // Navigate to the target page
+      navigate(`/student/classrooms/${notification?.classId}`);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
 
   return (
     <>
       <span className="w-full flex-1">{/* <ModeToggle /> */}</span>
-      <DropdownMenu>
+      <DropdownMenu open={isNotificationOpen} onOpenChange={setIsNotificationOpen}>
         <DropdownMenuTrigger asChild>
           <span className="relative">
             <Button
@@ -53,7 +71,7 @@ const Header = () => {
             )}
           </span>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="max-w-[78vw]">
+        <DropdownMenuContent align="end" className="max-w-[90vw] w-full ml-20">
           <DropdownMenuLabel>
             {unreadNotifications?.length
               ? "Notifications"
@@ -61,24 +79,18 @@ const Header = () => {
           </DropdownMenuLabel>
           {!!unreadNotifications?.length && <DropdownMenuSeparator />}
           {!!unreadNotifications?.length &&
-            unreadNotifications?.map((val, index: number) => (
+            unreadNotifications?.map((val: any, index: number) => (
               <DropdownMenu key={index}>
                 <button
-                  className="items-center gap-2 grid grid-flow-col justify-start text-left hover:bg-border w-full mb-2 py-1 pr-2 rounded"
-                  onClick={() => {
-                    markAsRead({
-                      userId: userInfo._id,
-                      notificationId: val.id,
-                    });
-                    navigate(`/student/classrooms/${val?.classId}`);
-                  }}
+                  className="items-center gap-4 pr-10 grid grid-flow-col justify-start text-left hover:bg-border w-full mb-2 py-1 pr-2 rounded"
+                  onClick={() => handleNotificationClick(val)}
                 >
                   <span className="size-8 rounded-full border border-border flex items-center justify-center">
                     <BookText className="size-5 text-muted-foreground" />
                   </span>
                   <span>
                     <p className="font-medium">{val?.title}</p>
-                    <p>{val?.message}</p>
+                    {/* <p>{val?.message}</p> */}
                   </span>
                 </button>
                 {/* <p className="self-end ml-2 !justify-self-end">View Quiz</p> */}

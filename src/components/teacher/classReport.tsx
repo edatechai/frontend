@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -20,10 +20,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useResultsByClassIdQuery } from "@/features/api/apiSlice";
-import { getColor, resultsMock } from "@/lib/jsons";
+import { getColor } from "@/lib/jsons";
 import { latexToHTML } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import * as React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -43,18 +44,18 @@ type QuizResult = {
   selectedAnswer: string;
 };
 
-function findValue(array: typeof resultsMock, obj: string, name: string) {
+function findValue(array: any[], obj: string, name: string) {
   for (let i = 0; i < array.length; i++) {
-    if (array[i]?.objective === obj && array[i].userInfo.fullName === name) {
+    if (array[i]?.objective === obj && array[i].userInfo?.fullName === name) {
       return +array[i]?.scorePercentage;
     }
   }
   return -5;
 }
 
-function findResults(array: typeof resultsMock, obj: string, name: string) {
+function findResults(array: any[], obj: string, name: string) {
   for (let i = 0; i < array.length; i++) {
-    if (array[i]?.objective === obj && array[i].userInfo.fullName === name) {
+    if (array[i]?.objective === obj && array[i].userInfo?.fullName === name) {
       return array[i]?.quizResults;
     }
   }
@@ -92,36 +93,80 @@ const getAvg = (
 
 const ClassReport = () => {
   const { classId } = useParams();
-  const { data, isLoading } = useResultsByClassIdQuery(classId);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(20);
+  const [isPaginationLoading, setIsPaginationLoading] = useState(false);
+  const [previousPage, setPreviousPage] = useState(1);
+  
+  const { data: rawData, isLoading, error, isFetching } = useResultsByClassIdQuery({
+    id: classId!,
+    page: currentPage,
+    limit: limit,
+  });
+  
   const [results, setResults] = useState<(typeof sample)[]>([]);
   const [reducedAvg, setReducedAvg] = useState<ReducedAvg>([]);
   const [objs, setObjs] = useState<string[]>([]);
 
+  // Handle pagination loading state
+  const handlePageChange = (newPage: number) => {
+    console.log("Changing page from", currentPage, "to", newPage);
+    setIsPaginationLoading(true);
+    setPreviousPage(currentPage);
+    setCurrentPage(newPage);
+  };
+
+  // Reset pagination loading when data changes for the new page
+  React.useEffect(() => {
+    console.log("Effect triggered - currentPage:", currentPage, "previousPage:", previousPage, "isFetching:", isFetching, "data:", !!rawData);
+    
+    // Only reset loading if we've actually changed pages and have data
+    if (currentPage !== previousPage && rawData && !isFetching) {
+      console.log("Resetting pagination loading");
+      setIsPaginationLoading(false);
+      setPreviousPage(currentPage);
+    }
+    
+    // Also reset on initial load
+    if (currentPage === previousPage && rawData && !isFetching && !isLoading) {
+      setIsPaginationLoading(false);
+    }
+  }, [currentPage, previousPage, rawData, isFetching, isLoading]);
+
+  // Extract data from paginated response
+  const data = rawData?.data || rawData; // Handle both paginated and non-paginated responses
+  const pagination = rawData?.pagination;
+
   useEffect(() => {
     if (data) {
-      setObjs([...new Set(data.map((val) => val?.objective).filter((v) => v))]);
-      const objects = [
-        ...new Set(data.map((val) => val?.objective).filter((v) => v)),
-      ];
+      console.log("Processing data:", data);
+      console.log("Sample userInfo:", data[0]?.userInfo);
+      
+      const objectsArray = [...new Set(data.map((val: any) => val?.objective).filter((v: any) => v))] as string[];
+      setObjs(objectsArray);
+      const objects = objectsArray;
 
-      const students = [
-        ...new Set(data.map((val) => val?.userInfo?.fullName).filter((v) => v)),
-      ];
+      const studentsArray = [...new Set(data.map((val: any) => val?.userInfo?.fullName).filter((v: any) => v))] as string[];
+      const students = studentsArray;
+      
+      console.log("Extracted students:", students);
+      console.log("Extracted objectives:", objects);
 
-      setResults(
-        students.map((name) => {
-          return {
-            fullName: name,
-            results: objects.map((obj, i) => {
-              return {
-                learning_outcome: obj,
-                score_percent: findValue(data, obj, name),
-                quizResults: findResults(data, obj, name),
-              };
-            }),
-          };
-        })
-      );
+      const processedResults = students.map((name) => {
+        return {
+          fullName: name,
+          results: objects.map((obj) => {
+            return {
+              learning_outcome: obj,
+              score_percent: findValue(data, obj, name),
+              quizResults: findResults(data, obj, name),
+            };
+          }),
+        };
+      });
+      
+      console.log("Processed results:", processedResults);
+      setResults(processedResults);
 
       setReducedAvg(
         objects.map((obj) => {
@@ -140,12 +185,27 @@ const ClassReport = () => {
     }
   }, [data]);
 
-  console.log({ classResults: data });
+  console.log({ classResults: data, pagination });
+  
   if (isLoading) {
-    return <p>Loading..</p>;
-  } else {
     return (
-      <div className="overflow-hidden">
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin mr-2" />
+        <span className="text-muted-foreground">Loading class report...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="text-red-500">Error loading class report. Please try again.</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -159,13 +219,23 @@ const ClassReport = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h3 className="mb-20 mt-6 text-xl font-medium">
-          {data?.[0]?.classRoomName}
-        </h3>
+        <div className="flex justify-between items-center mb-20 mt-6">
+          <h3 className="text-xl font-medium">
+            {data?.[0]?.classRoomName}
+          </h3>
+          {pagination && (
+            <div className="text-sm text-muted-foreground">
+              Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+              {pagination.total} quiz results
+            </div>
+          )}
+        </div>
         {results.length < 1 ? (
           <p>This class has no result</p>
         ) : (
-          <table className="pt-9 overflow-x-auto">
+          <>
+            <table className="pt-9 overflow-x-auto">
             <tr className="text-left whitespace-nowrap">
               <th></th>
               <th className="capitalize max-w-8">
@@ -211,7 +281,7 @@ const ClassReport = () => {
                 </td>
               ))}
             </tr>
-            {results.map((val, i) => (
+            {results.map((val) => (
               <tr key={val.fullName}>
                 <td>
                   <p className="pr-2 capitalize">{val.fullName}</p>
@@ -251,7 +321,7 @@ const ClassReport = () => {
                               <SheetHeader className="overflow-y-scroll  text-left">
                                 <SheetTitle>Quiz Report</SheetTitle>
                                 <SheetDescription>
-                                  {result.quizResults.map(
+                                  {result.quizResults && result.quizResults.length > 0 ? result.quizResults.map(
                                     (val, index: number) => (
                                       <Card className="mb-3" key={index}>
                                         <CardHeader>
@@ -309,6 +379,10 @@ const ClassReport = () => {
                                         </CardContent>
                                       </Card>
                                     )
+                                  ) : (
+                                    <p className="text-center py-4 text-muted-foreground">
+                                      Quiz details not available. This data has been optimized for performance.
+                                    </p>
                                   )}
                                 </SheetDescription>
                               </SheetHeader>
@@ -321,11 +395,74 @@ const ClassReport = () => {
                 ))}
               </tr>
             ))}
-          </table>
+            </table>
+
+            {/* Pagination Controls */}
+          {pagination && pagination.pages > 1 && (
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              {isPaginationLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  <span className="text-sm text-muted-foreground">Loading...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={!pagination.hasPrev || isPaginationLoading}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={!pagination.hasNext || isPaginationLoading}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Page {pagination.page} of {pagination.pages}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, pagination.pages) }, (_, i) => {
+                        const pageNumber = Math.max(1, Math.min(
+                          pagination.pages - 4,
+                          pagination.page - 2
+                        )) + i;
+                        
+                        if (pageNumber > pagination.pages) return null;
+                        
+                        return (
+                          <Button
+                            key={pageNumber}
+                            variant={pageNumber === pagination.page ? "default" : "outline"}
+                            size="sm"
+                            className="w-8 h-8 p-0"
+                            onClick={() => handlePageChange(pageNumber)}
+                            disabled={isPaginationLoading}
+                          >
+                            {pageNumber}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          </>
         )}
       </div>
     );
-  }
 };
 
 export default ClassReport;

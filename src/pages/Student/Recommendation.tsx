@@ -15,10 +15,10 @@ import {
   useRecommendObjectivesQuery,
   useStudentRecommendationMutation,
 } from "../../features/api/apiSlice";
-import { RootState } from "../../app/store";
+// import { RootState } from "../../app/store";
 // import ChatBotWrapper from "@/components/ChatBotWrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TextWithLineBreaks, {
+import {
   TextWithLineBreaksRec,
 } from "@/components/others/textWithLineBreaks";
 import { Loader, MessageSquare } from "lucide-react";
@@ -31,8 +31,8 @@ type Objective = {
 };
 
 const Recommedation = () => {
-  const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const { data } = useRecommendObjectivesQuery();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
+  const { data, isLoading: isLoadingRecommendations, error: recommendationsError } = useRecommendObjectivesQuery(undefined);
   const [showChatBot, setShowChatBot] = useState(false);
   const [getRec, { isLoading, data: recData }] =
     useStudentRecommendationMutation();
@@ -48,7 +48,7 @@ const Recommedation = () => {
   const [quizPassed, setQuizPassed] = useState(false);
   const [quizAttempted, setQuizAttempted] = useState(false);
   const [quizPassedCount, setQuizPassedCount] = useState(0);
-  const [recs, setRecs] = useState();
+  const [recs, setRecs] = useState<any[]>([]);
   const stepsPerPage = 1;
   const questionsPerPage = 1;
 
@@ -180,6 +180,42 @@ const Recommedation = () => {
     setShowChatBot(false);
   };
 
+  // Show loading state when waiting for initial recommendations data
+  if (isLoadingRecommendations) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader className="h-12 w-12 animate-spin text-blue-600" />
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-medium text-gray-900">Loading Your Study Plans</h3>
+          <p className="text-sm text-gray-500">
+            We're analyzing your performance to create personalized recommendations...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if there's an error loading recommendations
+  if (recommendationsError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-medium text-red-600">Error Loading Recommendations</h3>
+          <p className="text-sm text-gray-500">
+            We couldn't load your study plans. Please try refreshing the page.
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline" 
+            className="mt-4"
+          >
+            Refresh Page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* You can open the modal using document.getElementById('ID').showModal() method */}
@@ -193,7 +229,7 @@ const Recommedation = () => {
               <ChatBot
                 userInfo={userInfo}
                 rec={recData}
-                onClose={() => document.getElementById("my_modal_4").close()}
+                onClose={() => (document.getElementById("my_modal_4") as any)?.close()}
               />
               <form method="dialog">
                 <button className="btn">Close</button>
@@ -592,7 +628,7 @@ const Recommedation = () => {
                 <Button
                   className="btn text-sm flex items-center gap-2 w-full md:w-fit"
                   onClick={() =>
-                    document.getElementById("my_modal_4").showModal()
+                    (document.getElementById("my_modal_4") as any)?.showModal()
                   }
                 >
                   <MessageSquare />
@@ -622,7 +658,7 @@ const Recommedation = () => {
             <div className="flex gap-5">
               <Button
                 onClick={() =>
-                  document.getElementById("my_modal_4").showModal()
+                  (document.getElementById("my_modal_4") as any)?.showModal()
                 }
               >
                 Chat with Eddey

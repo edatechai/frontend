@@ -18,7 +18,7 @@ export const apiSlice = createApi({
     
     //http://51.21.244.112:5000/
     //https://ai.edatech.ai/app
-    baseUrl: "http://localhost:5000/",
+    baseUrl: "https://ai.edatech.ai/app",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -759,7 +759,26 @@ export const apiSlice = createApi({
     }),
 
     getChildResult: builder.query({
-      query: (childId) => `/api/users/getChildReport/${childId}`,
+      query: (arg: string | { childId: string; page?: number; limit?: number }) => {
+        if (typeof arg === 'string') {
+          return `/api/users/getChildReport/${arg}`;
+        }
+        const { childId, page = 1, limit = 10 } = arg || ({} as any);
+        return {
+          url: `/api/users/getChildReport/${childId}`,
+          params: { page, limit },
+        };
+      },
+      transformResponse: (response: any) => {
+        // Normalize to { data, pagination }
+        if (response && response.data) {
+          return {
+            data: response.data,
+            pagination: response.data.pagination || null,
+          };
+        }
+        return response;
+      }
     }),
 
     getChildSandW: builder.mutation({

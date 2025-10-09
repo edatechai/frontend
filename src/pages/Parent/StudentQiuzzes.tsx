@@ -37,7 +37,9 @@ type ExamQuestions = {
 
 const StudentQiuzzes = () => {
   const { classId, childId } = useParams();
-  const { data: AllQuiz, isLoading } = useFindAllQuizByIdForChildQuery({id: classId, childId});
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data: AllQuiz, isLoading } = useFindAllQuizByIdForChildQuery({ id: classId, childId, page, limit: pageSize });
   const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
@@ -84,7 +86,7 @@ const StudentQiuzzes = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h3 className="my-4 text-lg font-medium">
-        {AllQuiz?.[0]?.classRoomName}
+        {AllQuiz?.data?.[0]?.classRoomName}
       </h3>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="quizzes">
@@ -97,7 +99,7 @@ const StudentQiuzzes = () => {
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 {!isLoading ? (
-                  AllQuiz?.map((val: any, i: number) => (
+                  AllQuiz?.data?.map((val: any, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
@@ -125,6 +127,44 @@ const StudentQiuzzes = () => {
                   <p>Loading...</p>
                 )}
               </CardContent>
+              {/* Pagination under the Quizzes card */}
+              <div className="flex items-center justify-between gap-4 mt-4 px-6 pb-4">
+                <div className="text-sm text-slate-600">
+                  Page {AllQuiz?.pagination?.page || page} of {AllQuiz?.pagination?.pages || 1}
+                  {typeof AllQuiz?.pagination?.total === 'number' && (
+                    <span> • {AllQuiz?.pagination?.total} total</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-3 py-1.5 rounded border text-sm disabled:opacity-50"
+                    disabled={!AllQuiz?.pagination?.hasPrev}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    Prev
+                  </button>
+                  <button
+                    className="px-3 py-1.5 rounded border text-sm disabled:opacity-50"
+                    disabled={!AllQuiz?.pagination?.hasNext}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                  </button>
+                  <select
+                    className="ml-2 border rounded px-2 py-1 text-sm"
+                    value={pageSize}
+                    onChange={(e) => {
+                      const next = parseInt(e.target.value, 10) || 10;
+                      setPageSize(next);
+                      setPage(1);
+                    }}
+                  >
+                    {[5, 10, 20, 40].map((n) => (
+                      <option key={n} value={n}>{n}/page</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </AccordionContent>
           </Card>
         </AccordionItem>
@@ -167,11 +207,9 @@ const StudentQiuzzes = () => {
         </AccordionItem>
         
       </Accordion>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
-        {AllQuiz?.length === 0 && (
-          <div className="text-center">No Quiz Found</div>
-        )}
-      </div>
+      {AllQuiz?.data?.length === 0 && (
+        <div className="text-center mt-4">No Quiz Found</div>
+      )}
     </>
   );
 };

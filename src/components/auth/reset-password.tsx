@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// Import your reset password mutation hook here
-// import { useResetPasswordMutation } from "../../features/api/apiSlice";
-import { useResetPasswordMutation } from "@/features/api/apiSlice";
-import { useNavigate } from "react-router-dom";
+import { useUpdatePasswordAfterResetMutation } from "@/features/api/apiSlice";
+import { useSearchParams } from "react-router-dom";
 
-export const ResetPasswordForm = ({ token }: { token: string }) => {
-  const navigate = useNavigate();
+export const ResetPasswordForm = () => {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [resetPassword, { isLoading: isResetPasswordLoading }] = useResetPasswordMutation();
+  const [updatePasswordAfterReset, { isLoading: isResetPasswordLoading }] = useUpdatePasswordAfterResetMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,14 +19,19 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
       return;
     }
 
+    if (!token) {
+      alert("Invalid or missing reset token");
+      return;
+    }
+
     try {
-      const response = await resetPassword({ token, newPassword });
+      const response = await updatePasswordAfterReset({ token, newPassword });
       console.log(response);
       if (response.data) {
         alert(response.data.message)
         // Redirect to login
         // reload the page back to login
-        window.location.reload();
+        window.location.href = '/';
       }
 
       if (response.error) {
@@ -67,4 +71,4 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
       <Button type="submit">Reset Password</Button>
     </form>
   );
-}; 
+};

@@ -12,6 +12,7 @@ import {
   File,
   Key,
   FileText,
+  FileArchive,
   MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,13 @@ export function Layout() {
           href: `/teacher/quizzes`,
           icon: <FileText className="h-4 w-4" />,
           iconMobile: <FileText className="h-5 w-5" />,
+        },
+          {
+          id: 5,
+          name: "Lesson Plans",
+          href: `/teacher/lesson-plan`,
+          icon: <FileArchive className="h-4 w-4" />,
+          iconMobile: <FileArchive className="h-5 w-5" />,
         },
       ]);
     } else if (role == "agent") {

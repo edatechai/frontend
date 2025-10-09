@@ -348,6 +348,22 @@ export const apiSlice = createApi({
       }),
     }),
 
+    sendPasswordResetToParent: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/sendPasswordResetToParent",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    updatePasswordAfterReset: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/updatePasswordAfterReset",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
     getAllAccounts: builder.query({
       query: () => "/api/account/getAllAccounts",
       providesTags: ["AllAccounts"],
@@ -420,6 +436,15 @@ export const apiSlice = createApi({
           params: { page, limit },
         };
       },
+      transformResponse: (response: any) => {
+        if (response && response.classes) {
+          return { data: response.classes, pagination: response.pagination };
+        }
+        if (Array.isArray(response)) {
+          return { data: response };
+        }
+        return response;
+      },
       providesTags: ["ClassRoom"],
     }),
 
@@ -438,6 +463,15 @@ export const apiSlice = createApi({
           url: `/api/quiz/getQuizResultByClassId/${id}`,
           params: { page, limit },
         };
+      },
+      transformResponse: (response: any) => {
+        if (response && response.data) {
+          return response;
+        }
+        if (Array.isArray(response)) {
+          return { data: response };
+        }
+        return response;
       },
     }),
 
@@ -926,6 +960,54 @@ export const apiSlice = createApi({
         body: { accountId },
       }),
     }),
+
+    generateLesson: builder.mutation({
+      query: (payload) => ({
+        url: "/api/lessonplan/generate-lesson",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["ClassRoom"],
+    }),
+
+    getGeneratedLessons: builder.query({
+      query: () => "/api/lessonplan/lessons",
+      providesTags: ["ClassRoom"],
+    }),
+
+    getLessonPlan: builder.query({
+      query: (key) => ({
+        url: `/api/lessonplan/lessons/${key}`,
+        responseHandler: (response) => response.text(),
+      }),
+    }),
+    deleteLessonPlan: builder.mutation({
+      query: (key) => ({
+        url: `/api/lessonplan/lessons/${key}`,
+        method: "DELETE",
+      }),
+      // Optimistic update - remove the lesson immediately
+        onQueryStarted: async (key, { dispatch, queryFulfilled }) => {
+          // Optimistically remove the lesson from cache
+          const patchResult = dispatch(
+            apiSlice.util.updateQueryData('getGeneratedLessons', undefined, (draft) => {
+              if (draft?.lessons) {
+                draft.lessons = draft.lessons.filter(lesson => 
+                  lesson.key !== key && lesson.filename !== key
+                );
+              }
+            })
+          );
+          try {
+                await queryFulfilled;
+              } catch (error) {
+                // If the mutation fails, undo the optimistic update
+                patchResult.undo();
+              }
+            },
+      invalidatesTags: ['Lesson'],
+    }),
+
   }),
 });
 
@@ -943,6 +1025,8 @@ export const {
   useValidateEmailAndRegisterUserMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useSendPasswordResetToParentMutation,
+  useUpdatePasswordAfterResetMutation,
   useDeleteLicenseMutation,
   useDeleteAccountAndUsersMutation,
   useGetUsersByAccountIdQuery,
@@ -1051,4 +1135,8 @@ export const {
 
   // org admin
   useGenerateUserGuideMutation,
+  useGenerateLessonMutation,
+  useGetGeneratedLessonsQuery,
+  useLazyGetLessonPlanQuery,
+  useDeleteLessonPlanMutation,
 } = apiSlice;

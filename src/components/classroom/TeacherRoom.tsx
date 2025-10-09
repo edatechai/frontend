@@ -46,6 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import LessonGenerator from "../teacher/lessonGenerator";
 
 const TeacherRoom = () => {
   let { state } = useLocation();
@@ -66,6 +67,7 @@ const TeacherRoom = () => {
   const [openQuizDialog, setOpenQuizDialog] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [openEditQuizDialog, setOpenEditQuizDialog] = useState(false);
+  const [openLessonGenerator, setOpenLessonGenerator] = useState(false);
   const [getAllQuiz, { data }] = useLazyGetAllQuizByObjCodeQuery();
   const [edittedIndexes, setEdittedIndexes] = useState<string[]>([]);
   const [numberOfQuestions, setNumberOfQuestions] = useState("");
@@ -443,6 +445,17 @@ const TeacherRoom = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={openLessonGenerator} onOpenChange={setOpenLessonGenerator}>
+        <DialogContent className="h-[90vh] max-w-[95vw]">
+          <DialogHeader>
+            <DialogTitle>Generate Lesson Plan</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto">
+            <LessonGenerator classroomId={state?.data?._id} subject={state?.data?.subject} />
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-row justify-end mb-5">
         <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
           <DropdownMenuTrigger asChild>
@@ -466,14 +479,23 @@ const TeacherRoom = () => {
                 Multiple choice questions
               </DropdownMenuItem>
 
-              {/* <DropdownMenuItem
+              <DropdownMenuItem
                 onClick={() => {
                   checkIfExceededLimit()
                  
                 }}
               >
                 Exam styled questions
-              </DropdownMenuItem> */}
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setOpenLessonGenerator(true);
+                  setOpenDropdown(false);
+                }}
+              >
+                Generate Lesson Plan
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             {/* <DropdownMenuSeparator /> */}
           </DropdownMenuContent>

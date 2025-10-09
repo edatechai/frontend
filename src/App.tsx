@@ -1,3 +1,4 @@
+import AuthPage from "./pages/Auth/AuthPage";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Index from "./pages/Auth/Index";
@@ -52,7 +53,10 @@ import ActiveLicenses from "./pages/Org/ActiveLicenses";
 import Quizzes from "./pages/Teacher/quizzes";
 import Task from "./pages/Parent/Task";
 import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
+import LessonPlan from "./pages/Teacher/lessonPlan";
+import GeneratedLessonsPage from "./pages/Teacher/generatedLesson";
 // import store from "./app/store";
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -94,6 +98,9 @@ const App = () => {
             <Route path="/teacher/class" element={<TeacherRoom />} />
             <Route path="/teacher/quizzes" element={<Quizzes />} />
             <Route path="/teacher/under-development" element={<UnderDev />} />
+            
+            <Route path="/teacher/lesson-plan" element={<GeneratedLessonsPage />} />
+
             <Route
               path="/teacher/class/create-report"
               element={<CreateReport />}
@@ -172,11 +179,11 @@ const App = () => {
             />
             <Route
               path="/student/classrooms/exam/:examId"
-              // loader={async ({ params }) => {
-              //   return fetch(
-              //     `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${params.examId}`
-              //   );
-              // }}
+              loader={async ({ params }) => {
+                return fetch(
+                  `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${params.examId}`
+                );
+              }}
               element={<Exams />}
             />
             {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
@@ -201,7 +208,7 @@ const App = () => {
 
           {/* Default route */}
           {!user?.role ? (
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<AuthPage />} />
           ) : (
             <Route
               path="/"

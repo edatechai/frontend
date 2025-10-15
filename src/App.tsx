@@ -1,4 +1,3 @@
-import AuthPage from "./pages/Auth/AuthPage";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Toaster } from "sonner";
 import Index from "./pages/Auth/Index";
@@ -55,6 +54,7 @@ import Task from "./pages/Parent/Task";
 import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
 import LessonPlan from "./pages/Teacher/lessonPlan";
 import GeneratedLessonsPage from "./pages/Teacher/generatedLesson";
+import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
 // import store from "./app/store";
 
 
@@ -89,6 +89,7 @@ const App = () => {
       <div className="overflow-x-hidden">
         <Routes>
           {/* Public routes */}
+          <Route path="/app" element={<ResetPasswordPage />} />
           <Route path="/complete-agent-signup" element={<CompleteAgentSignup />} />
           
           {/* Teachers layout */}
@@ -204,11 +205,13 @@ const App = () => {
             <Route path="/parent/task/:childId" element={<Task />} />
             <Route path="/parent/task/studentquizzes/:classId/:childId" element={<StudentQuizzes />} />
             <Route path="/dashboard/under-development" element={<UnderDev />} />
+            
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
 
           {/* Default route */}
           {!user?.role ? (
-            <Route path="/" element={<AuthPage />} />
+            <Route path="/" element={<Index />} />
           ) : (
             <Route
               path="/"

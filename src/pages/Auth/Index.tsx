@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 import One from "../../assets/one.png";
 import { LoginForm } from "../../components/auth/login";
 import { RegisterForm } from "../../components/auth/register";
@@ -10,19 +13,47 @@ import { ResetPasswordForm } from "../../components/auth/reset-password";
 type ShowState = 'login' | 'register' | 'forgot' | 'reset';
 
 const Index = () => {
-  const [validateEmailAndRegisterUser,] = useValidateEmailAndRegisterUserMutation()
+  const [validateEmailAndRegisterUser,] = useValidateEmailAndRegisterUserMutation();
   const [show, setShow] = useState<ShowState>('login');
   const [urlData, setUrlData] = useState<any>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
-  let mounted = true;
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
-  
-    
-    const validateEmail = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const dataParam = params.get('data');
-      
-      if (dataParam && mounted) {
+    const params = new URLSearchParams(location.search);
+    const resetError = params.get('resetError');
+    if (resetError) {
+      // Show toast with the reset error, then remove it from the URL
+      try {
+        // URLSearchParams.get already returns a decoded value, use it directly
+        const msg = resetError;
+        // show toast via sonner (Toaster is mounted in App.tsx)
+        toast.error(msg);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.debug('Failed to show resetError param', e);
+        // fallback
+        alert(resetError);
+      }
+      // Remove resetError param from URL without reloading
+      params.delete('resetError');
+      navigate({ search: params.toString() }, { replace: true });
+    }
+    const showParam = params.get('show') as ShowState;
+    if (showParam && ['login', 'register', 'forgot', 'reset'].includes(showParam)) {
+      setShow(showParam);
+    }
+
+    const token = params.get('token');
+    if (token) {
+      setResetToken(token);
+      setShow('reset');
+    }
+
+    const dataParam = params.get('data');
+    if (dataParam) {
+      const validateEmail = async () => {
         try {
           const decodedData = JSON.parse(decodeURIComponent(dataParam));
           setUrlData(decodedData);
@@ -33,31 +64,14 @@ const Index = () => {
             } else {
               alert(response?.error?.data?.message);
             }
-          
         } catch (error) {
             alert(error);
             console.error('Error parsing URL data:', error);
-          
         }
-      }
-    };
-
-    const checkResetToken = () => {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token');
-      if (token) {
-        setResetToken(token);
-        setShow('reset');
-      }
-    };
-
-    validateEmail();
-    checkResetToken();
-
-    return () => {
-      mounted = false;
-    };
-  }, [mounted]);
+      };
+      validateEmail();
+    }
+  }, [location.search, validateEmailAndRegisterUser]);
 
   const toggleView = (view: ShowState) => setShow(view);
 
@@ -149,12 +163,12 @@ const Index = () => {
         {show === 'reset' && resetToken && (
           <div className="mx-auto grid w-[350px] gap-2">
             <div className="grid gap-2">
-              <h1 className="text-2xl font-bold">Reset Password</h1>
+              {/* <h1 className="text-2xl font-bold">Reset Password</h1>
               <p className="text-muted-foreground">
                 Enter your new password below
-              </p>
+              </p> */}
             </div>
-            <ResetPasswordForm token={resetToken} />
+            <ResetPasswordForm token={resetToken} showTitle={true} />
             <div className="text-center text-sm">
               Remember your password?{" "}
               <Button variant="link" onClick={() => toggleView('login')} className="px-0">

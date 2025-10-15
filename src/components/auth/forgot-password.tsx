@@ -4,11 +4,14 @@ import { Input } from "@/components/ui/input";
 import { useSendPasswordResetToParentMutation, useForgotPasswordMutation } from "@/features/api/apiSlice";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const ForgotPasswordForm = () => {
   const [userType, setUserType] = useState('student');
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
 
   const [sendPasswordResetToParent, { isLoading: isStudentLoading }] = useSendPasswordResetToParentMutation();
   const [forgotPassword, { isLoading: isParentLoading }] = useForgotPasswordMutation();
@@ -22,23 +25,27 @@ export const ForgotPasswordForm = () => {
       if (userType === 'student') {
         const response = await sendPasswordResetToParent({ username });
         if(response.data){
-          alert(response.data.message);
+          toast.success(response.data.message || 'Reset link sent');
           setUsername("");
+          navigate('/?show=login');
         } else {
-          alert(response.error.data.message);
+          const errMsg = (response.error as any)?.data?.message || (response.error as any)?.message || 'Failed to send reset link';
+          toast.error(errMsg);
         }
       } else {
         const response = await forgotPassword({ email });
         if(response.data){
-          alert(response.data.message);
+          toast.success(response.data.message || 'Reset link sent');
           setEmail("");
+          navigate('/?show=login');
         } else {
-          alert(response.error.data.message);
+          const errMsg = (response.error as any)?.data?.message || (response.error as any)?.message || 'Failed to send reset link';
+          toast.error(errMsg);
         }
       }
     } catch (error) {
       console.error("Error sending reset email:", error);
-      alert("An error occurred while sending the reset email");
+      toast.error("An error occurred while sending the reset email");
     }
   };
 

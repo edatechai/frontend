@@ -3,9 +3,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const getToken = () => {
   const token = localStorage.getItem("Token");
-  if (!token) {
-    console.log({ token });
-  }
   return token;
 };
 
@@ -14,11 +11,11 @@ const getToken = () => {
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "http://localhost:5000/",
+    baseUrl: "http://localhost:5000/",
     
     //http://51.21.244.112:5000/
     //https://ai.edatech.ai/app
-    baseUrl: "https://ai.edatech.ai/app",
+    // baseUrl: "https://ai.edatech.ai/app",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {

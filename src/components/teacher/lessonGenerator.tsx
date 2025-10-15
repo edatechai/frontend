@@ -4,16 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useGenerateLessonMutation, useFindMyClassesTeacherQuery, useFindAllObjectivesQuery, useGetAccountByIdQuery } from '@/features/api/apiSlice';
-import { useToast } from '@/components/ui/use-toast';
-import type { RootState } from '@/app/store';
+// removed unused Select imports
+import { useGenerateLessonMutation, useFindAllObjectivesQuery, useGetAccountByIdQuery } from '@/features/api/apiSlice';
+import { toast } from 'sonner';
+import { Loader } from 'lucide-react';
+// avoid importing RootState here to prevent type mismatch; use `any` in selector
 
 // Define types
-interface Classroom {
-  _id: string;
-  classRoomName: string;
-}
 
 interface LessonMetadata {
   student_count: number;
@@ -36,28 +33,25 @@ interface LessonGeneratorProps {
 }
 
 const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClassroomId, subject: propSubject }) => {
-  const { toast } = useToast();
-  const { userInfo: user } = useSelector((state: RootState) => state.user);
+  // using sonner's toast for consistency with generatedLessons.tsx
+  const { userInfo: user } = useSelector((state: any) => state.user);
   const { data: schoolData } = useGetAccountByIdQuery(user?.accountId);
 
   const [subject, setSubject] = useState<string>(propSubject || '');
   const [topic, setTopic] = useState<string>('');
   const [classroomId, setClassroomId] = useState<string>(propClassroomId || '');
   const [duration, setDuration] = useState<number>(60);
-  const [filteredObjectives, setFilteredObjectives] = useState([]);
-  const [pages, setPages] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [filteredObjectives, setFilteredObjectives] = useState<any[]>([]);
+  // pages/currentPage removed — detailed generated lesson rendering hidden
 
-  const { data: classroomsData, isLoading: isLoadingClassrooms } = useFindMyClassesTeacherQuery(user?._id, {
-    skip: !user?._id || !!propClassroomId,
-  });
+  // classrooms query removed — not used in this component
 
   const { data: allObjectives } = useFindAllObjectivesQuery({
     subject: propSubject,
     country: schoolData?.country,
   }, { skip: !propSubject || !schoolData?.country });
   
-  const classrooms: Classroom[] = classroomsData?.data || [];
+  // classrooms list not used in this component
 
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -84,7 +78,7 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
 
   const [generateLesson, { data, isLoading, isError, error }] = useGenerateLessonMutation();
 
-  const handleTopicChange = (e) => {
+  const handleTopicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setTopic(value);
 
@@ -92,7 +86,7 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
       setFilteredObjectives([]);
     } else {
       const filtered = allObjectives
-        ?.filter((objective) => {
+        ?.filter((objective: any) => {
           const searchValue = value.toLowerCase();
           const matchesSearch =
             objective?.objective?.toLowerCase().includes(searchValue) ||
@@ -102,7 +96,7 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
 
           return matchesSearch;
         })
-        .filter((objs) => {
+        .filter((objs: any) => {
           return objs.subject == propSubject;
         });
 
@@ -110,7 +104,7 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
     }
   };
 
-  const handleObjectiveSelect = (objective) => {
+  const handleObjectiveSelect = (objective: any) => {
     setTopic(objective?.objective);
     setFilteredObjectives([]);
   };
@@ -118,59 +112,52 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!classroomId || !subject || !topic) {
-      toast({
-        variant: "destructive",
-        title: "Missing Fields",
-        description: "Please select a classroom and provide a subject and topic.",
-      });
+      toast.error('Missing Fields — please select a classroom and provide a subject and topic.');
       return;
     }
     await generateLesson({ classroomId, subject, topic, duration });
   };
 
-  const handleDownload = () => {
-    if (data?.powerpoint_file) {
-      try {
-        const textData = data.powerpoint_file;
-        const blob = new Blob([textData], { type: 'text/plain;charset=utf-8' });
-        
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        const safeTopic = topic.replace(/[^a-zA-Z0-9_]/g, '_');
-        link.download = `${safeTopic}_lesson.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-        
-        toast({
-          title: "Download Started",
-          description: "Your lesson plan is downloading as a text file.",
-        });
-      } catch (e) {
-        console.error("Download failed:", e);
-        toast({
-          variant: "destructive",
-          title: "Download Failed",
-          description: "Could not process the file for download.",
-        });
-      }
-    }
-  };
+  // Small animated dots component
+  const AnimatedDots: React.FC = () => (
+    <span className="inline-flex items-center">
+      <span className="w-2 h-2 bg-current rounded-full animate-bounce mr-1" style={{ animationDelay: '0ms' }} />
+      <span className="w-2 h-2 bg-current rounded-full animate-bounce mr-1" style={{ animationDelay: '150ms' }} />
+      <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+    </span>
+  );
+
+  // handleDownload removed (unused) to avoid unused-local TypeScript errors
   
   const responseData = data as GenerateLessonResponse | undefined;
   const mutationError = error as { data?: { error?: string } } | undefined;
 
-  useEffect(() => {
-    if (responseData?.lesson_plan) {
-      const lessonPlan = responseData.lesson_plan;
-      const pages = lessonPlan.split('--------------------------------').filter(page => page.trim() !== '');
-      setPages(pages);
-      setCurrentPage(0);
+  // detailed response parsing removed — rendering hidden in this component
+
+  // Show a single success toast when a lesson is generated instead of rendering a Card
+  const [shownSuccessToast, setShownSuccessToast] = React.useState(false);
+  // Reset the shown flag when a new generation starts so we can show toast again
+  React.useEffect(() => {
+    if (isLoading) {
+      setShownSuccessToast(false);
     }
-  }, [responseData]);
+  }, [isLoading]);
+
+  React.useEffect(() => {
+    // Only show the toast when the mutation returned a lesson_plan (generation finished)
+    if (responseData?.lesson_plan && !shownSuccessToast) {
+      try {
+        toast.success('Lesson plan generated successfully');
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to show sonner toast', err);
+      }
+      setShownSuccessToast(true);
+    }
+  }, [responseData, shownSuccessToast]);
 
   return (
+    <>
     <div className="p-2 sm:p-4 md:p-8 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lesson Plan Generator</h1>
@@ -240,9 +227,20 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
                     <Input id="duration" type="number" value={duration} onChange={(e) => setDuration(parseInt(e.target.value, 10) || 0)} />
                 </div>
             </div>
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
-              {isLoading ? 'Generating...' : 'Generate Lesson Plan'}
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button type="submit" disabled={isLoading} className="w-full md:w-auto inline-flex items-center gap-2">
+                {isLoading ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin" />
+                    Generating
+                    <AnimatedDots />
+                  </>
+                ) : (
+                  'Generate Lesson Plan'
+                )}
+              </Button>
+            
+            </div>
           </form>
         </CardContent>
       </Card>
@@ -258,52 +256,12 @@ const LessonGenerator: React.FC<LessonGeneratorProps> = ({ classroomId: propClas
         </Card>
       )}
 
-      {responseData && (
-        <Card>
-          <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <CardTitle>Your Generated Lesson Plan</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                Lesson for "{topic}" in {classrooms.find(c => c._id === classroomId)?.classRoomName}
-              </p>
-            </div>
-            {/* <Button onClick={handleDownload} disabled={!responseData.powerpoint_file} className="w-full md:w-auto">
-              Download Lesson Plan
-            </Button> */}
-          </CardHeader>
-          <CardContent>
-            <Card className="bg-muted/50 mb-6">
-                <CardHeader>
-                    <CardTitle className="text-lg">Lesson Metadata</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="text-sm space-y-2">
-                        <li><strong>Student Count:</strong> {responseData.metadata.student_count}</li>
-                        <li><strong>Targeted Student Groups:</strong> {responseData.metadata.targeted_students.join('; ') || 'N/A'}</li>
-                        <li><strong>Dialogic Questions:</strong> {responseData.metadata.dialogic_questions}</li>
-                        {/* <li><strong>AI Cost Estimate:</strong> {responseData.metadata.cost_estimate}</li> */}
-                        <li><strong>Remaining Monthly Requests:</strong> {responseData.metadata.remaining_requests}</li>
-                    </ul>
-                </CardContent>
-            </Card>
-            <div className="prose prose-sm max-w-none bg-background p-4 rounded-md border">
-              <pre className="whitespace-pre-wrap font-sans">
-                {pages[currentPage]}
-              </pre>
-            </div>
-            <div className="flex justify-between mt-4">
-              <Button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 0}>
-                Previous
-              </Button>
-              <span>Page {currentPage + 1} of {pages.length}</span>
-              <Button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage >= pages.length - 1}>
-                Next
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* responseData no longer renders a Card; a toast notification is shown when generation completes */}
+
+      {/* detailed generated lesson rendering intentionally hidden */}
     </div>
+    {/* no inline fallback banner — using sonner toast */}
+    </>
   );
 };
 

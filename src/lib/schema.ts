@@ -93,6 +93,7 @@ export const AITaskSchema = z.object({
     .number()
     .min(1, { message: "Can not be less than 1" }),
   exam_board: z.string().min(1, { message: "Can not be empty" }),
+  country: z.string().min(1, { message: "Country is required" }),
   // total_marks: z.coerce.number().min(1, { message: "Can not be less than 1" }),
 });
 

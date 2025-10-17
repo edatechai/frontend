@@ -89,14 +89,14 @@ const Report = () => {
             <div className="flex justify-center items-center py-12">
               <div className="text-red-500">Error loading classrooms. Please try again.</div>
             </div>
-          ) : !myClasses?.classes?.length ? (
+          ) : !myClasses?.data?.length ? (
             <div className="flex justify-center items-center py-12">
               <div className="text-muted-foreground">No classrooms found</div>
             </div>
           ) : (
             <>
               <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-                {myClasses?.classes?.map((i: ClassItem, index: number) => {
+                {myClasses?.data?.map((i: ClassItem, index: number) => {
                   return (
                     <Card
                       x-chunk="dashboard-01-chunk-0"

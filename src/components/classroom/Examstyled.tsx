@@ -58,16 +58,17 @@ export default function Examstyled({
     estimated_time: exam_length,
     total_questions: num_questions,
     total_score: total_marks,
+    country, 
    
   }: z.infer<typeof AITaskSchema>) => {
     const payload = {
       class_id: classId,
       role: "teacher",
       exam_board,
-      country,
-      exam_length,
-      num_questions,
-      total_marks,
+      country,   
+      exam_length: Number(exam_length), // Convert to number,
+      num_questions: Number(num_questions), // Convert to number,
+      total_marks: Number(total_marks),
       learning_objectives: [search],
       subject: "Mathematics",
     };
@@ -83,6 +84,28 @@ export default function Examstyled({
           body: JSON.stringify(payload),
         }
       );
+
+       // Add better error logging
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Server response error:", errorText);
+        console.error("Status:", res.status);
+      
+      try {
+        const errorData = JSON.parse(errorText);
+        console.error("Error details:", errorData);
+      } catch (e) {
+        console.error("Raw error response:", errorText);
+      }
+      
+        toast.error("Request failed.", {
+          description: `Server error: ${res.status}`,
+        });
+        return;
+    }
+
+
+
       const data = await res.json();
 
       if (res.ok) {
@@ -207,6 +230,20 @@ export default function Examstyled({
                   <i className="text-red-400 text-xs block">{errors?.points_per_question?.message}</p>
                 
               </Labei> */}
+
+
+              <Label>
+                Country
+                      <Input type="text"
+                    {...register("country")}
+              className="mt-1"
+                  placeholder="Enter country (e.g., Nigeria, UK, USA)"
+                  required
+                  />
+                  <i className="text-red-400 text-xs block">
+                {errors?.country?.message}
+                  </i>
+              </Label>
             <Label className="relative text-slate-900">
               Exam Board
               <select

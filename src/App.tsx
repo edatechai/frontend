@@ -52,7 +52,11 @@ import ActiveLicenses from "./pages/Org/ActiveLicenses";
 import Quizzes from "./pages/Teacher/quizzes";
 import Task from "./pages/Parent/Task";
 import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
+import LessonPlan from "./pages/Teacher/lessonPlan";
+import GeneratedLessonsPage from "./pages/Teacher/generatedLesson";
+import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
 // import store from "./app/store";
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -85,6 +89,7 @@ const App = () => {
       <div className="overflow-x-hidden">
         <Routes>
           {/* Public routes */}
+          <Route path="/app" element={<ResetPasswordPage />} />
           <Route path="/complete-agent-signup" element={<CompleteAgentSignup />} />
           
           {/* Teachers layout */}
@@ -94,6 +99,9 @@ const App = () => {
             <Route path="/teacher/class" element={<TeacherRoom />} />
             <Route path="/teacher/quizzes" element={<Quizzes />} />
             <Route path="/teacher/under-development" element={<UnderDev />} />
+            
+            <Route path="/teacher/lesson-plan" element={<GeneratedLessonsPage />} />
+
             <Route
               path="/teacher/class/create-report"
               element={<CreateReport />}
@@ -172,11 +180,11 @@ const App = () => {
             />
             <Route
               path="/student/classrooms/exam/:examId"
-              // loader={async ({ params }) => {
-              //   return fetch(
-              //     `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${params.examId}`
-              //   );
-              // }}
+              loader={async ({ params }) => {
+                return fetch(
+                  `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${params.examId}`
+                );
+              }}
               element={<Exams />}
             />
             {/* <Route path="/dashboard/class-room" element={<ClassRoom />} /> */}
@@ -197,6 +205,8 @@ const App = () => {
             <Route path="/parent/task/:childId" element={<Task />} />
             <Route path="/parent/task/studentquizzes/:classId/:childId" element={<StudentQuizzes />} />
             <Route path="/dashboard/under-development" element={<UnderDev />} />
+            
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
           </Route>
 
           {/* Default route */}

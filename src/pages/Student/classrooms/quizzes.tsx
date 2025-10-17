@@ -20,20 +20,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// type ExamQuestions = {
-//   exam_questions: {
-//     _id: string;
-//     questions: {
-//       number: string;
-//       text: string;
-//       marks: number;
-//       learning_objectives: string[];
-//       mark_scheme: string;
-//     }[];
-//     student_id: null;
-//     class_id: string;
-//   }[];
-// };
+type ExamQuestions = {
+  exam_questions: {
+    _id: string;
+    questions: {
+      number: string;
+      text: string;
+      marks: number;
+      learning_objectives: string[];
+      mark_scheme: string;
+    }[];
+    student_id: null;
+    class_id: string;
+  }[];
+};
 
 const StudentQiuzzes = () => {
   const { classId } = useParams();
@@ -86,7 +86,7 @@ const StudentQiuzzes = () => {
       return iso;
     }
   };
-  // const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
+  const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
   const getExamTasks = async () => {
@@ -96,7 +96,7 @@ const StudentQiuzzes = () => {
       );
       const tasks = await res.json();
       console.log({ tasks });
-      // if (res.ok) setExamQuestions(tasks);
+      if (res.ok) setExamQuestions(tasks);
     } catch (err) {
       console.log({ err });
     }
@@ -203,7 +203,7 @@ const StudentQiuzzes = () => {
 
 
 
-        {/* <AccordionItem value="exams">
+        <AccordionItem value="exams">
           <Card className="mt-5">
             <CardHeader>
               <CardTitle className="text-lg">
@@ -238,7 +238,7 @@ const StudentQiuzzes = () => {
               </CardContent>
             </AccordionContent>
           </Card>
-        </AccordionItem> */}
+        </AccordionItem>
 
 
 

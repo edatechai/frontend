@@ -190,12 +190,16 @@ export const ResetPasswordForm = ({ token: propToken, showTitle = true }: ResetP
                 <Input
                   id="newPassword"
                   type={showNewPassword ? 'text' : 'password'}
-                  placeholder="Enter new password"
+                  placeholder="Enter your new password"
                   value={newPassword}
                   onChange={(e) => {
                     setNewPassword(e.target.value);
                     if (passwordError) setPasswordError("");
                   }}
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
+                  onPaste={(e) => e.preventDefault()}
+                  autoComplete="new-password"
                   required
                   minLength={8}
                   className="pr-10"
@@ -225,6 +229,10 @@ export const ResetPasswordForm = ({ token: propToken, showTitle = true }: ResetP
                     setConfirmPassword(e.target.value);
                     if (passwordError) setPasswordError("");
                   }}
+                  onCopy={(e) => e.preventDefault()}
+                  onCut={(e) => e.preventDefault()}
+                  onPaste={(e) => e.preventDefault()}
+                  autoComplete="new-password"
                   required
                   minLength={8}
                   className="pr-10"
@@ -281,3 +289,4 @@ export const ResetPasswordForm = ({ token: propToken, showTitle = true }: ResetP
     </div>
   );
 };
+

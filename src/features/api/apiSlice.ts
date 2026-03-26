@@ -89,7 +89,7 @@ export const apiSlice = createApi({
 
     updatePassword: builder.mutation({
       query: (payload) => ({
-        url: "/api/users/updatePassword",
+        url: `/api/users/updatePassword/${payload.id}`,
         method: "POST",
         body: payload,
       }),
@@ -393,10 +393,6 @@ export const apiSlice = createApi({
       providesTags: ["Quiz"],
     }),
 
-    getTest: builder.query({
-      query: () => "/api/quiz/test",
-    }),
-
     getStrengthsAndweaknesses: builder.mutation({
       query: (payload) => ({
         url: "/api/quiz/getMean",
@@ -472,10 +468,10 @@ export const apiSlice = createApi({
     }),
 
     updateBio: builder.mutation({
-      query: ({ id, bio, newPassword, oldPassword }) => ({
-        url: `/api/users/updateBio/${id}`,
-        method: "PUT",
-        body: { bio, newPassword, oldPassword },
+      query: ({ id, bio }) => ({
+        url: `/api/users/updatebio/${id}`,
+        method: "POST",
+        body: { bio },
       }),
       invalidatesTags: ["CurrentUser"],
     }),
@@ -742,7 +738,6 @@ export const {
   useGetAllQuizMutation,
   useQuizNextQuestionMutation,
   useGetPreviousQuestionMutation,
-  useGetTestQuery,
   useGetAllQuizzesByTeacherIdQuery,
   // useGetAllQuizByObjCodeQuery,
   useUpdateQuizMutation,

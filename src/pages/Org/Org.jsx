@@ -4,6 +4,7 @@ import { licenseColumns } from "../../components/table/columns";
 import { DataTable } from "../../components/table/data-table";
 import { useGetAccountByIdQuery, useGenerateUserGuideMutation } from "../../features/api/apiSlice";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Index = () => {
@@ -52,7 +53,7 @@ const Index = () => {
       tableRows.push(rowData);
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
       styles: { cellWidth: 'auto', fontSize: 10 },

@@ -23,11 +23,7 @@ export const apiSlice = createApi({
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://server.edatech.io
-<<<<<<< HEAD
-    baseUrl: "https://server.edatech.io",
-=======
-    baseUrl: "http://localhost:5000",
->>>>>>> 69ce9fe2 (new one)
+    baseUrl: "https://ai.edatech.ai/app",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -134,8 +130,6 @@ export const apiSlice = createApi({
       invalidatesTags: ["AllAccounts"],
     }),
 
-<<<<<<< HEAD
-=======
     updateMonthlyRequestLimit: builder.mutation({
       query: (payload) => ({
         url: `/api/account/updateMonthlyRequestLimit/${payload.id}/${payload.monthlyRequestLimit}`,
@@ -145,7 +139,7 @@ export const apiSlice = createApi({
       invalidatesTags: ["AllAccounts"],
     }),
 
->>>>>>> 69ce9fe2 (new one)
+
     forgotPassword: builder.mutation({
       query: (payload) => ({
         url: "/api/users/forgot-password",
@@ -480,17 +474,10 @@ export const apiSlice = createApi({
     updateBio: builder.mutation({
       query: ({ id, bio, newPassword, oldPassword }) => ({
         url: `/api/users/updateBio/${id}`,
-<<<<<<< HEAD
         method: "PUT",
         body: { bio, newPassword, oldPassword },
       }),
       invalidatesTags: ["CurrentUser"],
-=======
-        method: "POST",
-        body: { bio, newPassword, oldPassword },
-      }),
-     // invalidatesTags: ["CurrentUser"],
->>>>>>> 69ce9fe2 (new one)
     }),
 
     updateProfile: builder.mutation({
@@ -698,10 +685,7 @@ export const {
   useGetUsersByAccountIdQuery,
   useAddMoreLicensesMutation,
   useUpdatePasswordMutation,
-<<<<<<< HEAD
-=======
   useUpdateMonthlyRequestLimitMutation,
->>>>>>> 69ce9fe2 (new one)
   //classRoom
   useCreateClassRoomMutation,
   useGetAllClassRoomsQuery,

@@ -1,0 +1,73 @@
+name: Deploy — Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Only one production deployment runs at a time; never cancel in-flight runs.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Production (EC2)
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      # ── 2. Set up Node.js ─────────────────────────────────────────────────
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── 3. Install dependencies ───────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Build ──────────────────────────────────────────────────────────
+      - name: Build
+        run: npm run build
+
+      # ── 5. Write SSH key to disk ──────────────────────────────────────────
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key.pem
+          chmod 600 ~/.ssh/deploy_key.pem
+          ssh-keyscan -H "${{ vars.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      # ── 6. Sync built files to production server ──────────────────────────
+      - name: Sync dist via rsync
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            -e "ssh -i ~/.ssh/deploy_key.pem -o StrictHostKeyChecking=no" \
+            ./dist/ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:${{ vars.DEPLOY_PATH }}/
+
+      # ── 7. Set correct permissions on server ─────────────────────────────
+      - name: Set file permissions
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem \
+            -o StrictHostKeyChecking=no \
+            ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
+            "sudo chown -R www-data:www-data ${{ vars.DEPLOY_PATH }} && \
+             sudo chmod -R 755 ${{ vars.DEPLOY_PATH }}"
+
+      # ── 8. Summary ────────────────────────────────────────────────────────
+      - name: Deployment summary
+        run: |
+          echo "### Production deployment complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Server:** \`${{ vars.EC2_HOST }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Path:** \`${{ vars.DEPLOY_PATH }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY

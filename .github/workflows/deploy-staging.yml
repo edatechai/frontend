@@ -45,7 +45,15 @@ jobs:
           chmod 600 ~/.ssh/deploy_key.pem
           ssh-keyscan -H "${{ vars.EC2_HOST }}" >> ~/.ssh/known_hosts
 
-      # ── 6. Sync built files to staging server ─────────────────────────────
+      # ── 6. Grant deploy user ownership so rsync can write ────────────────
+      - name: Pre-rsync ownership grant
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem \
+            -o StrictHostKeyChecking=no \
+            ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
+            "sudo chown -R ${{ vars.EC2_USER }}:${{ vars.EC2_USER }} ${{ vars.DEPLOY_PATH }}"
+
+      # ── 7. Sync built files to staging server ─────────────────────────────
       - name: Sync dist via rsync
         run: |
           rsync -az --delete \
@@ -53,7 +61,7 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key.pem -o StrictHostKeyChecking=no" \
             ./dist/ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:${{ vars.DEPLOY_PATH }}/
 
-      # ── 7. Set correct permissions on server ─────────────────────────────
+      # ── 8. Restore correct permissions for nginx ──────────────────────────
       - name: Set file permissions
         run: |
           ssh -i ~/.ssh/deploy_key.pem \
@@ -62,7 +70,7 @@ jobs:
             "sudo chown -R www-data:www-data ${{ vars.DEPLOY_PATH }} && \
              sudo chmod -R 755 ${{ vars.DEPLOY_PATH }}"
 
-      # ── 8. Summary ────────────────────────────────────────────────────────
+      # ── 9. Summary ────────────────────────────────────────────────────────
       - name: Deployment summary
         run: |
           echo "### Staging deployment complete" >> $GITHUB_STEP_SUMMARY

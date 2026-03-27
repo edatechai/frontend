@@ -11,19 +11,10 @@ const getToken = () => {
 
 
 // Define our single API slice object
-//https://edatbackend.azurewebsites.net/
-//http://localhost:5000
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    // baseUrl: "https://edat-backend.onrender.com",
-    // baseUrl: "http://localhost:5000/",
-    // baseUrl: "https://edatbackend.azurewebsites.net/",
-    //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://server.edatech.io
-    baseUrl: "https://ai.edatech.ai/app",
+    baseUrl: import.meta.env.VITE_API_BASE_URL ?? "https://ai.edatech.ai/app",
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -318,7 +309,7 @@ export const apiSlice = createApi({
     }),
 
     findAllQuizByIdForChild: builder.query({
-      query: ({id, childId}) => `/api/quiz/findQuizByClassIdForChild/${id}/${childId}`,
+      query: ({ id, childId }) => `/api/quiz/findQuizByClassIdForChild/${id}/${childId}`,
       providesTags: ["Quiz"],
     }),
 
@@ -422,13 +413,13 @@ export const apiSlice = createApi({
 
     getAllChildren: builder.query({
       query: (ids) => `/api/users/getAllChildren?ids=${ids.join(",")}`,
-      providesTags: (result) => 
+      providesTags: (result) =>
         // Add more specific tags for better cache control
-        result 
+        result
           ? [
-              ...result.map(({ id }) => ({ type: 'AddChild' as const, id })),
-              { type: 'AddChild' as const, id: 'LIST' }
-            ]
+            ...result.map(({ id }) => ({ type: 'AddChild' as const, id })),
+            { type: 'AddChild' as const, id: 'LIST' }
+          ]
           : [{ type: 'AddChild', id: 'LIST' }],
     }),
 

@@ -73,10 +73,9 @@ export function ParentsLayout() {
                 end
                 to="/parent"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                    isActive
-                      ? "bg-muted text-foreground hover:bg-slate-200"
-                      : "text-primary-foreground hover:bg-blue-500"
+                  `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive
+                    ? "bg-muted text-foreground hover:bg-slate-200"
+                    : "text-primary-foreground hover:bg-blue-500"
                   }`
                 }
               >
@@ -101,10 +100,9 @@ export function ParentsLayout() {
                   <NavLink
                     to={`/parent/result/${wardId}`}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                        isActive
-                          ? "bg-muted text-foreground hover:bg-slate-200"
-                          : "text-primary-foreground hover:bg-blue-500"
+                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
                       }`
                     }
                   >
@@ -114,10 +112,9 @@ export function ParentsLayout() {
                   <NavLink
                     to={`/parent/strengths/${wardId}`}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                        isActive
-                          ? "bg-muted text-foreground hover:bg-slate-200"
-                          : "text-primary-foreground hover:bg-blue-500"
+                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
                       }`
                     }
                   >
@@ -127,10 +124,9 @@ export function ParentsLayout() {
                   <NavLink
                     to={`/parent/task/${wardId}`}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                        isActive
-                          ? "bg-muted text-foreground hover:bg-slate-200"
-                          : "text-primary-foreground hover:bg-blue-500"
+                      `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${isActive
+                        ? "bg-muted text-foreground hover:bg-slate-200"
+                        : "text-primary-foreground hover:bg-blue-500"
                       }`
                     }
                   >
@@ -188,10 +184,9 @@ export function ParentsLayout() {
                 <NavLink
                   to="/parent"
                   className={({ isActive }) =>
-                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 mt-4 ${
-                      isActive
-                        ? "bg-muted text-foreground hover:bg-slate-200"
-                        : "text-primary-foreground hover:bg-blue-500"
+                    `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 mt-4 ${isActive
+                      ? "bg-muted text-foreground hover:bg-slate-200"
+                      : "text-primary-foreground hover:bg-blue-500"
                     }`
                   }
                 >

@@ -172,9 +172,9 @@ const App = () => {
             />
           )}
         </Routes>
-        <Toaster richColors theme="light" toastOptions={{}} position="top-right" 
+        <Toaster richColors theme="light" toastOptions={{}} position="top-right"
           duration={4000}
-         />
+        />
       </div>
       // </Provider>
     );

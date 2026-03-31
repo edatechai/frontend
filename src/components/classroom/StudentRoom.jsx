@@ -128,10 +128,12 @@ const StudentRoom = (props) => {
     // navigate to dashboard/quiz with newdata
   };
 
+  const quizzes = Array.isArray(AllQuiz) ? AllQuiz : AllQuiz?.data;
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-7">
-        {AllQuiz?.map((i, index) => {
+        {quizzes?.map((i, index) => {
           return (
             <div key={index} className="">
               <div className="card bg-white border-2 border-slate-300 text-primary-content w-96">
@@ -172,7 +174,7 @@ const StudentRoom = (props) => {
           );
         })}
 
-        {AllQuiz?.length === 0 && (
+        {quizzes?.length === 0 && (
           <div className="text-center">No Quiz Found</div>
         )}
       </div>

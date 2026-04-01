@@ -46,7 +46,7 @@ const StudentQiuzzes = () => {
   const getExamTasks = async () => {
     try {
       const res = await fetch(
-        `https://edat-microservice-v1.onrender.com/exam/get_exam_questions?role=teacher&class_id=${classId}`
+        `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/exam/get_exam_questions?role=teacher&class_id=${classId}`
       );
       const tasks = await res.json();
       console.log({ tasks });

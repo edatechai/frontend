@@ -103,7 +103,7 @@ function Theory({ exam }: { exam: ExamQuestions }) {
 
     try {
       const res = await fetch(
-        "https://edat-microservice-v1.onrender.com/student/process_exam_responses",
+        `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/student/process_exam_responses`,
         // "http://localhost:5000/api/chat/markStudentResponse",
         {
           method: "POST",

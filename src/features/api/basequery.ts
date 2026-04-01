@@ -10,8 +10,7 @@ const getToken = () => {
 };
 
 const baseQuery = fetchBaseQuery({
-  //baseUrl: "http://localhost:5000/",
-  baseUrl: "https://edatbackend.azurewebsites.net/",
+  baseUrl: import.meta.env.VITE_API_BASE_URL,
   prepareHeaders: async (headers) => {
     const token = getToken();
     if (token) {

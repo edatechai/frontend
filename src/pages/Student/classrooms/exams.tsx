@@ -24,7 +24,7 @@ const Exams = () => {
   const getExamTasks = async () => {
     try {
       const res = await fetch(
-        `https://edat-microservice-v1.onrender.com/exam/get_one_exam_id?exam_id=${examId}`
+        `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/exam/get_one_exam_id?exam_id=${examId}`
       );
       const tasks = await res.json();
       console.log({ tasks });

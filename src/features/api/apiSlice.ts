@@ -23,7 +23,7 @@ export const apiSlice = createApi({
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
     //https://server.edatech.io
-    baseUrl: "https://ai.edatech.ai/app",
+    baseUrl: import.meta.env.VITE_API_BASE_URL,
     prepareHeaders: async (headers) => {
       const token = getToken();
       if (token) {
@@ -82,6 +82,14 @@ export const apiSlice = createApi({
     validateEmailAndRegisterUser: builder.mutation({
       query: (payload) => ({
         url: "/api/users/validateEmailAndRegisterUser",
+        method: "POST",
+        body: payload,
+      }),
+    }),
+
+    verifyEmail: builder.mutation({
+      query: (payload) => ({
+        url: "/api/users/verify-email",
         method: "POST",
         body: payload,
       }),
@@ -674,6 +682,7 @@ export const {
   useUpdateNumberOfLearningObjectiveMutation,
   useUpdateProfileMutation,
   useValidateEmailAndRegisterUserMutation,
+  useVerifyEmailMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useDeleteLicenseMutation,

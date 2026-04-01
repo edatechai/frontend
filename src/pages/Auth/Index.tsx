@@ -1,43 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import One from "../../assets/one.png";
 import { LoginForm } from "../../components/auth/login";
 import { RegisterForm } from "../../components/auth/register";
 import { Button } from "@/components/ui/button";
-import { useValidateEmailAndRegisterUserMutation } from "../../features/api/apiSlice";
+import { useVerifyEmailMutation } from "../../features/api/apiSlice";
 import { ForgotPasswordForm } from "../../components/auth/forgot-password";
 import { ResetPasswordForm } from "../../components/auth/reset-password";
 
 type ShowState = 'login' | 'register' | 'forgot' | 'reset';
 
 const Index = () => {
-  const [validateEmailAndRegisterUser,] = useValidateEmailAndRegisterUserMutation()
+  const [verifyEmail] = useVerifyEmailMutation();
   const [show, setShow] = useState<ShowState>('login');
-  const [urlData, setUrlData] = useState<any>(null);
   const [resetToken, setResetToken] = useState<string | null>(null);
-  let mounted = true;
+  const mounted = useRef(true);
   useEffect(() => {
-  
-    
-    const validateEmail = async () => {
+    const handleVerifyEmail = async () => {
       const params = new URLSearchParams(window.location.search);
-      const dataParam = params.get('data');
-      
-      if (dataParam && mounted) {
+      const verifyToken = params.get('verifyToken');
+
+      if (verifyToken && mounted.current) {
         try {
-          const decodedData = JSON.parse(decodeURIComponent(dataParam));
-          setUrlData(decodedData);
-          const response = await validateEmailAndRegisterUser(decodedData);
-          console.log("response", response)
-            if(response?.data?.message === "User created successfully"){
-              alert(response?.data?.message);
-            } else {
-              alert(response?.error?.data?.message);
-            }
-          
+          const response = await verifyEmail({ token: verifyToken });
+          if (response?.data?.message === 'Email verified successfully.') {
+            alert('Email verified! You can now log in.');
+          } else {
+            alert(response?.error?.data?.message || 'Email verification failed.');
+          }
         } catch (error) {
-            alert(error);
-            console.error('Error parsing URL data:', error);
-          
+          alert('An error occurred during email verification.');
+          console.error('Error verifying email:', error);
         }
       }
     };
@@ -51,13 +43,13 @@ const Index = () => {
       }
     };
 
-    validateEmail();
+    handleVerifyEmail();
     checkResetToken();
 
     return () => {
-      mounted = false;
+      mounted.current = false;
     };
-  }, [mounted]);
+  }, []);
 
   const toggleView = (view: ShowState) => setShow(view);
 

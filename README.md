@@ -8,7 +8,7 @@ React + TypeScript + Vite SPA served from EC2 at https://ai.edatech.ai
 
 Full setup instructions (environment variables, running both apps, seeding, common issues) are in the backend repo:
 
-📄 [`main-backend/DEVELOPMENT.md`](../main-backend/DEVELOPMENT.md)
+📄 [DEVELOPMENT.md](https://github.com/edatechai/backend/blob/main/DEVELOPMENT.md)
 
 ### Quick start
 

@@ -37,7 +37,7 @@ type ExamQuestions = {
 const StudentQiuzzes = () => {
   const { classId } = useParams();
   const { data: AllQuiz, isLoading } = useFindAllQuizByIdQuery(classId);
-  const [examQuestions, setExamQuestions] = useState<ExamQuestions | "">("");
+  const [, setExamQuestions] = useState<ExamQuestions | "">("");
   console.log({ AllQuiz });
 
   const getExamTasks = async () => {
@@ -64,13 +64,13 @@ const StudentQiuzzes = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink>
+            <BreadcrumbLink asChild>
               <Link to="/student">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink>
+            <BreadcrumbLink asChild>
               <Link to="/student/classrooms">Classrooms</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -81,20 +81,20 @@ const StudentQiuzzes = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h3 className="my-4 text-lg font-medium">
-        {AllQuiz?.[0]?.classRoomName}
+        {AllQuiz?.data?.[0]?.classRoomName || "Classroom Quizzes"}
       </h3>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="quizzes">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">
+              <div className="text-lg font-semibold leading-none tracking-tight">
                 <AccordionTrigger>Quizzes</AccordionTrigger>
-              </CardTitle>
+              </div>
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 {!isLoading ? (
-                  AllQuiz?.map((val, i: number) => (
+                  AllQuiz?.data?.map((val: { objective: string, numberOfQuestions: number, questionsAndAnswers: { objCode: string }[] }, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
@@ -120,6 +120,9 @@ const StudentQiuzzes = () => {
                   ))
                 ) : (
                   <p>Loading...</p>
+                )}
+                {!isLoading && (!AllQuiz?.data || AllQuiz?.data?.length === 0) && (
+                  <p className="col-span-full text-center py-10 text-muted-foreground text-sm">No quizzes available in this class yet.</p>
                 )}
               </CardContent>
             </AccordionContent>
@@ -169,9 +172,6 @@ const StudentQiuzzes = () => {
 
       </Accordion>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
-        {AllQuiz?.length === 0 && (
-          <div className="text-center">No Quiz Found</div>
-        )}
       </div>
     </>
   );

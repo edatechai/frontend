@@ -33,11 +33,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # ── 4. Build ──────────────────────────────────────────────────────────
+      # ── 4. Write .env from GitHub Variables ───────────────────────────────
+      # vars.* → non-sensitive config baked into the Vite bundle at build time
+      - name: Write .env file
+        run: |
+          cat > .env << 'ENVEOF'
+          VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+          VITE_MICROSERVICE_BASE_URL=${{ vars.VITE_MICROSERVICE_BASE_URL }}
+          ENVEOF
+
+      # ── 5. Build ──────────────────────────────────────────────────────────
       - name: Build
         run: npm run build
 
-      # ── 5. Write SSH key to disk ──────────────────────────────────────────
+      # ── 6. Write SSH key to disk ──────────────────────────────────────────
       - name: Configure SSH key
         run: |
           mkdir -p ~/.ssh
@@ -45,7 +54,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key.pem
           ssh-keyscan -H "${{ vars.EC2_HOST }}" >> ~/.ssh/known_hosts
 
-      # ── 6. Grant deploy user ownership so rsync can write ────────────────
+      # ── 7. Grant deploy user ownership so rsync can write ────────────────
       - name: Pre-rsync ownership grant
         run: |
           ssh -i ~/.ssh/deploy_key.pem \
@@ -53,7 +62,7 @@ jobs:
             ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
             "sudo chown -R ${{ vars.EC2_USER }}:${{ vars.EC2_USER }} ${{ vars.DEPLOY_PATH }}"
 
-      # ── 7. Sync built files to staging server ─────────────────────────────
+      # ── 8. Sync built files to staging server ─────────────────────────────
       - name: Sync dist via rsync
         run: |
           rsync -az --delete \
@@ -61,7 +70,7 @@ jobs:
             -e "ssh -i ~/.ssh/deploy_key.pem -o StrictHostKeyChecking=no" \
             ./dist/ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:${{ vars.DEPLOY_PATH }}/
 
-      # ── 8. Restore correct permissions for nginx ──────────────────────────
+      # ── 9. Restore correct permissions for nginx ──────────────────────────
       - name: Set file permissions
         run: |
           ssh -i ~/.ssh/deploy_key.pem \
@@ -70,7 +79,7 @@ jobs:
             "sudo chown -R www-data:www-data ${{ vars.DEPLOY_PATH }} && \
              sudo chmod -R 755 ${{ vars.DEPLOY_PATH }}"
 
-      # ── 9. Summary ────────────────────────────────────────────────────────
+      # ── 10. Summary ───────────────────────────────────────────────────────
       - name: Deployment summary
         run: |
           echo "### Staging deployment complete" >> $GITHUB_STEP_SUMMARY

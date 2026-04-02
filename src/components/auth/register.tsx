@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { RegisterSchema } from "../../lib/schema";
 import { useCreateUserMutation } from "../../features/api/apiSlice";
 import {
@@ -37,7 +38,6 @@ import TermsAndConditions from "./terms-and-conditions";
 
 export function RegisterForm({ toggle }: { toggle: () => void }) {
   const [CreateUser, { isLoading }] = useCreateUserMutation();
-  const [showPassword, setShowPassword] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
 
@@ -324,25 +324,12 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
               <FormItem className="space-y-0.5 relative">
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     placeholder="password"
+                    disabled={isLoading}
                     {...field}
-                    type={showPassword ? "text" : "password"}
                   />
                 </FormControl>
-                <button
-                  className={`absolute right-2 bottom-2.5 ${
-                    isLoading && "text-border"
-                  }`}
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff size={16} className="h-4 w-4 opacity-50" />
-                  ) : (
-                    <Eye size={16} className="h-4 w-4 opacity-50" />
-                  )}
-                </button>
                 <FormMessage />
               </FormItem>
             )}
@@ -354,25 +341,12 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
               <FormItem className="space-y-0.5 relative">
                 <FormLabel>Confirm password</FormLabel>
                 <FormControl>
-                  <Input
+                  <PasswordInput
                     placeholder="password"
+                    disabled={isLoading}
                     {...field}
-                    type={showPassword ? "text" : "password"}
                   />
                 </FormControl>
-                <button
-                  className={`absolute right-2 bottom-2.5 ${
-                    isLoading && "text-border"
-                  }`}
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff size={16} className="h-4 w-4 opacity-50" />
-                  ) : (
-                    <Eye size={16} className="h-4 w-4 opacity-50" />
-                  )}
-                </button>
                 <FormMessage />
               </FormItem>
             )}

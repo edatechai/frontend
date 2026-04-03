@@ -11,9 +11,10 @@ import { LoginSchema } from "../../lib/schema";
 import { useLoginMutation } from "../../features/api/apiSlice";
 import { toast } from "sonner";
 
+import { PasswordInput } from "@/components/ui/password-input";
+
 export const LoginForm = () => {
   const [Login, { isLoading }] = useLoginMutation();
-  const [showPassword, setShowPassword] = useState(false);
   //   const dispatch = useDispatch();
 
   const {
@@ -70,9 +71,8 @@ export const LoginForm = () => {
         </span>
         <div className="grid gap-1.5 w-full items-center relative">
           <Label htmlFor="password">Password</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type={showPassword ? "text" : "password"}
             required
             placeholder="password"
             autoCapitalize="none"
@@ -80,15 +80,7 @@ export const LoginForm = () => {
             autoCorrect="off"
             disabled={isLoading}
             {...register("password")}
-            className="pr-8"
           />
-          <button
-            className={`absolute right-2 top-7 ${isLoading && "text-border"}`}
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
           <span className="text-red-400 text-xs">
             <i>{errors?.password?.message}</i>
           </span>

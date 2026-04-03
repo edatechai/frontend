@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useVerifyEmailMutation } from "../../features/api/apiSlice";
 import { ForgotPasswordForm } from "../../components/auth/forgot-password";
 import { ResetPasswordForm } from "../../components/auth/reset-password";
+import { toast } from "sonner";
 
 type ShowState = 'login' | 'register' | 'forgot' | 'reset';
 
@@ -23,12 +24,13 @@ const Index = () => {
         try {
           const response = await verifyEmail({ token: verifyToken });
           if (response?.data?.message === 'Email verified successfully.') {
-            alert('Email verified! You can now log in.');
+            toast.success('Email verified! You can now log in.');
           } else {
-            alert(response?.error?.data?.message || 'Email verification failed.');
+            const errorData = response?.error as any;
+            toast.error(errorData?.data?.message || 'Email verification failed.');
           }
         } catch (error) {
-          alert('An error occurred during email verification.');
+          toast.error('An error occurred during email verification.');
           console.error('Error verifying email:', error);
         }
       }

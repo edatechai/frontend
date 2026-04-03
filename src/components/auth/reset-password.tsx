@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-// Import your reset password mutation hook here
-// import { useResetPasswordMutation } from "../../features/api/apiSlice";
 import { useResetPasswordMutation } from "@/features/api/apiSlice";
-import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
+import { toast } from "sonner";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export const ResetPasswordForm = ({ token }: { token: string }) => {
-  const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetPassword, { isLoading: isResetPasswordLoading }] = useResetPasswordMutation();
@@ -16,7 +14,7 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
     e.preventDefault();
     
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -24,31 +22,31 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
       const response = await resetPassword({ token, newPassword });
       console.log(response);
       if (response.data) {
-        alert(response.data.message)
+        toast.success(response.data.message || "Password has been reset successfully.");
         // Redirect to login
-        // reload the page back to login
-        window.location.reload();
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
       }
 
       if (response.error) {
-       
-        alert(response.error.data.error);
-        window.location.reload();
-        
+        const errorData = response.error as any;
+        toast.error(errorData?.data?.error || errorData?.data?.message || "Failed to reset password");
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
-
 
     } catch (error) {
       console.error("Error resetting password:", error);
-      alert("Failed to reset password");
+      toast.error("An unexpected error occurred");
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4">
       <div className="grid gap-2">
-        <Input
-          type="text"
+        <PasswordInput
           placeholder="New Password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
@@ -56,15 +54,21 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
         />
       </div>
       <div className="grid gap-2">
-        <Input
-          type="text"
+        <PasswordInput
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
       </div>
-      <Button type="submit">Reset Password</Button>
+      <Button type="submit" disabled={isResetPasswordLoading}>
+        {isResetPasswordLoading && (
+          <span className="mr-2 animate-spin text-white">
+            <Loader size={16} />
+          </span>
+        )}
+        {isResetPasswordLoading ? "Resetting..." : "Reset Password"}
+      </Button>
     </form>
   );
-}; 
+};

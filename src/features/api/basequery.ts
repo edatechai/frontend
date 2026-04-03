@@ -1,11 +1,11 @@
-import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+import type { BaseQueryApi } from "@reduxjs/toolkit/query";
+
+type ExtraOptions = { navigate?: (path: string) => void };
 // import { history } from "./path-to-your-history"; // Adjust the path to your history setup
 
 const getToken = () => {
   const token = localStorage.getItem("Token");
-  if (!token) {
-    console.log({ token });
-  }
   return token;
 };
 
@@ -19,15 +19,13 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithRedirect = async (args, api, extraOptions) => {
+const baseQueryWithRedirect: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, ExtraOptions> = async (args, api: BaseQueryApi, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
 
-  console.log({ result });
-  console.log({ extraOptions });
   if (result?.error?.status === 401) {
-    const { navigate } = extraOptions; // Get the navigate function
-    if (navigate) {
-      console.log("navigate");
+    const { navigate } = extraOptions;
+    const authPaths = ["/", "/register"];
+    if (navigate && !authPaths.includes(window.location.pathname)) {
       navigate("/");
     }
   }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import One from "../../assets/one.png";
 import { LoginForm } from "../../components/auth/login";
 import { RegisterForm } from "../../components/auth/register";
@@ -10,9 +11,10 @@ import { toast } from "sonner";
 
 type ShowState = 'login' | 'register' | 'forgot' | 'reset';
 
-const Index = () => {
+const Index = ({ initialView = 'login' }: { initialView?: ShowState }) => {
   const [verifyEmail] = useVerifyEmailMutation();
-  const [show, setShow] = useState<ShowState>('login');
+  const [show, setShow] = useState<ShowState>(initialView);
+  const navigate = useNavigate();
   const [resetToken, setResetToken] = useState<string | null>(null);
   const mounted = useRef(true);
   useEffect(() => {
@@ -72,7 +74,7 @@ const Index = () => {
             <div className="text-center text-sm">
               <div>
                 Don&apos;t have an account?{" "}
-                <Button variant="link" onClick={() => toggleView('register')} className="px-0">
+                <Button variant="link" onClick={() => navigate('/register')} className="px-0">
                   Sign up
                 </Button>
               </div>
@@ -94,10 +96,10 @@ const Index = () => {
                 Enter your information to create an account
               </p>
             </div>
-            <RegisterForm toggle={() => toggleView('login')} />
+            <RegisterForm toggle={() => navigate('/')} />
             <div className="text-center text-sm">
               Already have an account?{" "}
-              <Button variant="link" onClick={() => toggleView('login')} className="px-0">
+              <Button variant="link" onClick={() => navigate('/')} className="px-0">
                 Sign in
               </Button>
             </div>

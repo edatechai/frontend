@@ -60,12 +60,6 @@ const App = () => {
     }
   }, [user]);
 
-  if (user) {
-    dispatch(setUserInfo(user));
-  } else {
-    dispatch(setUserInfo(null));
-  }
-
   if (isLoading) {
     return <div>Loading...</div>;
   } else {
@@ -162,14 +156,17 @@ const App = () => {
             <Route path="/dashboard/under-development" element={<UnderDev />} />
           </Route>
 
-          {/* Default route */}
+          {/* Auth routes */}
           {!user?.role ? (
-            <Route path="/" element={<Index />} />
+            <>
+              <Route path="/" element={<Index key="login" />} />
+              <Route path="/register" element={<Index key="register" initialView="register" />} />
+            </>
           ) : (
-            <Route
-              path="/"
-              element={<Navigate to={`/${user?.role}`} replace />}
-            />
+            <>
+              <Route path="/" element={<Navigate to={`/${user?.role}`} replace />} />
+              <Route path="/register" element={<Navigate to={`/${user?.role}`} replace />} />
+            </>
           )}
         </Routes>
         <Toaster richColors theme="light" toastOptions={{}} position="top-right" 

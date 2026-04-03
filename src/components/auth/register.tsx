@@ -74,10 +74,10 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
         });
       } else {
         if (response.data.statusMsg === "verify your email") {
-          alert(response.data.message);
+          toast.success(response.data.message);
           toggle();
         } else {
-          toast(response.data.message);
+          toast.success(response.data.message);
           toggle();
         }
       }

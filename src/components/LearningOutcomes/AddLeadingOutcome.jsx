@@ -45,7 +45,6 @@ const Index = () => {
     };
     try {
       const response = await createObjective(payload).unwrap();
-      console.log(response);
       if (response.status) {
         dialogRef.current.close();
         return alert(response.message);
@@ -53,7 +52,6 @@ const Index = () => {
       alert(response.message);
       dialogRef.current.close();
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -65,12 +63,10 @@ const Index = () => {
     ) {
       try {
         const response = await deleteObjective(id).unwrap();
-        console.log(response);
         if (response.status) {
           alert(response.message);
         }
       } catch (error) {
-        console.log(error);
       }
     }
   };

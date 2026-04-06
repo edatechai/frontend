@@ -16,7 +16,6 @@ import { Link } from "react-router-dom";
 
 const StudentRoom = (props) => {
   let { state } = useLocation();
-  //console.log("this is state for me",state?.data)
 
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data: classes } = useGetAllClassRoomByAccountIdQuery(
@@ -29,7 +28,6 @@ const StudentRoom = (props) => {
   const { data: AllQuiz } = useFindAllQuizByIdQuery(state?.data);
   const [RandomSelect, { data }] = useQuizRandomSelectMutation();
 
-  console.log("here me", AllQuiz);
 
   const [joinClass, { isLoading }] = useJoinClassMutation();
   const dialogRef = useRef(null);
@@ -56,7 +54,6 @@ const StudentRoom = (props) => {
   //   }
   // };
 
-  console.log(classRoomName);
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
@@ -78,7 +75,6 @@ const StudentRoom = (props) => {
   };
 
   const handleObjectiveSelect = (objective) => {
-    // console.log("this is it", objective)
     setSelectedObjective(objective);
     setSearch(objective?.objective);
     setFilteredObjectives([]);
@@ -102,8 +98,6 @@ const StudentRoom = (props) => {
     };
 
     const response = await createQuiz(payload);
-    console.log(response);
-    //console.log("heere", payload)
     if (response.data.status === true) {
       dialogRef.current.close();
       alert(response.data.message);
@@ -113,13 +107,11 @@ const StudentRoom = (props) => {
   };
 
   const handleRandomSelect = async (id) => {
-    console.log("this is id", id);
     const payload = {
       objCode: id?.objCode,
       numberOfQuestions: id?.numberOfQuestions,
     };
     const response = await RandomSelect(payload);
-    console.log("this is my real data", response.data);
 
     const newdata = {
       ...state?.data,

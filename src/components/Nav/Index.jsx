@@ -4,9 +4,7 @@ import { useGetAccountByIdQuery } from '../../features/api/apiSlice'
 
 const Index = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
-    console.log("userr info", userInfo);
     const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
-    console.log("my data", data);
   return (
     <div className="navbar bg-base-100">
 

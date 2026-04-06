@@ -24,12 +24,10 @@ const ParentDashboard = () => {
   const [addSubjectPriority, { isLoading: isAdding2 }] =
     useAddSubjectPriorityMutation();
   const { data: classes } = useFindMyClassesQuery(currentData);
-  console.log("this is my data", classes);
   const [subject_id, setSubject_id] = useState("");
   const [subject_important_ranking, setSubject_important_ranking] =
     useState("");
 
-  console.log({ classes });
 
   const handleSubmit = async () => {
     const payload = {
@@ -37,7 +35,6 @@ const ParentDashboard = () => {
       childlicense,
     };
     const res = await addChild(payload).unwrap();
-    console.log(res);
     if (res.error) {
       alert(res.error.data.message);
       return dialogRef.current.close();
@@ -80,7 +77,6 @@ const ParentDashboard = () => {
       }
     } catch (error) {
       console.error("Error adding subject priority:", error);
-      console.log("herre", error.data);
       if (error.status) {
         alert(error.data.message);
         return dialogRef.current.close();

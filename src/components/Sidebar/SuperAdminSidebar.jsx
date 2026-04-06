@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 
 const Sidebar = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("userr info", userInfo);
 
   const logout = async () => {
     localStorage.removeItem("Token");

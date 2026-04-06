@@ -203,7 +203,6 @@ const Index = (props) => {
           subject: ldata?.subject,
         };
 
-       console.log("this is our  payload right here:", payload);
       
 
 
@@ -381,7 +380,6 @@ const Index = (props) => {
     setQuizResultHandled(true);
 
     const response = await createQuizResult(payload);
-    console.log("Response here: ", response.data.quizResultId);
     if (response?.data.status === true) {
       setQuizResultId(response?.data.quizResultId);
     }
@@ -423,7 +421,6 @@ const Index = (props) => {
         objective: ldata?.objective,
         subject: ldata?.subject,
       };
-      console.log("done", payload);
       handleQuizResult(payload);
     }
   }, [isQuizCompleted]);
@@ -468,7 +465,6 @@ const Index = (props) => {
         studentName: userInfo?.fullName,
       };
 
-      console.log("this is our newObject right here:", newObject);
       const response = await analyzeResult(newObject);
       const analyzedResponseData = response.data;
 

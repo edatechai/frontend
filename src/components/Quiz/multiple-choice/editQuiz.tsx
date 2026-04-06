@@ -76,7 +76,6 @@ const EditQuiz = ({
   ];
 
   const handleSubmit = async () => {
-    console.log("this is question", question)
    
     // setId(question._id );
     // setAnswer(question.answer);
@@ -111,11 +110,9 @@ const EditQuiz = ({
       // Helper function to strip HTML tags
       
       
-      console.log("payload", payload);
       
       // TODO: Implement your update logic here
       const result =  await updateQuiz(payload);
-      console.log("result", result)
       // status is 200 show result.data.message
       if (result.data.status) {
         setEdittedIndexes((prev) => [...prev, question._id]);

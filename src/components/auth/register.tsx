@@ -56,7 +56,6 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
   }, [watchRole, form]);
 
   async function onSubmit(body: z.infer<typeof RegisterSchema>) {
-    console.log("body", body);
     try {
       const trimmedData = {
         ...body,
@@ -85,7 +84,6 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
       toast.error("Registration failed", {
         description: "Something went wrong",
       });
-      console.log("error", error);
     }
   }
 

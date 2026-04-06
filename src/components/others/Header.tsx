@@ -26,7 +26,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const { data } = useGetAllNotificationsByUserIdQuery(userInfo?._id);
   const [markAsRead] = useMarkNotificationAsReadMutation();
-  console.log({ data });
 
   const unreadNotifications = data?.filter((val) => val.status == "unread");
 

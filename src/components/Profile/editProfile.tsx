@@ -33,7 +33,6 @@ import { toast } from "sonner";
 export function EditProfileForm({ userInfo }: { userInfo: any }) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
-  console.log({ userInfo });
   // 1. Define your form.
   const form = useForm<z.infer<typeof EditProfileSchema>>({
     resolver: zodResolver(EditProfileSchema),
@@ -65,7 +64,6 @@ export function EditProfileForm({ userInfo }: { userInfo: any }) {
       toast.error("Profile edit failed", {
         description: "Something went wrong",
       });
-      console.log("error", error);
     }
   }
 
@@ -259,17 +257,13 @@ export function EditPasswordForm() {
   });
 
   async function onSubmit(values: z.infer<typeof EditPasswordSchema>) {
-    console.log("values", values);
     const payload = {
       oldPassword: values.currentPassword,
       newPassworrd: values.password
     }
-    console.log("payload", payload);
     try {
       const response = await updatePassword(payload);
-      console.log("response", response);
     } catch (error) {
-      console.log("error", error);
     }
   }
 

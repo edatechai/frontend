@@ -7,7 +7,6 @@
 // // Replace this with actual authentication logic.
 
 // const getUserRole = (getuser) => {
-//   console.log("data",getuser?.role)
 //   const mRole = getuser?.role
 //  return `"${mRole}"`;
 // // console.log("me check", `"${mRole}"`)
@@ -40,7 +39,6 @@
 // const PrivateRoute = ({ children, roles }) => {
 //   // Fetch user data from the API slice
 //   const { data: user, error, isLoading } = useCurrentUserQuery();
-//   console.log("user", user)
 
 //   // Check for loading state and handle errors
 //   if (isLoading) {
@@ -76,7 +74,6 @@ const getUserRole = (user) => {
 const PrivateRoute = ({ children, roles }) => {
   // Fetch user data from the API slice
   const { data: user, error, isLoading } = useCurrentUserQuery();
-  console.log("user", user)
 
   // Check for loading state and handle errors
   if (isLoading) {

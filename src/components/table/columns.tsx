@@ -247,7 +247,6 @@ export const columns: ColumnDef<Results>[] = [
   //     <Button
   //       variant="outline"
   //       onClick={() => {
-  //         console.log(row.original);
   //       }}
   //     >
   //       View Score
@@ -540,7 +539,6 @@ export const childColumns: ColumnDef<Child>[] = [
             id: _id,
             numberOfLearningObjectives: numberOfLearningObjectives,
           }).unwrap();
-          console.log(res);
           if (res.status === true) {
             alert("pass score updated successfully");
           }
@@ -556,7 +554,6 @@ export const childColumns: ColumnDef<Child>[] = [
             id: _id,
             passScore: passScore,
           }).unwrap();
-          console.log(res);
           if (res.status === true) {
             alert("pass score updated successfully");
           }
@@ -692,7 +689,6 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
             toast.error("Year group creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -700,7 +696,6 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
           toast.error("Year group creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (
@@ -841,7 +836,6 @@ export const ArmColumns: ColumnDef<Arm>[] = [
             toast.error("Arm creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -849,7 +843,6 @@ export const ArmColumns: ColumnDef<Arm>[] = [
           toast.error("Arm creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (
@@ -991,7 +984,6 @@ export const subjectColumns: ColumnDef<Subject>[] = [
             toast.error("Arm creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -999,7 +991,6 @@ export const subjectColumns: ColumnDef<Subject>[] = [
           toast.error("Arm creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (

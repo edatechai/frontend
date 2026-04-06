@@ -17,11 +17,9 @@
 
 // const Sidebar = () => {
 //   const userInfo = useSelector((state) => state.user.userInfo);
-//   console.log("userr info", userInfo)
 //   const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
   
 
-//   console.log("my ddata", data)
 
 
   
@@ -87,9 +85,7 @@ import { useGetAccountByIdQuery } from '../../features/api/apiSlice';
 
 const Sidebar = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("userr info", userInfo);
   const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
-  console.log("my data", data);
 
   const logout = async () => {
     localStorage.removeItem('Token');

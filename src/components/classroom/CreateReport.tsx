@@ -163,7 +163,6 @@ export default function CreateReport() {
   const handleSubmit = async () => {
     //   try {
     const response = await generateStudentsReport(data).unwrap();
-    console.log(response);
     //     if (response.status) {
     //       dialogRef.current.close();
     //       return alert(response.message);
@@ -171,7 +170,6 @@ export default function CreateReport() {
     //     alert(response.message);
     //     dialogRef.current.close();
     //   } catch (error) {
-    //     console.log(error);
     //   }
   };
 

@@ -140,7 +140,6 @@ const ClassReport = () => {
     }
   }, [data]);
 
-  console.log({ classResults: data });
   if (isLoading) {
     return <p>Loading..</p>;
   } else {

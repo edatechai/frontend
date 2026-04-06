@@ -20,7 +20,6 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
 
     try {
       const response = await resetPassword({ token, newPassword });
-      console.log(response);
       if (response.data) {
         toast.success(response.data.message || "Password has been reset successfully.");
         // Redirect to login

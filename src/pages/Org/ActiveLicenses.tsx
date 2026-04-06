@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const ActiveLicenses = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
@@ -78,34 +78,36 @@ const ActiveLicenses = () => {
     doc.save("active-licenses.pdf");
   };
 
-  const handleExportToExcel = () => {
-    // Prepare data in the same format as the table
-    const excelData = data?.map((item: any, index: number) => ({
-      'Sr. No.': (index + 1).toString().padStart(2, '0'),
-      'License Code': item.license || 'Not assigned',
-      'Full Name': item.fullName || 'Not assigned',
-      'Email': item.email || 'Not assigned',
-      'Role': item.role || 'Not assigned'
-    }));
+  const handleExportToExcel = async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Active Licenses');
 
-    // Create worksheet
-    const ws = XLSX.utils.json_to_sheet(excelData);
-
-    // Set column widths
-    const columnWidths = [
-      { wch: 10 },  // Sr. No.
-      { wch: 25 },  // License Code
-      { wch: 25 },  // Full Name
-      { wch: 25 },  // Email
-      { wch: 25 }   // Role
+    ws.columns = [
+      { header: 'Sr. No.',       key: 'srNo',        width: 10 },
+      { header: 'License Code',  key: 'license',     width: 25 },
+      { header: 'Full Name',     key: 'fullName',    width: 25 },
+      { header: 'Email',         key: 'email',       width: 25 },
+      { header: 'Role',          key: 'role',        width: 25 },
     ];
-    ws['!cols'] = columnWidths;
 
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Active Licenses');
+    data?.forEach((item: any, index: number) => {
+      ws.addRow({
+        srNo:      (index + 1).toString().padStart(2, '0'),
+        license:   item.license   || 'Not assigned',
+        fullName:  item.fullName  || 'Not assigned',
+        email:     item.email     || 'Not assigned',
+        role:      item.role      || 'Not assigned',
+      });
+    });
 
-    // Save file
-    XLSX.writeFile(wb, 'active-licenses.xlsx');
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'active-licenses.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
 

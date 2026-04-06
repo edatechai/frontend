@@ -5,13 +5,11 @@ import { DataTable } from "../../components/table/data-table";
 import { useGetAccountByIdQuery, useGenerateUserGuideMutation } from "../../features/api/apiSlice";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 
 const Index = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("userr info", userInfo);
   const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
-  console.log("my data", data);
 
   const handleCopyToClipboard = (text) => {
     navigator.clipboard
@@ -27,7 +25,6 @@ const Index = () => {
 
   const handleGenerateUserGuide = async () => {
    const response = await generateUserGuide(data?._id);
-   console.log("response", response);
    if(response?.data?.success === true){
     alert(response?.data?.message);
    }else{
@@ -70,34 +67,40 @@ const Index = () => {
     doc.save("license-keys.pdf");
   };
 
-  const handleExportToExcel = () => {
-    const tableColumn = ["S.No", "License Code", "Parent License", "User Name", "Owner", "Email", "Role"];
-    const tableRows = data.license.map((item, index) => [
-      index + 1,
-      item.licenseCode || "Not assigned",
-      item.parentLicense || "Not assigned",
-      item.username || "Not assigned",
-      item.owner || "Not assigned",
-      item.email || "Not assigned",
-      item.role || "Not assigned"
-    ]);
+  const handleExportToExcel = async () => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('License Keys');
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet([tableColumn, ...tableRows]);
-    
-    // Set column widths (approximately 15 characters wide)
-    const colWidth = 15;
-    const wscols = tableColumn.map((col, index) => ({
-      wch: index === 0 ? 8 : colWidth  // Make S.No column slightly narrower
-    }));
-    ws['!cols'] = wscols;
+    ws.columns = [
+      { header: 'S.No',           key: 'sno',           width: 8  },
+      { header: 'License Code',   key: 'licenseCode',   width: 15 },
+      { header: 'Parent License', key: 'parentLicense', width: 15 },
+      { header: 'User Name',      key: 'username',      width: 15 },
+      { header: 'Owner',          key: 'owner',         width: 15 },
+      { header: 'Email',          key: 'email',         width: 15 },
+      { header: 'Role',           key: 'role',          width: 15 },
+    ];
 
-    // Auto-fit row heights
-    const wsrows = Array(tableRows.length + 1).fill({ hpt: 25 }); // 25 points height
-    ws['!rows'] = wsrows;
+    data.license.forEach((item, index) => {
+      ws.addRow({
+        sno:           index + 1,
+        licenseCode:   item.licenseCode   || 'Not assigned',
+        parentLicense: item.parentLicense || 'Not assigned',
+        username:      item.username      || 'Not assigned',
+        owner:         item.owner         || 'Not assigned',
+        email:         item.email         || 'Not assigned',
+        role:          item.role          || 'Not assigned',
+      });
+    });
 
-    XLSX.utils.book_append_sheet(wb, ws, "License Keys");
-    XLSX.writeFile(wb, "license-keys.xlsx");
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'license-keys.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (

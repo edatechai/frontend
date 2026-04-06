@@ -52,7 +52,6 @@ const Index = () => {
 
     try {
       const response = await createAccount(payload);
-      console.log("res", response);
 
       if (response.error) {
         toast.error("Organisation creation failed", {

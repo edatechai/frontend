@@ -27,12 +27,10 @@ const Exams = () => {
         `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/exam/get_one_exam_id?exam_id=${examId}`
       );
       const tasks = await res.json();
-      console.log({ tasks });
       if (res.ok) {
         setExamQuestions(tasks);
       }
     } catch (err) {
-      console.log({ err });
     }
   };
 

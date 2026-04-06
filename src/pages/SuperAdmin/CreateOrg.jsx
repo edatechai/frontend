@@ -4,7 +4,6 @@ import { TbCurrencyNaira } from 'react-icons/tb';
 import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation, useUpdateMonthlyRequestLimitMutation } from '../../features/api/apiSlice';
 import countryList from "react-select-country-list";
 const LicenseModal = ({ isVisible, onClose, license }) => {
-  console.log("this is data ", license);
   if (!isVisible) return null;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,7 +19,6 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
   const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
 
   const handleDeleteLicense = async(license, id)=>{
-    console.log("license", license, id);
     const payload = {
       id: id,
       licenseCode: license.licenseCode
@@ -30,7 +28,6 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
       const response = await deleteLicense(payload)
       // pop a modal to confirm the deletion, telling the user this action cannot be undone
       if(confirm("You are about to delete a license and the user associated with it, this action cannot be undone")){
-        console.log("response", response);
         if(response.error) {
           alert(response.error.data.message);
           onClose();
@@ -40,7 +37,6 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
         }
       }
     } catch (error) {
-      console.log("error", error);
     }
 
    
@@ -158,7 +154,6 @@ const Index = () => {
   const [createAccount, { isloading, isError, isSuccess }] = useCreateAccountMutation();
   const [addMoreLicenses, { isLoading: isLoadingAddMoreLicenses, isError: isErrorAddMoreLicenses, isSuccess: isSuccessAddMoreLicenses }] = useAddMoreLicensesMutation();
   const { data, isLoading } = useGetAllAccountsQuery();
-  console.log('this is data', data);
   const [item, setItem] = useState(null);
   const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
 
@@ -188,11 +183,9 @@ const Index = () => {
       countryCode: country?.value
     };
 
-    console.log("this is the country", payload);
 
     try {
       const response = await createAccount(payload);
-      console.log('res', response);
 
       if (response.error) {
         alert(response.error.data.message);
@@ -215,7 +208,6 @@ const Index = () => {
       setLicenseStatus('');
     }
 
-    console.log('payload', payload);
   };
 
   const handleViewLicense = (license) => {
@@ -226,10 +218,8 @@ const Index = () => {
   const [deleteAccountAndUsers] = useDeleteAccountAndUsersMutation()
 
   const handleDeleteAccountAndUsers = async(id) => {
-    console.log("this is the id", id);  
     if(confirm("You are about to delete an organization and all the users associated with it, this action cannot be undone")){
       const response = await deleteAccountAndUsers(id)
-      console.log("response", response);
       if(response.error){
         alert(response.error.data.message);
       } else {
@@ -239,13 +229,11 @@ const Index = () => {
   }
 
   const handleAddMoreLicenses = (item) => {
-    console.log("this is the item", item);
     setItem(item);
     document.getElementById('my_modal_3').showModal()
   }
 
   const handleUpdateMonthlyRequestLimit = (item) => {
-    console.log("this is the item", item);
     setItem(item);
     document.getElementById('my_modal_9').showModal()
   }
@@ -268,7 +256,6 @@ const Index = () => {
 
   try {
     const response = await addMoreLicenses(payload)
-    console.log("response", response);
     if(response.error){
       alert(response.error.data.message);
       // close the modal
@@ -286,11 +273,9 @@ const Index = () => {
   }
 
 
-  console.log("this is the payload", payload);
 }
 
 const handleUpdateMonthlyRequestLimitSubmit = async() => {
-  console.log("this is the item", item);
   const payload = {
     id: item._id,
     monthlyRequestLimit: monthlyRequestLimit
@@ -298,7 +283,6 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
 
   try {
     const response = await updateMonthlyRequestLimit(payload)
-    console.log("response", response);
     if(response.error){
       alert(response.error.data.message);
     } else {

@@ -38,7 +38,6 @@ const StudentQiuzzes = () => {
   const { classId } = useParams();
   const { data: AllQuiz, isLoading } = useFindAllQuizByIdQuery(classId);
   const [, setExamQuestions] = useState<ExamQuestions | "">("");
-  console.log({ AllQuiz });
 
   const getExamTasks = async () => {
     try {
@@ -46,12 +45,10 @@ const StudentQiuzzes = () => {
         `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/exam/get_exam_questions?role=teacher&class_id=${classId}`
       );
       const tasks = await res.json();
-      console.log({ tasks });
       if (res.ok) {
         setExamQuestions(tasks);
       }
     } catch (err) {
-      console.log({ err });
     }
   };
 

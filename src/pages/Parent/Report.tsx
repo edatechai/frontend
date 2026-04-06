@@ -2,7 +2,6 @@ import { useSelector } from "react-redux";
 
 const ParentReport = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log({ userInfo });
 
   return (
     <div className="mx-3 md:mx-24 my-9">

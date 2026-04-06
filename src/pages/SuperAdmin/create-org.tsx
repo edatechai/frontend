@@ -133,7 +133,6 @@ const Index = () => {
   const [createAccount, { isloading, isError, isSuccess }] =
     useCreateAccountMutation();
   const { data, isLoading } = useGetAllAccountsQuery();
-  console.log("this is data", data);
 
   const handleSubmit = async () => {
     const payload = {
@@ -148,7 +147,6 @@ const Index = () => {
 
     try {
       const response = await createAccount(payload);
-      console.log("res", response);
 
       if (response.error) {
         alert(response.error.data.message);
@@ -171,7 +169,6 @@ const Index = () => {
       setLicenseStatus("");
     }
 
-    console.log("payload", payload);
   };
 
   const handleViewLicense = (license) => {
@@ -180,7 +177,6 @@ const Index = () => {
   };
 
   const handleDeleteAccountAndUsers = (id) => {
-    console.log("this is the id", id);
   };
 
   return (

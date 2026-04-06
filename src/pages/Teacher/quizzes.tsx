@@ -7,9 +7,7 @@ export default function Quizzes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const userInfo = useSelector((state: any) => state.user.userInfo);
-  console.log("this is user",userInfo);
   const { data } = useGetAllQuizzesByTeacherIdQuery(userInfo._id);
-  console.log(data);
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">My Task</h1>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLogoutMutation } from '../features/api/apiSlice';
 import SidebarButton from "../cta/sidebarButton";
 import { MdOutlineDashboard, MdOutlineSettings } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
@@ -12,7 +13,9 @@ import { useSelector } from "react-redux";
 const Sidebar = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
+  const [logoutApi] = useLogoutMutation();
   const logout = async () => {
+    await logoutApi().catch(() => {});
     localStorage.removeItem("Token");
     window.location.href = "/";
   };

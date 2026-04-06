@@ -26,9 +26,7 @@ export function StudentDash() {
   const { data: quizResult, isLoading: quizResultLoading } =
     useGetQuizResultByUserIdQuery(userInfo._id);
 
-  console.log("my data", quizResult);
 
-  console.log({ myClasses });
 
   let clas;
   if (classId) {

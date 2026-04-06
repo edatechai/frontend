@@ -29,7 +29,6 @@ const Index = () => {
     confirm: false,
   });
 
-  console.log({ userInfo });
 
   const handlePasswordUpdate = async () => {
     if (password === undefined && confirmPassword === undefined && currentPassword === undefined) {
@@ -53,7 +52,6 @@ const Index = () => {
         oldPassword: currentPassword,
       };
       const res = await updatePassword(payload).unwrap();
-      console.log("this is the response", res);
       setIsLoading(false);
       toast.success("Password updated successfully");
       setPassword("");
@@ -73,7 +71,6 @@ const Index = () => {
     try {
       setIsBioLoading(true);
       const res = await updateBio({ id: userInfo?._id, bio }).unwrap();
-      console.log("this is the response", res);
       toast.success("Bio updated successfully");
       setIsBioLoading(false);
       setTimeout(() => {

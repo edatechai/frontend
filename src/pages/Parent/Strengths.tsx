@@ -79,7 +79,6 @@ export default function Strengths() {
   const [classId, setClassId] = useState("");
   const { data: childClassrooms, isLoading: classroomsLoading } = useGetChildResultQuery(childId);
   const [getSW, { data, isLoading: swLoading }] = useGetChildSandWMutation();
-  console.log("childClassrooms", childClassrooms)
 
   useEffect(() => {
     if (classId) {
@@ -92,7 +91,6 @@ export default function Strengths() {
     clas = childClassrooms?.data?.classRoomData?.filter((i: any) => classId === i._id)[0];
   }
 
-  console.log("class", clas)
 
   const sw = async () => {
     const v = await getSW({

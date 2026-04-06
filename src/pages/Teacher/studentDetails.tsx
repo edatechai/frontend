@@ -14,7 +14,6 @@ import { Link, useParams } from "react-router-dom";
 function StudentDetails() {
   const { userId } = useParams();
   const { data, isLoading } = useStudentDetailsQuery(userId);
-  console.log({ data });
 
   return (
     <main>

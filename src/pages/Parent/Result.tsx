@@ -7,7 +7,6 @@ const ChildResult = () => {
   const { childId } = useParams();
   const { data, isLoading } = useGetChildResultQuery(childId);
 
-  console.log({ childData: data });
 
   return (
     <main>

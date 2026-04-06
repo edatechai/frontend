@@ -1,35 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-
-const getToken = () => {
-  const token = localStorage.getItem("Token");
-  if (!token) {
-  }
-  return token;
-};
-
+import { createApi } from "@reduxjs/toolkit/query/react";
+import baseQueryWithReauth from "./basequery";
 
 // Define our single API slice object
-//https://edatbackend.azurewebsites.net/
-//http://localhost:5000
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    // baseUrl: "https://edat-backend.onrender.com",
-    // baseUrl: "http://localhost:5000/",
-    // baseUrl: "https://edatbackend.azurewebsites.net/",
-    //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://server.edatech.io
-    baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: async (headers) => {
-      const token = getToken();
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     "CurrentUser",
     "CreateAccount",
@@ -666,6 +641,12 @@ export const apiSlice = createApi({
         body: { accountId },
       }),
     }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/api/users/logout',
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
@@ -764,4 +745,5 @@ export const {
 
   // org admin
   useGenerateUserGuideMutation,
+  useLogoutMutation,
 } = apiSlice;

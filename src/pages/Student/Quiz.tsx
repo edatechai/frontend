@@ -81,7 +81,6 @@
 //     };
 //   }, [state]);
 
-//   console.log({ state });
 
 //   const getQuiz = async () => {
 //     const payload = {
@@ -89,7 +88,6 @@
 //       numberOfQuestions: +qs!,
 //     };
 //     const res = await quizRandomSelect(payload);
-//     console.log("me", res);
 //     if (res?.data?.length > 0) {
 //       setAllQuiz(
 //         res?.data.map((v) => ({
@@ -104,7 +102,6 @@
 //     }
 //   };
 
-//   console.log({ allQuiz });
 
 //   const updateResult = () => {
 //     const correctOptionValue =
@@ -117,7 +114,6 @@
 //         : allQuiz?.[currentIndex]?.answer.toLowerCase() === "d"
 //         ? allQuiz?.[currentIndex]?.optionD
 //         : "";
-//     console.log({ correctOptionValue });
 //     const wrongOptionValue =
 //       allQuiz?.[currentIndex]?.selectedAnswer.toLowerCase() === "a"
 //         ? allQuiz?.[currentIndex]?.optionA
@@ -128,7 +124,6 @@
 //         : allQuiz?.[currentIndex]?.selectedAnswer.toLowerCase() === "d"
 //         ? allQuiz?.[currentIndex]?.optionD
 //         : "";
-//     console.log({ wrongOptionValue });
 
 //     const result = [...allQuiz];
 //     result[currentIndex].correctAnswer = allQuiz[currentIndex]?.answer;
@@ -157,7 +152,6 @@
 //     const score = quizResults.filter((val) => val?.isCorrect)?.length;
 //     setQuizScore(score);
 
-//     console.log({
 //       score,
 //       state: state.data?.questionsAndAnswers?.length,
 //       div: quizScore / state.data?.questionsAndAnswers?.length,
@@ -192,7 +186,6 @@
 //     }
 //   };
 
-//   console.log({ len: state });
 
 //   const handleAnalyzeResult = async () => {
 //     document.getElementById("my_modal_3").showModal();
@@ -255,7 +248,6 @@
 
 //     const res = await updateQuizResult(payload);
 //     setDoneAnalysing(false);
-//     console.log("all here", res);
 //   };
 
 //   useEffect(() => {

@@ -7,7 +7,6 @@ import { Users } from "lucide-react";
 const Report = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo._id);
-  console.log({ myClasses });
 
   return (
     <div className="min-h-screen w-full flex flex-1 flex-col gap-4 md:gap-8">

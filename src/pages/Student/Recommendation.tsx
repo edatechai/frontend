@@ -52,7 +52,6 @@ const Recommedation = () => {
   const stepsPerPage = 1;
   const questionsPerPage = 1;
 
-  console.log({ recQuery: data, recData });
 
   useEffect(() => {
     if (recData?.objectives?.length === 0) {
@@ -79,7 +78,6 @@ const Recommedation = () => {
     }
   }, [data]);
 
-  console.log(" this is recData", data);
 
   const getRecommendation = async () => {
     const payload = {
@@ -87,12 +85,9 @@ const Recommedation = () => {
       objcode: preview?.objcode,
     };
 
-    console.log("thiss is payload", payload);
     try {
       const res = await getRec(payload);
-      console.log("res here", res);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -133,22 +128,15 @@ const Recommedation = () => {
   const evaluateQuiz = () => {
     const correctAnswers = recData.questions.reduce((acc, question, index) => {
       const isCorrect = selectedOptions[index] === question.answer;
-      console.log(
-        `Question ${index + 1}: ${isCorrect ? "Correct" : "Incorrect"}`
-      );
-      console.log(`Selected Option: ${selectedOptions[index]}`);
       return isCorrect ? acc + 1 : acc;
     }, 0);
 
-    console.log(`Total correct answers: ${correctAnswers}`);
 
     if (correctAnswers === recData.questions.length) {
       setQuizPassedCount((prevCount) => prevCount + 1);
       setQuizPassed(true);
-      console.log("Quiz passed");
     } else {
       setQuizPassed(false);
-      console.log("Quiz failed");
     }
 
     setQuizAttempted(true);
@@ -156,10 +144,8 @@ const Recommedation = () => {
     if (quizPassedCount + 1 >= 2) {
       // setShowChatBot(false);
       setCurrentStepPage(5);
-      console.log("Moving to step 5");
     } else {
       //setShowChatBot(true);
-      console.log("Opening chat with Eddey");
     }
   };
 

@@ -17,7 +17,7 @@ import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 
 export function StudentLayout() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data } = useGetAccountByIdQuery(userInfo?.accountId);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">

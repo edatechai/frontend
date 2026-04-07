@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
-  LineChart,
   Menu,
   Circle,
   Dumbbell,
@@ -29,14 +28,22 @@ import {
 } from "@/features/api/apiSlice";
 
 export function ParentsLayout() {
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const { data: children, isLoading } = useGetAllChildrenQuery(
+  const userInfo = useSelector((state: any) => state.user.userInfo);
+  const { data: children } = useGetAllChildrenQuery(
     userInfo?.childrenArray
   );
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { data } = useGetAccountByIdQuery(userInfo.accountId);
-  const [wardId, setWardId] = useState<string | null>(null);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
+
+  // Extract childId from URL on initial load so direct links and page refreshes work.
+  // Matches: /parent/result/:id  /parent/strengths/:id  /parent/task/:id
+  const getChildIdFromPath = (path: string): string | null => {
+    const match = path.match(/^\/parent\/(?:result|strengths|task)\/([^/]+)/);
+    return match ? match[1] : null;
+  };
+
+  const [wardId, setWardId] = useState<string | null>(getChildIdFromPath(pathname));
 
   useEffect(() => {
     if (children?.length == 1) {
@@ -150,7 +157,7 @@ export function ParentsLayout() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Children</SelectLabel>
-                    {children?.map(({ user }) => (
+                    {children?.map(({ user }: { user: any }) => (
                       <SelectItem value={user?._id} key={user?._id}>
                         {user?.fullName}
                       </SelectItem>

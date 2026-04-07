@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { useLogoutMutation } from '../features/api/apiSlice';
+import { useLogoutMutation, apiSlice } from '../features/api/apiSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setUserInfo } from '../features/user/userSlice';
 import SidebarButton from "../cta/sidebarButton";
 import { MdOutlineDashboard, MdOutlineSettings } from "react-icons/md";
 import { FiUsers } from "react-icons/fi";
@@ -10,11 +13,15 @@ import { IoIosLogOut } from "react-icons/io";
 import { LuUser } from "react-icons/lu";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [logoutApi] = useLogoutMutation();
   const logout = async () => {
     await logoutApi().catch(() => {});
     localStorage.removeItem("Token");
-    window.location.href = "/";
+    dispatch(setUserInfo(null));
+    dispatch(apiSlice.util.resetApiState());
+    navigate('/');
   };
   return (
     <>

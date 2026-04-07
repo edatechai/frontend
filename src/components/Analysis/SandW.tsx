@@ -49,16 +49,16 @@ const chartConfig = {
   },
 };
 
-export function SandW({ classId, clas }: { classId: string }) {
+export function SandW({ classId, clas }: { classId: string; clas: any }) {
   const userInfo = useSelector((state) => state?.user.userInfo);
   const [chartData, setChartdata] = useState("") as any;
   const [getSW, { data, isLoading }] = useGetStrengthsAndweaknessesMutation();
 
   useEffect(() => {
-    if (classId) {
+    if (classId && userInfo?._id) {
       sw();
     }
-  }, [classId]);
+  }, [classId, userInfo?._id]);
 
   const sw = async () => {
     const v = await getSW({
@@ -73,7 +73,7 @@ export function SandW({ classId, clas }: { classId: string }) {
     setChartdata(v);
   };
 
-  const chartDatas = chartData?.data?.getAggregateScores?.data;
+  const chartDatas = data?.getAggregateScores?.data || chartData?.data?.getAggregateScores?.data;
 
   const renderChartContent = () => {
     if (isLoading) {
@@ -85,47 +85,40 @@ export function SandW({ classId, clas }: { classId: string }) {
       )
     }
     
-    if (!chartDatas || chartDatas.length === 0) {
+    if (!isLoading && (!chartDatas || chartDatas.length === 0)) {
       return (
         <div className="flex flex-col items-center justify-center h-64 gap-2 text-gray-500">
           <OctagonAlert className="w-6 h-6" />
-          <span>No chart data available</span>
+          <span>No performance data found for this subject yet. Take a quiz to see your progress!</span>
         </div>
       );
     }
 
     return (
-      <ChartContainer config={chartConfig} className="min-w-[600px]">
+      <ChartContainer config={chartConfig} className="min-w-[600px] h-[300px]">
         <BarChart 
           accessibilityLayer 
           data={chartDatas}
-          width={600}
-          height={300}
         >
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="name"
             tickLine={false}
-            tickMargin={0}
+            tickMargin={10}
             axisLine={false}
-            tickFormatter={(value) => value}
+            tickFormatter={(value) => value.length > 20 ? `${value.substring(0, 20)}...` : value}
             interval={0}
-            
-            
-           
-            width={300}
-
           />
           <ChartTooltip
             cursor={false}
             content={<ChartTooltipContent indicator="line" />}
           />
-          <Legend wrapperStyle={{ bottom: -10 }} />
+          <Legend verticalAlign="top" height={36}/>
           <Bar
             dataKey="student"
             fill="var(--color-student)"
             radius={4}
-            name={`${userInfo?.fullName.split(" ")[0]}'s score`}
+            name={`${userInfo?.fullName?.split(" ")[0] || 'My'} score`}
           />
           <Bar
             dataKey="class"

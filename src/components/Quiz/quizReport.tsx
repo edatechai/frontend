@@ -9,7 +9,6 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -29,7 +28,7 @@ const QuizReport = ({ quizResults }: { quizResults: any }) => {
       <SheetContent className="sm:w-[540px] overflow-auto">
         <SheetHeader className="overflow-y-scroll text-left">
           <SheetTitle>Quiz Report</SheetTitle>
-          <SheetDescription>
+          <div className="overflow-y-auto">
             {quizResults?.map((val: any, index: number) => (
               <Card className="mb-3" key={index}>
                 <CardHeader>
@@ -72,7 +71,7 @@ const QuizReport = ({ quizResults }: { quizResults: any }) => {
                 </CardContent>
               </Card>
             ))}
-          </SheetDescription>
+          </div>
         </SheetHeader>
       </SheetContent>
     </Sheet>

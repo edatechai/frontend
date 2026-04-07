@@ -2,6 +2,25 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQueryWithReauth from "./basequery";
 
 // Define our single API slice object
+export interface QuizResult {
+  question: string;
+  isCorrect: boolean;
+  wrongOption?: string;
+  correctOption: string;
+  correctAnswer: string;
+  selectedAnswer: string;
+}
+
+export interface ClassResult {
+  objective: string;
+  userInfo: {
+    fullName: string;
+  };
+  scorePercentage: string | number;
+  quizResults: QuizResult[];
+  classRoomName: string;
+}
+
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
@@ -200,7 +219,7 @@ export const apiSlice = createApi({
       // providesTags: ["ClassRoom"],
     }),
 
-    resultsByClassId: builder.query({
+    resultsByClassId: builder.query<ClassResult[], string | undefined>({
       query: (id) => `/api/quiz/getQuizResultByClassId/${id}`,
     }),
 

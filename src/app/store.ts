@@ -10,7 +10,11 @@ export default configureStore({
     user: userReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
+    getDefaultMiddleware({
+      serializableCheck: {
+        warnAfter: 100,
+      },
+    })
       .concat(apiSlice.middleware)
       .concat(unauthorizedMiddleware.middleware),
 });

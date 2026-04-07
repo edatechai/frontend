@@ -205,7 +205,7 @@ const TeacherRoom = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink>
+            <BreadcrumbLink asChild>
               <Link to="/teacher">Classrooms</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>

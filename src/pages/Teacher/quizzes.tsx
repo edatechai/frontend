@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 
 export default function Quizzes() {
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [selectedQuiz, setSelectedQuiz] = useState<any[] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   const userInfo = useSelector((state: any) => state.user.userInfo);
@@ -12,9 +12,9 @@ export default function Quizzes() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">My Task</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.map((quiz) => (
+        {(data as any)?.data?.map((quiz: any) => (
           <div 
-            key={quiz._id} 
+            key={`${quiz?._id?.classId}-${quiz?._id?.subject}`}
             className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
           >
             <div className="flex justify-between items-start mb-4">
@@ -53,7 +53,7 @@ export default function Quizzes() {
               </button>
             </div>
             <div className="space-y-4">
-              {selectedQuiz?.map((quiz, index) => (
+              {selectedQuiz?.map((quiz: any, index: number) => (
                 <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
                   <h3 className="text-[17px] font-semibold mb-2">Objective: {quiz?.objective}</h3>
                   <div className="grid grid-cols-2 gap-3">

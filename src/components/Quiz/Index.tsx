@@ -444,46 +444,54 @@ const Index = (props) => {
     };
 
     const handleAnalyzeResult = async () => {
-      document.getElementById("my_modal_3").showModal();
-      const failedResults = await quizResults
-        .filter((result) => !result?.isCorrect)
-        .map((result) => ({
-          question: result?.question,
-          student_answer: result?.wrongOption,
-          correct_answer: result?.correctOption,
-        }));
+      try {
+        (document.getElementById("my_modal_3") as any).showModal();
+        const failedResults = await quizResults
+          .filter((result) => !result?.isCorrect)
+          .map((result) => ({
+            question: result?.question,
+            student_answer: result?.wrongOption,
+            correct_answer: result?.correctOption,
+          }));
 
-      const newObject = {
-        questions: failedResults,
-        studentInfo: {
-          age: userInfo?.dob,
-          learningObjectives: `${ldata?.objective}: ${scorePercentage}`,
-          neurodiversity: userInfo?.neurodiversity,
-          gender: userInfo?.gender,
-          userId: userInfo?._id,
-        },
-        studentName: userInfo?.fullName,
-      };
-
-      const response = await analyzeResult(newObject);
-      const analyzedResponseData = response.data;
-
-      const updatedQuizResults = quizResults.map((result) => {
-        const analysis =
-          analyzedResponseData.find(
-            (item) => item.question === result?.question
-          )?.analysis || "";
-        return {
-          ...result,
-          analysis,
+        const newObject = {
+          questions: failedResults,
+          studentInfo: {
+            age: userInfo?.dob,
+            learningObjectives: `${ldata?.objective}: ${scorePercentage}`,
+            neurodiversity: userInfo?.neurodiversity,
+            gender: userInfo?.gender,
+            userId: userInfo?._id,
+          },
+          studentName: userInfo?.fullName,
         };
-      });
-      setAnalyzedData(analyzedResponseData);
-      setQuizResults(updatedQuizResults);
-      setDoneAnalysing(true);
-      setQuizScoreDialogOpen(false);
 
-       document.getElementById("my_modal_3").close();
+        const response: any = await analyzeResult(newObject);
+        const analyzedResponseData = response.data;
+
+        if (!analyzedResponseData) {
+          throw new Error("Failed to analyze result: API returned no data");
+        }
+
+        const updatedQuizResults = quizResults.map((result) => {
+          const analysis =
+            analyzedResponseData.find(
+              (item: any) => item.question === result?.question
+            )?.analysis || "";
+          return {
+            ...result,
+            analysis,
+          };
+        });
+        setAnalyzedData(analyzedResponseData);
+        setQuizResults(updatedQuizResults);
+        setDoneAnalysing(true);
+        setQuizScoreDialogOpen(false);
+      } catch (error) {
+        console.error("Error in handleAnalyzeResult:", error);
+      } finally {
+        (document.getElementById("my_modal_3") as any).close();
+      }
     };
 
     const handleUpdateQuizResult = async () => {
@@ -507,19 +515,19 @@ const Index = (props) => {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink>
+              <BreadcrumbLink asChild>
                 <Link to="/student">Dashboard</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>
+              <BreadcrumbLink asChild>
                 <Link to="/student/classrooms">Classrooms</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink>
+              <BreadcrumbLink asChild>
                 <Link to={`/student/classrooms/${ldata.classId}`}>Quizzes</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -539,10 +547,12 @@ const Index = (props) => {
                
                 {data?.questionsAndAnswers.length} 
               </DialogTitle>
-              <DialogDescription className="flex gap-3 pt-5 items-center">
-                <div className="">Score: </div>
-                <Progress value={scorePercentage} className="w-full h-2" />
-                <div>{Math.round(scorePercentage)}%</div>
+              <DialogDescription asChild>
+                <div className="flex gap-3 pt-5 items-center">
+                  <div className="">Score: </div>
+                  <Progress value={scorePercentage} className="w-full h-2" />
+                  <div>{Math.round(scorePercentage)}%</div>
+                </div>
               </DialogDescription>
               {scorePercentage < 50 && (
                 <p className="text-red-600 py-3">
@@ -647,14 +657,14 @@ const Index = (props) => {
                   <p className="text-sm">
                     Correct answer: {result?.correctAnswer.toUpperCase()}
                   </p>
-                  <span className="flex gap-1 text-sm">
+                  <div className="flex gap-1 text-sm">
                     <p>Correct option:</p>
                     <p
                       dangerouslySetInnerHTML={{
                         __html: latexToHTML(result?.correctOption),
                       }}
                     ></p>
-                  </span>
+                  </div>
                 </div>
                 <p
                   className={`text-sm font-bold px-3 py-1 rounded ${

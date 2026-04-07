@@ -32,7 +32,7 @@ type Objective = {
 
 const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const { data } = useRecommendObjectivesQuery();
+  const { data, isLoading: isLoadingRecs } = useRecommendObjectivesQuery();
   const [showChatBot, setShowChatBot] = useState(false);
   const [getRec, { isLoading, data: recData }] =
     useStudentRecommendationMutation();
@@ -190,7 +190,14 @@ const Recommedation = () => {
       )}
 
       <div className="flex justify-center">
-        {!showSteps &&
+        {isLoadingRecs && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-500">
+            <div className="w-10 h-10 border-4 border-t-transparent border-blue-500 rounded-full animate-spin" />
+            <span>Loading recommendations...</span>
+          </div>
+        )}
+
+        {!isLoadingRecs && !showSteps &&
           !showCon &&
           data?.recommendLearningObjectivesData?.length && (
             <div className="space-y-4">
@@ -249,7 +256,7 @@ const Recommedation = () => {
             </div>
           )}
 
-        {data && !data?.recommendLearningObjectivesData?.length && (
+        {!isLoadingRecs && data && !data?.recommendLearningObjectivesData?.length && (
           <p>No recommendations</p>
         )}
 

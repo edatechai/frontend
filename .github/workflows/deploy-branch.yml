@@ -1,0 +1,92 @@
+name: Deploy — Branch (Temporary)
+
+# ⚠️  TEMPORARY — delete this file once branch testing is complete.
+# Manually deploy any branch to the production server using production
+# secrets and variables. Does NOT require a push to main.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'feature/security-fixes'
+
+jobs:
+  deploy:
+    name: Deploy branch '${{ github.event.inputs.branch }}' to Production (EC2)
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # ── 1. Checkout specified branch ─────────────────────────────────────
+      - name: Checkout branch
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      # ── 2. Set up Node.js ─────────────────────────────────────────────────
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── 3. Install dependencies ───────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 4. Write .env from GitHub Variables ───────────────────────────────
+      - name: Write .env file
+        run: |
+          cat > .env << 'ENVEOF'
+          VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+          VITE_MICROSERVICE_BASE_URL=${{ vars.VITE_MICROSERVICE_BASE_URL }}
+          ENVEOF
+
+      # ── 5. Build ──────────────────────────────────────────────────────────
+      - name: Build
+        run: npm run build
+
+      # ── 6. Write SSH key to disk ──────────────────────────────────────────
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key.pem
+          chmod 600 ~/.ssh/deploy_key.pem
+          ssh-keyscan -H "${{ vars.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      # ── 7. Grant deploy user ownership so rsync can write ────────────────
+      - name: Pre-rsync ownership grant
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem \
+            -o StrictHostKeyChecking=no \
+            ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
+            "sudo chown -R ${{ vars.EC2_USER }}:${{ vars.EC2_USER }} ${{ vars.DEPLOY_PATH }}"
+
+      # ── 8. Sync built files to production server ──────────────────────────
+      - name: Sync dist via rsync
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            -e "ssh -i ~/.ssh/deploy_key.pem -o StrictHostKeyChecking=no" \
+            ./dist/ ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }}:${{ vars.DEPLOY_PATH }}/
+
+      # ── 9. Restore correct permissions for nginx ──────────────────────────
+      - name: Set file permissions
+        run: |
+          ssh -i ~/.ssh/deploy_key.pem \
+            -o StrictHostKeyChecking=no \
+            ${{ vars.EC2_USER }}@${{ vars.EC2_HOST }} \
+            "sudo chown -R www-data:www-data ${{ vars.DEPLOY_PATH }} && \
+             sudo chmod -R 755 ${{ vars.DEPLOY_PATH }}"
+
+      # ── 10. Summary ───────────────────────────────────────────────────────
+      - name: Deployment summary
+        run: |
+          echo "### Branch deployment complete" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.event.inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Server:** \`${{ vars.EC2_HOST }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Path:** \`${{ vars.DEPLOY_PATH }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Triggered by:** \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY

@@ -15,7 +15,7 @@ import { useGetQuizResultByUserIdQuery } from "../../features/api/apiSlice";
 export const Result = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data: quizResult, isLoading: quizResultLoading } =
-    useGetQuizResultByUserIdQuery(userInfo._id);
+    useGetQuizResultByUserIdQuery(userInfo?._id, { skip: !userInfo?._id });
 
   return (
     <main>

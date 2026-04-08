@@ -24,7 +24,7 @@ export function Layout() {
   const userInfo = useSelector((state) => state.user.userInfo);
   const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
   const [openNav, setOpenNav] = useState(false);
-  const { role } = userInfo;
+  const role = userInfo?.role;
   const [menus, setMenus] = useState([
     {
       id: 1,

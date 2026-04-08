@@ -46,8 +46,10 @@ import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
 
 const App = () => {
   const navigate = useNavigate();
+  const hasToken = !!localStorage.getItem("Token");
   const { data: user, isLoading } = useCurrentUserQuery(undefined, {
-    extraOptions: { navigate }, // Pass navigate here
+    extraOptions: { navigate },
+    skip: !hasToken,
   });
 
   const dispatch = useDispatch();

@@ -31,8 +31,25 @@ const redirectToLogin = (extraOptions: ExtraOptions) => {
   }
 };
 
+const PUBLIC_PATHS = [
+  '/api/users/login',
+  '/api/users/register',
+  '/api/users/refresh-token',
+  '/api/users/logout',
+  '/api/users/forgot-password',
+  '/api/users/reset-password',
+  '/api/users/getCurrentUser',
+];
+
 const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError, ExtraOptions> =
   async (args, api: BaseQueryApi, extraOptions) => {
+    const url = typeof args === 'string' ? args : args.url;
+    const isPublic = PUBLIC_PATHS.some((p) => url.includes(p));
+
+    if (!getToken() && !isPublic) {
+      return { error: { status: 401, data: 'No token' } as FetchBaseQueryError };
+    }
+
     // Wait if a token refresh is already in progress
     await mutex.waitForUnlock();
 

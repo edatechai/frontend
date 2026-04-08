@@ -18,13 +18,13 @@ const Index = () => {
   const { data: classes } = useGetAllClassRoomByAccountIdQuery(
     userInfo?.accountId
   );
-  const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
+  const { data: myClasses } = useFindMyClassesQuery(userInfo?._id, { skip: !userInfo?._id });
   const {
     data: quizResult,
     isLoading: quizResultLoading,
     isSuccess: quizResultSuccess,
     isError: quizResultError,
-  } = useGetQuizResultByUserIdQuery(userInfo._id);
+  } = useGetQuizResultByUserIdQuery(userInfo?._id, { skip: !userInfo?._id });
 
 
   const [joinClass, { isLoading }] = useJoinClassMutation();

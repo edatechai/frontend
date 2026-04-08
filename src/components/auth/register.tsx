@@ -43,6 +43,14 @@ export function RegisterForm({ toggle }: { toggle: () => void }) {
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      license: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
+    },
   });
 
   const watchRole = form.watch("role");

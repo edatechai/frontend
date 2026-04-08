@@ -315,7 +315,7 @@ const Recommedation = () => {
 
         {!(quizAttempted && !quizPassed) && (
           <Dialog open={showSteps} onOpenChange={handleDialogClose}>
-            <DialogContent className="max-w-[95vw] md:max-w-[70vw]">
+            <DialogContent className="max-w-[95vw] md:max-w-[70vw]" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>
                   <p className="capitalize">
@@ -323,7 +323,7 @@ const Recommedation = () => {
                   </p>
                 </DialogTitle>
 
-                <DialogDescription className="flex flex-col md:flex-row gap-5 overflow-auto max-h-[70vh]">
+                <div className="flex flex-col md:flex-row gap-5 overflow-auto max-h-[70vh]">
                   {currentStepPage === 4 ? (
                     <div className="bg-white p-6 rounded-lg">
                       <p className="text-lg font-medium mb-4">
@@ -350,7 +350,7 @@ const Recommedation = () => {
                                   : currentStepPage + stepsPerPage
                               )
                               .map((step, index) => (
-                                <div className="mt-10 text-slate-800 first-letter:capitalize">
+                                <div key={index} className="mt-10 text-slate-800 first-letter:capitalize">
                                   {
                                     <TextWithLineBreaksRec
                                       texts={step.instruction}
@@ -417,7 +417,12 @@ const Recommedation = () => {
 
                   {currentStepPage <= 4 && (
                     <div className="border border-foreground/20 rounded p-4 grow flex flex-col justify-between min-w-[22vw]">
-                      <div className="my-auto">
+                      {currentStepPage < 4 && (
+                        <p className="text-xs text-muted-foreground mb-3 text-center">
+                          Complete the steps on the left to unlock these questions.
+                        </p>
+                      )}
+                      <div className={`my-auto ${currentStepPage < 4 ? "opacity-50 pointer-events-none" : ""}`}>
                         {recData?.questions
                           .slice(
                             currentQuestionPage,
@@ -437,6 +442,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="A"
                                     checked={
                                       selectedOptions[
@@ -464,6 +470,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="B"
                                     checked={
                                       selectedOptions[
@@ -491,6 +498,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="C"
                                     checked={
                                       selectedOptions[
@@ -518,6 +526,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="D"
                                     checked={
                                       selectedOptions[
@@ -575,7 +584,7 @@ const Recommedation = () => {
                       )}
                     </div>
                   )}
-                </DialogDescription>
+                </div>
               </DialogHeader>
               <div className="bg-[#EBF0FC] px-4 py-3 md:py-1 rounded flex flex-col md:flex-row justify-between items-center gap-3">
                 <p>

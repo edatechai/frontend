@@ -257,7 +257,8 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
       >
         <style>{messageStyle}</style>
         {convo?.map((item, index) => {
-          return item.content ? (
+          if (!item.content) return null;
+          return (
             <div
               key={index}
               className={`flex flex-col mb-4 ${
@@ -277,8 +278,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
                 <Chatbox item={item} />
               </div>
             </div>
-          ) : (
-            <></>
           );
         })}
         {/* {conversationItems.map((item, index) => (

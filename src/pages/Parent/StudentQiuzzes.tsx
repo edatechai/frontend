@@ -80,20 +80,20 @@ const StudentQiuzzes = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <h3 className="my-4 text-lg font-medium">
-        {AllQuiz?.[0]?.classRoomName}
+        {AllQuiz?.data?.[0]?.classRoomName}
       </h3>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="quizzes">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">
+              <div className="text-lg font-semibold">
                 <AccordionTrigger>Quizzes</AccordionTrigger>
-              </CardTitle>
+              </div>
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
                 {!isLoading ? (
-                  AllQuiz?.map((val, i: number) => (
+                  AllQuiz?.data?.map((val, i: number) => (
                     <Card key={i} className="flex flex-col justify-between">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium line-clamp-2 capitalize">
@@ -128,9 +128,9 @@ const StudentQiuzzes = () => {
         <AccordionItem value="exams">
           <Card className="mt-5">
             <CardHeader>
-              <CardTitle className="text-lg">
+              <div className="text-lg font-semibold">
                 <AccordionTrigger>Exams</AccordionTrigger>
-              </CardTitle>
+              </div>
             </CardHeader>
             <AccordionContent>
               <CardContent className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -164,7 +164,7 @@ const StudentQiuzzes = () => {
         
       </Accordion>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 mt-8">
-        {AllQuiz?.length === 0 && (
+        {AllQuiz?.data?.length === 0 && (
           <div className="text-center">No Quiz Found</div>
         )}
       </div>

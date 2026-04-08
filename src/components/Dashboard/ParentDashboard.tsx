@@ -18,7 +18,7 @@ const ParentDashboard = () => {
   const [childlicense, setChildlicense] = useState("");
   const [currentData, setCurrentData] = useState("");
 
-  const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray);
+  const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray, { skip: !userInfo?.childrenArray });
   const [addChild, { isLoading: isAdding }] = useAddChildMutation();
   const [removeChild, { isLoading: isRemoving }] = useRemoveChildMutation();
   const [addSubjectPriority, { isLoading: isAdding2 }] =

@@ -425,7 +425,7 @@ export const apiSlice = createApi({
     }),
 
     getAllChildren: builder.query({
-      query: (ids) => `/api/users/getAllChildren?ids=${ids.join(",")}`,
+      query: (ids) => `/api/users/getAllChildren?ids=${(ids || []).join(",")}`,
       providesTags: (result) => 
         // Add more specific tags for better cache control
         result 

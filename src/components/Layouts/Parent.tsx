@@ -30,7 +30,8 @@ import {
 export function ParentsLayout() {
   const userInfo = useSelector((state: any) => state.user.userInfo);
   const { data: children } = useGetAllChildrenQuery(
-    userInfo?.childrenArray
+    userInfo?.childrenArray,
+    { skip: !userInfo?.childrenArray }
   );
   const { pathname } = useLocation();
   const navigate = useNavigate();

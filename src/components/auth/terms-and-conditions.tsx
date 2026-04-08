@@ -198,37 +198,37 @@ const PDFDocument = ({ isTerms }: { isTerms: boolean }) => (
             <Text style={styles.heading}>Data Usage</Text>
             <Text style={styles.text}>We use the collected data for the following purposes:</Text>
             <Text style={styles.listItem}>
-              • <strong>Students:</strong> Personalize learning experiences with recommendations and content suitable for their age and skill level (based on anonymized learning data). Provide progress tracking and reports to students, parents, and teachers (using anonymized data to protect student privacy). Improve the EDAT Platform's functionalities through analysis of anonymized learning data to continuously enhance the platform's effectiveness.
+              • <Text style={{ fontWeight: 'bold' }}>Students:</Text> Personalize learning experiences with recommendations and content suitable for their age and skill level (based on anonymized learning data). Provide progress tracking and reports to students, parents, and teachers (using anonymized data to protect student privacy). Improve the EDAT Platform's functionalities through analysis of anonymized learning data to continuously enhance the platform's effectiveness.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Teachers:</strong> Manage student progress and learning activities within their classes. Gain insights into anonymized student performance data to develop effective teaching strategies tailored to the specific needs of their students.
+              • <Text style={{ fontWeight: 'bold' }}>Teachers:</Text> Manage student progress and learning activities within their classes. Gain insights into anonymized student performance data to develop effective teaching strategies tailored to the specific needs of their students.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Parents:</strong> Monitor their child's progress on the EDAT Platform and access anonymized performance data and learning activity reports to understand their child's learning journey and identify areas where they might require additional support.
+              • <Text style={{ fontWeight: 'bold' }}>Parents:</Text> Monitor their child's progress on the EDAT Platform and access anonymized performance data and learning activity reports to understand their child's learning journey and identify areas where they might require additional support.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>School and Local Administrators:</strong> Track overall student performance at the class or school level (using anonymized data reports) to identify areas for improvement in curriculum, teaching methods, or resource allocation. Make data-driven decisions to optimize educational programs and learning outcomes for all students.
+              • School and Local Administrators: Track overall student performance at the class or school level (using anonymized data reports) to identify areas for improvement in curriculum, teaching methods, or resource allocation. Make data-driven decisions to optimize educational programs and learning outcomes for all students.
             </Text>
 
             <Text style={styles.heading}>Data Security and Privacy</Text>
             <Text style={styles.text}>EDAT prioritizes data security and privacy. We implement the following measures:</Text>
             <Text style={styles.listItem}>
-              • <strong>Secure Storage:</strong> All data is stored on secure servers with industry-standard security practices like encryption and access controls to prevent unauthorized access.
+              • Secure Storage: All data is stored on secure servers with industry-standard security practices like encryption and access controls to prevent unauthorized access.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Anonymization:</strong> We prioritize student privacy. Student performance data is always anonymized before analysis or reporting. This ensures valuable insights can be gained for improving the platform and learning experience without compromising student identity.
+              • Anonymization: We prioritize student privacy. Student performance data is always anonymized before analysis or reporting. This ensures valuable insights can be gained for improving the platform and learning experience without compromising student identity.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Parental Consent:</strong> We obtain verifiable parental consent for collecting and using data beyond basic information for students under the age limit defined by COPPA (or the relevant age limit set by the specific region).
+              • Parental Consent: We obtain verifiable parental consent for collecting and using data beyond basic information for students under the age limit defined by COPPA (or the relevant age limit set by the specific region).
             </Text>
             <Text style={styles.listItem}>
-              • <strong>User Control:</strong> Users have the right to access, modify, or delete their data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
+              • User Control: Users have the right to access, modify, or delete their data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Data Retention:</strong> We retain student data for a maximum of five years after a student becomes inactive on the platform (unless parental consent is provided for longer retention). This timeframe allows us to maintain historical data for platform improvement and to provide valuable insights to parents and educators who might rejoin the platform in the future. We regularly review and update our data retention policies in accordance with best practices and regulatory requirements.
+              • Data Retention: We retain student data for a maximum of five years after a student becomes inactive on the platform (unless parental consent is provided for longer retention). This timeframe allows us to maintain historical data for platform improvement and to provide valuable insights to parents and educators who might rejoin the platform in the future. We regularly review and update our data retention policies in accordance with best practices and regulatory requirements.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Compliance with Regulations:</strong> We adhere to Nigerian Data Protection Regulation (NDPR), US Children's Online Privacy Protection Act (COPPA), EU General Data Protection Regulation (GDPR), and UK General Data Protection Regulation (UK GDPR).
+              • Compliance with Regulations: We adhere to Nigerian Data Protection Regulation (NDPR), US Children's Online Privacy Protection Act (COPPA), EU General Data Protection Regulation (GDPR), and UK General Data Protection Regulation (UK GDPR).
             </Text>
 
             <Text style={styles.heading}>Creating Models and Tailoring Assessments</Text>
@@ -239,13 +239,13 @@ const PDFDocument = ({ isTerms }: { isTerms: boolean }) => (
             <Text style={styles.heading}>Your Rights</Text>
             <Text style={styles.text}>Users have the following rights regarding their data:</Text>
             <Text style={styles.listItem}>
-              • <strong>Access and Modification:</strong> You have the right to access and modify your data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
+              • Access and Modification: You have the right to access and modify your data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Erasure:</strong> You have the right to request the erasure of your data. However, there may be circumstances where we are unable to do so due to legal or regulatory obligations.
+              • Erasure: You have the right to request the erasure of your data. However, there may be circumstances where we are unable to do so due to legal or regulatory obligations.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>Complaint:</strong> If you have any concerns about how we handle your data, you can lodge a complaint with the relevant data protection authority.
+              • Complaint: If you have any concerns about how we handle your data, you can lodge a complaint with the relevant data protection authority.
             </Text>
 
             <Text style={styles.heading}>Contact Us</Text>
@@ -255,13 +255,13 @@ const PDFDocument = ({ isTerms }: { isTerms: boolean }) => (
 
             <Text style={styles.heading}>Additional Notes for Different Regions</Text>
             <Text style={styles.listItem}>
-              • <strong>Nigeria (NDPR):</strong> The notice explicitly mentions the rights of data subjects under NDPR, including rectification, erasure, and restriction of processing of their data.
+              • Nigeria (NDPR): The notice explicitly mentions the rights of data subjects under NDPR, including rectification, erasure, and restriction of processing of their data.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>US (COPPA):</strong> The notice clearly states the age limit below which parental consent is mandatory for collecting any personal information beyond basic student identification.
+              • US (COPPA): The notice clearly states the age limit below which parental consent is mandatory for collecting any personal information beyond basic student identification.
             </Text>
             <Text style={styles.listItem}>
-              • <strong>EU (GDPR) and UK (UK GDPR):</strong> The notice specifies the legal basis for data processing (e.g., consent, legitimate interest) and data retention periods. Users have the right to data portability under these regulations.
+              • EU (GDPR) and UK (UK GDPR): The notice specifies the legal basis for data processing (e.g., consent, legitimate interest) and data retention periods. Users have the right to data portability under these regulations.
             </Text>
             <Text style={styles.text}>
               By using the EDAT Platform, users acknowledge this Data Usage and Privacy Notice. We reserve the right to update this notice periodically. We encourage users to review this notice regularly for changes.
@@ -446,30 +446,30 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h4 className="text-lg font-semibold mt-2">Required Data:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Anonymized ID:</strong> This unique identifier ensures student privacy while allowing us to track their progress on the platform. EDATECH prioritizes student privacy and never collects personally identifiable information (PII) about students without verifiable parental consent.
+                  Anonymized ID: This unique identifier ensures student privacy while allowing us to track their progress on the platform. EDATECH prioritizes student privacy and never collects personally identifiable information (PII) about students without verifiable parental consent.
                 </li>
                 <li>
-                  <strong>Age Range:</strong> Knowing the student's age range allows EDAT to filter content and recommendations to ensure they are age-appropriate and comply with COPPA regulations for users under 13 (or the relevant age limit set by the specific region).
+                  Age Range: Knowing the student's age range allows EDAT to filter content and recommendations to ensure they are age-appropriate and comply with COPPA regulations for users under 13 (or the relevant age limit set by the specific region).
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Optional Data (with Parental Consent):</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Name:</strong> Personalizing the learning experience by name can motivate students and make their interaction with the platform more engaging. However, we understand the importance of parental control over student data. That's why we require verifiable parental consent before collecting a student's name.
+                  Name: Personalizing the learning experience by name can motivate students and make their interaction with the platform more engaging. However, we understand the importance of parental control over student data. That's why we require verifiable parental consent before collecting a student's name.
                 </li>
                 <li>
-                  <strong>School Information:</strong> School affiliation can provide context for student performance and can be helpful for teachers who manage multiple classes across different schools. Similar to the student's name, school information is only collected with verifiable parental consent.
+                  School Information: School affiliation can provide context for student performance and can be helpful for teachers who manage multiple classes across different schools. Similar to the student's name, school information is only collected with verifiable parental consent.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Learning Data (Always Anonymized):</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Performance on Exams and Learning Activities:</strong> This anonymized data allows us to personalize learning paths for each student by identifying their strengths and weaknesses. It also enables us to track progress over time and provide valuable insights to students, parents, and teachers.
+                  Performance on Exams and Learning Activities: This anonymized data allows us to personalize learning paths for each student by identifying their strengths and weaknesses. It also enables us to track progress over time and provide valuable insights to students, parents, and teachers.
                 </li>
                 <li>
-                  <strong>Usage of Personalized Recommendations:</strong> By analyzing how students interact with our recommended learning activities, we can continuously improve the recommendation engine, ensuring it suggests the most suitable content for each student's individual needs.
+                  Usage of Personalized Recommendations: By analyzing how students interact with our recommended learning activities, we can continuously improve the recommendation engine, ensuring it suggests the most suitable content for each student's individual needs.
                 </li>
               </ul>
 
@@ -477,24 +477,24 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h4 className="text-lg font-semibold mt-2">Login Credentials:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Username and Password:</strong> Securely stored using industry best practices like hashing and salting to protect user credentials in case of a data breach.
+                  Username and Password: Securely stored using industry best practices like hashing and salting to protect user credentials in case of a data breach.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Class Management Data:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Anonymized Student IDs:</strong> Associated with the teacher's classes to allow efficient management of student progress, assignments, and communication within their classes.
+                  Anonymized Student IDs: Associated with the teacher's classes to allow efficient management of student progress, assignments, and communication within their classes.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Optional Data (with User Consent):</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Name:</strong> Sharing names fosters better communication and collaboration between teachers, especially those working within the same school or district.
+                  Name: Sharing names fosters better communication and collaboration between teachers, especially those working within the same school or district.
                 </li>
                 <li>
-                  <strong>School Affiliation:</strong> Like student information, a teacher's school affiliation provides context and can be helpful for administrators managing multiple schools or districts using EDAT. We obtain the teacher's consent before collecting this information.
+                  School Affiliation: Like student information, a teacher's school affiliation provides context and can be helpful for administrators managing multiple schools or districts using EDAT. We obtain the teacher's consent before collecting this information.
                 </li>
               </ul>
 
@@ -502,27 +502,27 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h4 className="text-lg font-semibold mt-2">Login Credentials:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Credentials:</strong> Securely stored login credentials ensure authorized access to their child's data on the platform.
+                  Credentials: Securely stored login credentials ensure authorized access to their child's data on the platform.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Child Information (with Parental Consent):</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Name:</strong> Parents can easily identify their child's data and reports within the platform.
+                  Name: Parents can easily identify their child's data and reports within the platform.
                 </li>
                 <li>
-                  <strong>Anonymized Student ID:</strong> Links the parent to their child's anonymized learning data, allowing them to monitor their child's progress without compromising student privacy. We require verifiable parental consent before collecting a child's name and linking it to their learning data.
+                  Anonymized Student ID: Links the parent to their child's anonymized learning data, allowing them to monitor their child's progress without compromising student privacy. We require verifiable parental consent before collecting a child's name and linking it to their learning data.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Access to Student Reports:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Progress on Learning Activities:</strong> Parents can see how their child is progressing through different learning modules and activities offered by the platform.
+                  Progress on Learning Activities: Parents can see how their child is progressing through different learning modules and activities offered by the platform.
                 </li>
                 <li>
-                  <strong>Performance Data (Always Anonymized):</strong> Anonymized performance data on exams, quizzes, and assignments provides valuable insights to parents about their child's strengths and weaknesses without revealing any personally identifiable information.
+                  Performance Data (Always Anonymized): Anonymized performance data on exams, quizzes, and assignments provides valuable insights to parents about their child's strengths and weaknesses without revealing any personally identifiable information.
                 </li>
               </ul>
 
@@ -530,14 +530,14 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h4 className="text-lg font-semibold mt-2">Login Credentials:</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Credentials:</strong> Ensure only authorized administrators have access to student data reports.
+                  Credentials: Ensure only authorized administrators have access to student data reports.
                 </li>
               </ul>
 
               <h4 className="text-lg font-semibold mt-2">Aggregated Student Data (Always Anonymized):</h4>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Group Performance Reports:</strong> Provide administrators with valuable insights into student performance at the class or school level, enabling data-driven decisions to improve educational programs and learning outcomes for all students. By using anonymized data, EDAT protects student privacy while empowering administrators to optimize educational resources.
+                  Group Performance Reports: Provide administrators with valuable insights into student performance at the class or school level, enabling data-driven decisions to improve educational programs and learning outcomes for all students. By using anonymized data, EDAT protects student privacy while empowering administrators to optimize educational resources.
                 </li>
               </ul>
 
@@ -545,16 +545,16 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <p>We use the collected data for the following purposes:</p>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Students:</strong> Personalize learning experiences with recommendations and content suitable for their age and skill level (based on anonymized learning data). Provide progress tracking and reports to students, parents, and teachers (using anonymized data to protect student privacy). Improve the EDAT Platform's functionalities through analysis of anonymized learning data to continuously enhance the platform's effectiveness.
+                  Students: Personalize learning experiences with recommendations and content suitable for their age and skill level (based on anonymized learning data). Provide progress tracking and reports to students, parents, and teachers (using anonymized data to protect student privacy). Improve the EDAT Platform's functionalities through analysis of anonymized learning data to continuously enhance the platform's effectiveness.
                 </li>
                 <li>
-                  <strong>Teachers:</strong> Manage student progress and learning activities within their classes. Gain insights into anonymized student performance data to develop effective teaching strategies tailored to the specific needs of their students.
+                  Teachers: Manage student progress and learning activities within their classes. Gain insights into anonymized student performance data to develop effective teaching strategies tailored to the specific needs of their students.
                 </li>
                 <li>
-                  <strong>Parents:</strong> Monitor their child's progress on the EDAT Platform and access anonymized performance data and learning activity reports to understand their child's learning journey and identify areas where they might require additional support.
+                  Parents: Monitor their child's progress on the EDAT Platform and access anonymized performance data and learning activity reports to understand their child's learning journey and identify areas where they might require additional support.
                 </li>
                 <li>
-                  <strong>School and Local Administrators:</strong> Track overall student performance at the class or school level (using anonymized data reports) to identify areas for improvement in curriculum, teaching methods, or resource allocation. Make data-driven decisions to optimize educational programs and learning outcomes for all students.
+                  School and Local Administrators: Track overall student performance at the class or school level (using anonymized data reports) to identify areas for improvement in curriculum, teaching methods, or resource allocation. Make data-driven decisions to optimize educational programs and learning outcomes for all students.
                 </li>
               </ul>
 
@@ -562,22 +562,22 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <p>EDAT prioritizes data security and privacy. We implement the following measures:</p>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Secure Storage:</strong> All data is stored on secure servers with industry-standard security practices like encryption and access controls to prevent unauthorized access.
+                  Secure Storage: All data is stored on secure servers with industry-standard security practices like encryption and access controls to prevent unauthorized access.
                 </li>
                 <li>
-                  <strong>Anonymization:</strong> We prioritize student privacy. Student performance data is always anonymized before analysis or reporting. This ensures valuable insights can be gained for improving the platform and learning experience without compromising student identity.
+                  Anonymization: We prioritize student privacy. Student performance data is always anonymized before analysis or reporting. This ensures valuable insights can be gained for improving the platform and learning experience without compromising student identity.
                 </li>
                 <li>
-                  <strong>Parental Consent:</strong> We obtain verifiable parental consent for collecting and using data beyond basic information for students under the age limit defined by COPPA (or the relevant age limit set by the specific region).
+                  Parental Consent: We obtain verifiable parental consent for collecting and using data beyond basic information for students under the age limit defined by COPPA (or the relevant age limit set by the specific region).
                 </li>
                 <li>
-                  <strong>User Control:</strong> Users have the right to access, modify, or delete their data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
+                  User Control: Users have the right to access, modify, or delete their data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
                 </li>
                 <li>
-                  <strong>Data Retention:</strong> We retain student data for a maximum of five years after a student becomes inactive on the platform (unless parental consent is provided for longer retention). This timeframe allows us to maintain historical data for platform improvement and to provide valuable insights to parents and educators who might rejoin the platform in the future. We regularly review and update our data retention policies in accordance with best practices and regulatory requirements.
+                  Data Retention: We retain student data for a maximum of five years after a student becomes inactive on the platform (unless parental consent is provided for longer retention). This timeframe allows us to maintain historical data for platform improvement and to provide valuable insights to parents and educators who might rejoin the platform in the future. We regularly review and update our data retention policies in accordance with best practices and regulatory requirements.
                 </li>
                 <li>
-                  <strong>Compliance with Regulations:</strong> We adhere to Nigerian Data Protection Regulation (NDPR), US Children's Online Privacy Protection Act (COPPA), EU General Data Protection Regulation (GDPR), and UK General Data Protection Regulation (UK GDPR).
+                  Compliance with Regulations: We adhere to Nigerian Data Protection Regulation (NDPR), US Children's Online Privacy Protection Act (COPPA), EU General Data Protection Regulation (GDPR), and UK General Data Protection Regulation (UK GDPR).
                 </li>
               </ul>
 
@@ -589,13 +589,13 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h2 className="text-2xl font-semibold mt-6">Your Rights</h2>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Access and Modification:</strong> You have the right to access and modify your data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
+                  Access and Modification: You have the right to access and modify your data upon request (subject to legal and regulatory restrictions). For student data, we will process such requests in accordance with parental consent.
                 </li>
                 <li>
-                  <strong>Erasure:</strong> You have the right to request the erasure of your data. However, there may be circumstances where we are unable to do so due to legal or regulatory obligations.
+                  Erasure: You have the right to request the erasure of your data. However, there may be circumstances where we are unable to do so due to legal or regulatory obligations.
                 </li>
                 <li>
-                  <strong>Complaint:</strong> If you have any concerns about how we handle your data, you can lodge a complaint with the relevant data protection authority.
+                  Complaint: If you have any concerns about how we handle your data, you can lodge a complaint with the relevant data protection authority.
                 </li>
               </ul>
 
@@ -607,13 +607,13 @@ const TermsAndConditions = ({ onClose }: { onClose: () => void }) => {
               <h2 className="text-2xl font-semibold mt-6">Additional Notes for Different Regions</h2>
               <ul className="list-disc list-inside">
                 <li>
-                  <strong>Nigeria (NDPR):</strong> The notice explicitly mentions the rights of data subjects under NDPR, including rectification, erasure, and restriction of processing of their data.
+                  Nigeria (NDPR): The notice explicitly mentions the rights of data subjects under NDPR, including rectification, erasure, and restriction of processing of their data.
                 </li>
                 <li>
-                  <strong>US (COPPA):</strong> The notice clearly states the age limit below which parental consent is mandatory for collecting any personal information beyond basic student identification.
+                  US (COPPA): The notice clearly states the age limit below which parental consent is mandatory for collecting any personal information beyond basic student identification.
                 </li>
                 <li>
-                  <strong>EU (GDPR) and UK (UK GDPR):</strong> The notice specifies the legal basis for data processing (e.g., consent, legitimate interest) and data retention periods. Users have the right to data portability under these regulations.
+                  EU (GDPR) and UK (UK GDPR): The notice specifies the legal basis for data processing (e.g., consent, legitimate interest) and data retention periods. Users have the right to data portability under these regulations.
                 </li>
               </ul>
               <p>

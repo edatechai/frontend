@@ -579,7 +579,7 @@ export const childColumns: ColumnDef<Child>[] = [
                   Update minimum score
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Update child minimum score</DialogTitle>
                 </DialogHeader>
@@ -610,7 +610,7 @@ export const childColumns: ColumnDef<Child>[] = [
                   Update number of objectives
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Update Number of learning objective</DialogTitle>
                 </DialogHeader>
@@ -713,7 +713,7 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
                   <Pencil className="size-4" /> Edit year group
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit year group</DialogTitle>
                   <DialogDescription>
@@ -860,7 +860,7 @@ export const ArmColumns: ColumnDef<Arm>[] = [
                   <Pencil className="size-4" /> Edit arm
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit arm</DialogTitle>
                   <DialogDescription>
@@ -1008,7 +1008,7 @@ export const subjectColumns: ColumnDef<Subject>[] = [
                   <Pencil className="size-4" /> Edit subject
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit arm</DialogTitle>
                   <DialogDescription>

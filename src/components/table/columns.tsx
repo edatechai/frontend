@@ -582,27 +582,25 @@ export const childColumns: ColumnDef<Child>[] = [
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Update child minimum score</DialogTitle>
-                  <DialogDescription>
-                    <div className="mt-4">
-                      <Label>Minimum score</Label>
-                      <Input
-                        value={passScore}
-                        disabled={sisloading}
-                        onChange={(e) => setPassScore(e.target.value)}
-                        type="text"
-                        className="w-full"
-                        placeholder="Enter license code"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleUpdate}
-                      disabled={sisloading}
-                      className="mx-auto block mt-4"
-                    >
-                      Submit
-                    </Button>
-                  </DialogDescription>
                 </DialogHeader>
+                <div className="mt-4">
+                  <Label>Minimum score</Label>
+                  <Input
+                    value={passScore}
+                    disabled={sisloading}
+                    onChange={(e) => setPassScore(e.target.value)}
+                    type="text"
+                    className="w-full"
+                    placeholder="Enter license code"
+                  />
+                </div>
+                <Button
+                  onClick={handleUpdate}
+                  disabled={sisloading}
+                  className="mx-auto block mt-4"
+                >
+                  Submit
+                </Button>
               </DialogContent>
             </Dialog>
             <DropdownMenuSeparator />
@@ -615,29 +613,27 @@ export const childColumns: ColumnDef<Child>[] = [
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                   <DialogTitle>Update Number of learning objective</DialogTitle>
-                  <DialogDescription>
-                    <div className="mt-4">
-                      <Label>Number</Label>
-                      <Input
-                        value={numberOfLearningObjectives}
-                        disabled={sisloading}
-                        onChange={(e) =>
-                          setNumberOfLearningObjectives(e.target.value)
-                        }
-                        type="text"
-                        className="w-full"
-                        placeholder="Enter a number"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleUpdateNumberOfLearningObjective}
-                      disabled={sisloading2}
-                      className="mx-auto block mt-4"
-                    >
-                      Submit
-                    </Button>
-                  </DialogDescription>
                 </DialogHeader>
+                <div className="mt-4">
+                  <Label>Number</Label>
+                  <Input
+                    value={numberOfLearningObjectives}
+                    disabled={sisloading}
+                    onChange={(e) =>
+                      setNumberOfLearningObjectives(e.target.value)
+                    }
+                    type="text"
+                    className="w-full"
+                    placeholder="Enter a number"
+                  />
+                </div>
+                <Button
+                  onClick={handleUpdateNumberOfLearningObjective}
+                  disabled={sisloading2}
+                  className="mx-auto block mt-4"
+                >
+                  Submit
+                </Button>
               </DialogContent>
             </Dialog>
           </DropdownMenuContent>

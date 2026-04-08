@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 
 export function Layout() {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data } = useGetAccountByIdQuery(userInfo?.accountId);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
   const [openNav, setOpenNav] = useState(false);
   const { role } = userInfo;
   const [menus, setMenus] = useState([

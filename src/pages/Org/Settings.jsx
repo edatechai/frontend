@@ -10,7 +10,7 @@ const Index = () => {
           role="tab"
           className="tab text-md"
           aria-label="Classroom Settings"
-          checked
+          defaultChecked
         />
         <div
           role="tabpanel"

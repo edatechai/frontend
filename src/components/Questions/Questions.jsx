@@ -112,10 +112,11 @@ const Index = () => {
               </div>
               <select
                 disabled={isLoading}
+                defaultValue=""
                 onChange={(e) => setObjCode(e.target.value)}
                 className="select select-bordered w-full min-w-full"
               >
-                <option disabled selected>
+                <option disabled value="">
                   Select an objective code
                 </option>
                 {allObjectives?.map((obj, index) => (

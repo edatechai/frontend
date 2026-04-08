@@ -4,9 +4,12 @@ import { TbCurrencyNaira } from 'react-icons/tb';
 import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation, useUpdateMonthlyRequestLimitMutation } from '../../features/api/apiSlice';
 import countryList from "react-select-country-list";
 const LicenseModal = ({ isVisible, onClose, license }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [deleteLicense, {isLoading, isError, isSuccess}] = useDeleteLicenseMutation()
+  const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
+
   if (!isVisible) return null;
 
-  const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
   const indexOfLastRecord = currentPage * recordsPerPage;
@@ -14,9 +17,6 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
   const currentRecords = license.license.slice(indexOfFirstRecord, indexOfLastRecord);
 
   const totalPages = Math.ceil(license.license.length / recordsPerPage);
-
-  const [deleteLicense, {isLoading, isError, isSuccess}] = useDeleteLicenseMutation()
-  const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
 
   const handleDeleteLicense = async(license, id)=>{
     const payload = {
@@ -510,8 +510,8 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
 
                 <div className='mt-4'>
                   <div className='text-md font-sm py-2'>Organization Category</div>
-                  <select onChange={(e) => setCategory(e.target.value)} className="select select-bordered w-full min-w-full">
-                    <option disabled selected>Select Organization Category</option>
+                  <select defaultValue="" onChange={(e) => setCategory(e.target.value)} className="select select-bordered w-full min-w-full">
+                    <option disabled value="">Select Organization Category</option>
                     <option value="College">College</option>
                     <option value="High School">High School</option>
                     <option value="High School">Primary School</option>

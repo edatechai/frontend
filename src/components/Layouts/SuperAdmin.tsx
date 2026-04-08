@@ -31,7 +31,7 @@ export function SuperAdminLayout() {
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <div className="flex items-center gap-2 font-semibold">
               {/* <Circle className="h-6 w-6" /> */}
-              <img className="h-8" src="edat_logo.png" />
+              <img className="h-8" src="/edat_logo.png" />
             </div>
           </div>
           <div className="flex-1 mt-4">

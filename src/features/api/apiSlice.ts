@@ -248,8 +248,11 @@ export const apiSlice = createApi({
     }),
 
     findAllObjectives: builder.query({
-      query: ({ subject, country }) =>
-        `/api/objective/findAllObjectives?subject=${subject}&country=${country}`,
+      query: (params) => {
+        if (!params) return "/api/objective/findAllObjectives";
+        const { subject, country } = params;
+        return `/api/objective/findAllObjectives?subject=${subject}&country=${country}`;
+      },
       providesTags: ["Objectives"],
     }),
 

@@ -2,7 +2,6 @@ import { latexToHTML } from "@/lib/utils";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../ui/card";
@@ -25,7 +24,7 @@ const QuizReport = ({ quizResults }: { quizResults: any }) => {
       <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
         View Report
       </SheetTrigger>
-      <SheetContent className="sm:w-[540px] overflow-auto">
+      <SheetContent className="sm:w-[540px] overflow-auto" aria-describedby={undefined}>
         <SheetHeader className="overflow-y-scroll text-left">
           <SheetTitle>Quiz Report</SheetTitle>
           <div className="overflow-y-auto">

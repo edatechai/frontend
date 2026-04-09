@@ -49,7 +49,6 @@ export default function Examstyled({
   });
 
   const navigation = useNavigate()
-  console.log({ errors });
 
   const [customDuration, setCustomDuration] = useState(false);
 
@@ -71,7 +70,6 @@ export default function Examstyled({
       learning_objectives: [search],
       subject: "Mathematics",
     };
-    console.log({ payload });
     try {
       const res = await fetch(
         `${import.meta.env.VITE_MICROSERVICE_BASE_URL}/exam/generate_exam_questions`,

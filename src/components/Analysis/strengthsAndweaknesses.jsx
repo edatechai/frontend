@@ -23,7 +23,6 @@ const StrengthsAndweaknesses = (props) => {
     useGetStrengthsAndweaknessesMutation();
   const [realData, setRealData] = useState();
 
-  console.log("this is data", realData);
 
   useEffect(() => {
     function getCategoryAndTopic(objCode, props) {
@@ -50,17 +49,13 @@ const StrengthsAndweaknesses = (props) => {
       category,
       userId: userInfo?._id,
     };
-    console.log(payload);
 
     const result = await getSW(payload);
-    // console.log("this is my result", result)
     setRealData(result);
   };
 
-  //console.log("here me",realData.data.aggData.chartData)
 
   const chartData = realData?.data?.getAggregateScores?.data;
-  console.log("new", chartData);
 
   // const newdata = [
   //   { name: 'Class',  score : chartData?.classScores.classScore },

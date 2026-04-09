@@ -121,7 +121,6 @@ function Theory({ exam }: { exam: ExamQuestions }) {
         }
       );
       const data = await res.json();
-      console.log({ examData: data });
       setIsLoading(false);
       if (res.ok) {
         toast("Submitted successfully");
@@ -140,12 +139,10 @@ function Theory({ exam }: { exam: ExamQuestions }) {
     }
   };
 
-  console.log({ score });
 
   // Add this to handle mathfield value changes
   const handleMathFieldInput = (element: MathfieldElement, index: number) => {
     // You can access the LaTeX value using element.value
-    console.log(`Question ${index + 1} answer:`, element.value);
   };
 
   return (
@@ -292,7 +289,6 @@ function Theory({ exam }: { exam: ExamQuestions }) {
                   //
                   (match) => {
                     const m = match.replace(/^\f/, "\\f");
-                    console.log({ mm: m.slice(0), m });
                     return katex.renderToString(match.replace(/^\f/, "\\f"));
                   }
                 ),

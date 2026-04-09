@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
-  LineChart,
   Menu,
   Circle,
   Dumbbell,
@@ -12,15 +11,6 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
 import {
@@ -29,14 +19,28 @@ import {
 } from "@/features/api/apiSlice";
 
 export function ParentsLayout() {
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const { data: children, isLoading } = useGetAllChildrenQuery(
-    userInfo?.childrenArray
+  const userInfo = useSelector((state: any) => state.user.userInfo);
+  const { data: children } = useGetAllChildrenQuery(
+    userInfo?.childrenArray,
+    { skip: !userInfo?.childrenArray }
   );
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { data } = useGetAccountByIdQuery(userInfo.accountId);
-  const [wardId, setWardId] = useState<string | null>(null);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
+
+  // Extract childId from URL on initial load so direct links and page refreshes work.
+  // Matches: /parent/result/:id  /parent/strengths/:id  /parent/task/:id
+  const getChildIdFromPath = (path: string): string | null => {
+    const match = path.match(/^\/parent\/(?:result|strengths|task)\/([^/]+)/);
+    return match ? match[1] : null;
+  };
+
+  const [wardId, setWardId] = useState<string | null>(getChildIdFromPath(pathname));
+
+  useEffect(() => {
+    const childId = getChildIdFromPath(pathname);
+    if (childId) setWardId(childId);
+  }, [pathname]);
 
   useEffect(() => {
     if (children?.length == 1) {
@@ -142,24 +146,7 @@ export function ParentsLayout() {
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
-            {children?.length > 1 && (
-              <Select onValueChange={(e) => setWardId(e)}>
-                <SelectTrigger className="bg-primary text-primary-foreground mb-5">
-                  <SelectValue placeholder="Select child" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Children</SelectLabel>
-                    {children?.map(({ user }) => (
-                      <SelectItem value={user?._id} key={user?._id}>
-                        {user?.fullName}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-            <span className="flex gap-2 text-xs items-center">
+<span className="flex gap-2 text-xs items-center">
               <img alt="" src="/edat_logo.png" className="w-12" />
               <p>All Rights Reserved ©2024</p>
             </span>

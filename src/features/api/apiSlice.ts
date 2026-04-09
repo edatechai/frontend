@@ -1,36 +1,29 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-
-const getToken = () => {
-  const token = localStorage.getItem("Token");
-  if (!token) {
-    console.log({ token });
-  }
-  return token;
-};
-
+import { createApi } from "@reduxjs/toolkit/query/react";
+import baseQueryWithReauth from "./basequery";
 
 // Define our single API slice object
-//https://edatbackend.azurewebsites.net/
-//http://localhost:5000
+export interface QuizResult {
+  question: string;
+  isCorrect: boolean;
+  wrongOption?: string;
+  correctOption: string;
+  correctAnswer: string;
+  selectedAnswer: string;
+}
+
+export interface ClassResult {
+  objective: string;
+  userInfo: {
+    fullName: string;
+  };
+  scorePercentage: string | number;
+  quizResults: QuizResult[];
+  classRoomName: string;
+}
+
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    // baseUrl: "https://edat-backend.onrender.com",
-    // baseUrl: "http://localhost:5000/",
-    // baseUrl: "https://edatbackend.azurewebsites.net/",
-    //https://edatbackend-production-frfhc5aagkhbhafk.eastus-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://edatech-backend-production-server-dchucmeddgbtgdcy.ukwest-01.azurewebsites.net/
-    //https://server.edatech.io
-    baseUrl: import.meta.env.VITE_API_BASE_URL,
-    prepareHeaders: async (headers) => {
-      const token = getToken();
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-    },
-  }),
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     "CurrentUser",
     "CreateAccount",
@@ -226,7 +219,7 @@ export const apiSlice = createApi({
       // providesTags: ["ClassRoom"],
     }),
 
-    resultsByClassId: builder.query({
+    resultsByClassId: builder.query<ClassResult[], string | undefined>({
       query: (id) => `/api/quiz/getQuizResultByClassId/${id}`,
     }),
 
@@ -255,8 +248,11 @@ export const apiSlice = createApi({
     }),
 
     findAllObjectives: builder.query({
-      query: ({ subject, country }) =>
-        `/api/objective/findAllObjectives?subject=${subject}&country=${country}`,
+      query: (params) => {
+        if (!params) return "/api/objective/findAllObjectives";
+        const { subject, country } = params;
+        return `/api/objective/findAllObjectives?subject=${subject}&country=${country}`;
+      },
       providesTags: ["Objectives"],
     }),
 
@@ -429,7 +425,7 @@ export const apiSlice = createApi({
     }),
 
     getAllChildren: builder.query({
-      query: (ids) => `/api/users/getAllChildren?ids=${ids.join(",")}`,
+      query: (ids) => `/api/users/getAllChildren?ids=${(ids || []).join(",")}`,
       providesTags: (result) => 
         // Add more specific tags for better cache control
         result 
@@ -667,6 +663,12 @@ export const apiSlice = createApi({
         body: { accountId },
       }),
     }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/api/users/logout',
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
@@ -765,4 +767,5 @@ export const {
 
   // org admin
   useGenerateUserGuideMutation,
+  useLogoutMutation,
 } = apiSlice;

@@ -48,7 +48,6 @@ export const CreateArm = ({ userInfo, setShowArmDialog }) => {
   const form = useForm<z.infer<typeof ArmFormSchema>>({
     resolver: zodResolver(ArmFormSchema),
   });
-  console.log("userInfo", userInfo);
 
 
   async function onSubmit({ aim }: z.infer<typeof ArmFormSchema>) {
@@ -61,7 +60,6 @@ export const CreateArm = ({ userInfo, setShowArmDialog }) => {
         toast.error("Arm creation failed", {
           description: response?.error?.data?.message,
         });
-        console.log({ backendError: response.error });
       } else {
         toast(response.data.message);
         form.reset({ aim: "" });
@@ -71,7 +69,6 @@ export const CreateArm = ({ userInfo, setShowArmDialog }) => {
       toast.error("Arm creation failed", {
         description: "Something went wrong",
       });
-      console.log("error", error);
     }
   }
   return (
@@ -122,7 +119,6 @@ export const CreateYearGroup = ({ userInfo, setShowYearGroupDialog }) => {
         toast.error("Year group creation failed", {
           description: response?.error?.data?.message,
         });
-        console.log({ backendError: response.error });
       } else {
         toast(response.data.message);
         form.reset({ yearGroup: "" });
@@ -132,7 +128,6 @@ export const CreateYearGroup = ({ userInfo, setShowYearGroupDialog }) => {
       toast.error("Year group creation failed", {
         description: "Something went wrong",
       });
-      console.log("error", error);
     }
   }
   return (
@@ -170,7 +165,6 @@ export const CreateYearGroup = ({ userInfo, setShowYearGroupDialog }) => {
 export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
   const [createSubject, { isLoading }] = useCreateSubjectMutation();
   const { data: account } = useGetAccountByIdQuery(userInfo?.accountId);
-  console.log("account", account);
   const form = useForm<z.infer<typeof SubjectFormSchema>>({
     resolver: zodResolver(SubjectFormSchema),
   });
@@ -185,7 +179,6 @@ export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
         toast.error("Subject creation failed", {
           description: response?.error?.data?.message,
         });
-        console.log({ backendError: response.error });
       } else {
         toast(response.data.message);
         form.reset({ subject: "" });
@@ -195,7 +188,6 @@ export const CreateSubject = ({ userInfo, setShowSubjectDialog }) => {
       toast.error("Subject creation failed", {
         description: "Something went wrong",
       });
-      console.log("error", error);
     }
   }
   return (

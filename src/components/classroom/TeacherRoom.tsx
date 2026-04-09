@@ -54,8 +54,6 @@ const TeacherRoom = () => {
     country: userInfo?.country,
   });
 
-  console.log("this is userInfo", userInfo)
-  console.log("this is class data", state?.data)
   const [createQuiz] = useCreateQuizMutation();
   const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
   // const { data: AllQuiz } = useFindAllQuizQuery();
@@ -98,9 +96,6 @@ const TeacherRoom = () => {
     const monthlyLimit = state?.data?.monthlyRequestCount;
     const lastRequestMonth = state?.data?.lastRequestMonth;
     const lastRequestYear = state?.data?.lastRequestYear;
-    console.log("this is lastRequestMonth", lastRequestMonth);
-    console.log("this is lastRequestYear", lastRequestYear);
-    console.log("this is monthlyLimit", monthlyLimit);
 
     const isNewMonth = () => {
       const currentDate = new Date();
@@ -119,11 +114,8 @@ const TeacherRoom = () => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearch(value);
-    // console.log({ value1: value });
 
-    // console.log({ statetes: state });
 
-    console.log({ subject: allObjectives.length });
 
     if (value.trim() === "") {
       setFilteredObjectives([]);
@@ -149,19 +141,15 @@ const TeacherRoom = () => {
           // }
         })
         .filter((objs) => {
-          // console.log({ subject1: objs.subject, state: state.data.subject });
           return objs.subject == state.data.subject;
         });
 
       setFilteredObjectives(filtered);
 
-      // console.log({ userInfo });
-      console.log("this is filtered", filtered);
     }
   };
 
   const handleObjectiveSelect = (objective) => {
-    console.log("this is it", objective);
     setSelectedObjective(objective);
     setSearch(objective?.objective);
     setFilteredObjectives([]);
@@ -188,7 +176,6 @@ const TeacherRoom = () => {
       quizEnd,
     };
 
-    console.log("this is payload", payload);
 
     const response = await createQuiz(payload);
    
@@ -199,7 +186,6 @@ const TeacherRoom = () => {
         objCode: selectedObjective?.objCode,
       });
 
-      console.log("data here", getAllQ);
       setIsLoadingQuiz(false);
 
       toast(response.data.message);
@@ -219,7 +205,7 @@ const TeacherRoom = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink>
+            <BreadcrumbLink asChild>
               <Link to="/teacher">Classrooms</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>

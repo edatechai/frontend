@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 
 function TextWithLineBreaks({ texts }: { texts: string }) {
-  console.log({ texts });
   const textWithBreaks = texts?.split("\n")?.map((text, index) => (
     <Fragment key={index}>
       <p dangerouslySetInnerHTML={FormatBold(text)} />
@@ -12,7 +11,6 @@ function TextWithLineBreaks({ texts }: { texts: string }) {
 }
 
 export function TextWithLineBreaksRec({ texts }: { texts: string }) {
-  console.log({ texts });
   const textWithBreaks = texts?.split("\\n")?.map((text, index) => (
     <Fragment key={index}>
       {text}

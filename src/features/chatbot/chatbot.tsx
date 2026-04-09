@@ -26,7 +26,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
   
   const [chat, { isLoading, error: chatError }] = useChatMutation();
   const userInfo = useSelector((state: any) => state.user.userInfo);
-  console.log("this is user info", userInfo, rec?.questions[0].question);
   const [question, setQuestion] = useState("");
   const [isInitializing, setIsInitializing] = useState(true);
   const [conversation, setConversation] = useState<Message[]>([]);
@@ -48,7 +47,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
    
   //   if(userInfo){
   //   if (isChatVisible) {
-  //     console.log("this is userInfo", userInfo);
   //     if (userInfo) {
   //       initializeChat(userInfo);
   //     } else {
@@ -91,12 +89,10 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
 
    
 
-    console.log("this is payload", payload);
     
     try {
       setIsInitializing(true);
       const response = await chat(payload);
-      console.log("this is response", response);
       setConversation(response?.data.conversation);
       setAskedQuestions(response?.data.askedQuestions);
     } catch (error: any) {
@@ -106,7 +102,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
       setIsInitializing(false);
     }
   };
-  console.log({ conversation });
 
 
   // if(userInfo){
@@ -145,7 +140,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
     }
 
     setConvo(h);
-    console.log({ h });
   }, [conversation]);
 
   const scrollToBottom = (behavior: "auto" | "smooth" = "auto") => {
@@ -192,11 +186,9 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
 
       };
       
-      console.log("this is new payload", payload);
 
       try {
         const response = await chat(payload);
-        console.log("this is response", response);
         if (response?.error) {
           alert(response?.error?.data?.error);
         } else {
@@ -265,7 +257,8 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
       >
         <style>{messageStyle}</style>
         {convo?.map((item, index) => {
-          return item.content ? (
+          if (!item.content) return null;
+          return (
             <div
               key={index}
               className={`flex flex-col mb-4 ${
@@ -285,8 +278,6 @@ function ChatBot({ rec, onClose }: ChatBotProps) {
                 <Chatbox item={item} />
               </div>
             </div>
-          ) : (
-            <></>
           );
         })}
         {/* {conversationItems.map((item, index) => (

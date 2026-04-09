@@ -7,7 +7,7 @@ import { JoinClassroom } from "./joinClassroom.tsx";
 
 const TeachersClassroom = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo._id);
+  const { data: myClasses } = useFindMyClassesTeacherQuery(userInfo?._id, { skip: !userInfo?._id });
 
   return (
     <>

@@ -6,7 +6,7 @@ const Index =()=>{
         <div className="py-10 px-7">
             <div className='text-xl font-medium mb-10'>Super Admin Settings</div>
             <div role="tablist" className="tabs tabs-lifted w-full min-w-full">
-            <input type="radio" name="my_tabs_2" role="tab" className="tab text-md" aria-label="Learning objectives" checked />
+            <input type="radio" name="my_tabs_2" role="tab" className="tab text-md" aria-label="Learning objectives" defaultChecked />
                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                 <AddLearningOutcomes/>
                 </div>

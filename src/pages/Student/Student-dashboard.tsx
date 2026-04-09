@@ -22,13 +22,11 @@ import { columns } from "../../components/table/columns";
 export function StudentDash() {
   const userInfo = useSelector((state) => state.user.userInfo);
   const [classId, setClassId] = useState("");
-  const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
+  const { data: myClasses } = useFindMyClassesQuery(userInfo?._id, { skip: !userInfo?._id });
   const { data: quizResult, isLoading: quizResultLoading } =
-    useGetQuizResultByUserIdQuery(userInfo._id);
+    useGetQuizResultByUserIdQuery(userInfo?._id, { skip: !userInfo?._id });
 
-  console.log("my data", quizResult);
 
-  console.log({ myClasses });
 
   let clas;
   if (classId) {

@@ -16,17 +16,19 @@ import {
   apiSlice,
   useGetAllNotificationsByUserIdQuery,
   useMarkNotificationAsReadMutation,
+  useLogoutMutation,
 } from "../../features/api/apiSlice";
+import { setUserInfo } from "../../features/user/userSlice";
 import { ModeToggle } from "./mode-toggle";
 import { getInitialsFromFullName } from "@/lib/utils";
 
 const Header = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state: any) => state.user.userInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [logoutApi] = useLogoutMutation();
   const { data } = useGetAllNotificationsByUserIdQuery(userInfo?._id);
   const [markAsRead] = useMarkNotificationAsReadMutation();
-  console.log({ data });
 
   const unreadNotifications = data?.filter((val) => val.status == "unread");
 
@@ -67,7 +69,7 @@ const Header = () => {
                   className="items-center gap-2 grid grid-flow-col justify-start text-left hover:bg-border w-full mb-2 py-1 pr-2 rounded"
                   onClick={() => {
                     markAsRead({
-                      userId: userInfo._id,
+                      userId: userInfo?._id,
                       notificationId: val.id,
                     });
                     navigate(`/student/classrooms/${val?.classId}`);
@@ -106,15 +108,16 @@ const Header = () => {
             {userInfo?.fullName}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>{userInfo.email}</DropdownMenuItem>
+          <DropdownMenuItem>{userInfo?.email}</DropdownMenuItem>
           {/* <DropdownMenuItem>Profile</DropdownMenuItem> */}
           {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => {
+            onClick={async () => {
+              await logoutApi().catch(() => {});
               localStorage.removeItem("Token");
+              dispatch(setUserInfo(null));
               dispatch(apiSlice.util.resetApiState());
-              // window.location.href = "/";
               navigate("/");
             }}
           >

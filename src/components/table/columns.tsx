@@ -1,4 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { Link } from "react-router-dom";
 import {
   ArrowUpDown,
   MoreHorizontal,
@@ -247,7 +248,6 @@ export const columns: ColumnDef<Results>[] = [
   //     <Button
   //       variant="outline"
   //       onClick={() => {
-  //         console.log(row.original);
   //       }}
   //     >
   //       View Score
@@ -499,7 +499,12 @@ export const childColumns: ColumnDef<Child>[] = [
   {
     header: "Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.original.user.fullName}</div>
+      <Link
+        to={`/parent/result/${row.original.user._id}`}
+        className="capitalize font-medium text-blue-600 hover:underline"
+      >
+        {row.original.user.fullName}
+      </Link>
     ),
   },
   {
@@ -540,7 +545,6 @@ export const childColumns: ColumnDef<Child>[] = [
             id: _id,
             numberOfLearningObjectives: numberOfLearningObjectives,
           }).unwrap();
-          console.log(res);
           if (res.status === true) {
             alert("pass score updated successfully");
           }
@@ -556,7 +560,6 @@ export const childColumns: ColumnDef<Child>[] = [
             id: _id,
             passScore: passScore,
           }).unwrap();
-          console.log(res);
           if (res.status === true) {
             alert("pass score updated successfully");
           }
@@ -582,30 +585,28 @@ export const childColumns: ColumnDef<Child>[] = [
                   Update minimum score
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Update child minimum score</DialogTitle>
-                  <DialogDescription>
-                    <div className="mt-4">
-                      <Label>Minimum score</Label>
-                      <Input
-                        value={passScore}
-                        disabled={sisloading}
-                        onChange={(e) => setPassScore(e.target.value)}
-                        type="text"
-                        className="w-full"
-                        placeholder="Enter license code"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleUpdate}
-                      disabled={sisloading}
-                      className="mx-auto block mt-4"
-                    >
-                      Submit
-                    </Button>
-                  </DialogDescription>
                 </DialogHeader>
+                <div className="mt-4">
+                  <Label>Minimum score</Label>
+                  <Input
+                    value={passScore}
+                    disabled={sisloading}
+                    onChange={(e) => setPassScore(e.target.value)}
+                    type="text"
+                    className="w-full"
+                    placeholder="Enter license code"
+                  />
+                </div>
+                <Button
+                  onClick={handleUpdate}
+                  disabled={sisloading}
+                  className="mx-auto block mt-4"
+                >
+                  Submit
+                </Button>
               </DialogContent>
             </Dialog>
             <DropdownMenuSeparator />
@@ -615,32 +616,30 @@ export const childColumns: ColumnDef<Child>[] = [
                   Update number of objectives
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Update Number of learning objective</DialogTitle>
-                  <DialogDescription>
-                    <div className="mt-4">
-                      <Label>Number</Label>
-                      <Input
-                        value={numberOfLearningObjectives}
-                        disabled={sisloading}
-                        onChange={(e) =>
-                          setNumberOfLearningObjectives(e.target.value)
-                        }
-                        type="text"
-                        className="w-full"
-                        placeholder="Enter a number"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleUpdateNumberOfLearningObjective}
-                      disabled={sisloading2}
-                      className="mx-auto block mt-4"
-                    >
-                      Submit
-                    </Button>
-                  </DialogDescription>
                 </DialogHeader>
+                <div className="mt-4">
+                  <Label>Number</Label>
+                  <Input
+                    value={numberOfLearningObjectives}
+                    disabled={sisloading}
+                    onChange={(e) =>
+                      setNumberOfLearningObjectives(e.target.value)
+                    }
+                    type="text"
+                    className="w-full"
+                    placeholder="Enter a number"
+                  />
+                </div>
+                <Button
+                  onClick={handleUpdateNumberOfLearningObjective}
+                  disabled={sisloading2}
+                  className="mx-auto block mt-4"
+                >
+                  Submit
+                </Button>
               </DialogContent>
             </Dialog>
           </DropdownMenuContent>
@@ -692,7 +691,6 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
             toast.error("Year group creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -700,7 +698,6 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
           toast.error("Year group creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (
@@ -722,7 +719,7 @@ export const yearGroupColumns: ColumnDef<YearGroup>[] = [
                   <Pencil className="size-4" /> Edit year group
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit year group</DialogTitle>
                   <DialogDescription>
@@ -841,7 +838,6 @@ export const ArmColumns: ColumnDef<Arm>[] = [
             toast.error("Arm creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -849,7 +845,6 @@ export const ArmColumns: ColumnDef<Arm>[] = [
           toast.error("Arm creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (
@@ -871,7 +866,7 @@ export const ArmColumns: ColumnDef<Arm>[] = [
                   <Pencil className="size-4" /> Edit arm
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit arm</DialogTitle>
                   <DialogDescription>
@@ -991,7 +986,6 @@ export const subjectColumns: ColumnDef<Subject>[] = [
             toast.error("Arm creation failed", {
               description: response?.error?.data?.message,
             });
-            console.log({ backendError: response.error });
           } else {
             toast(response.data.message);
           }
@@ -999,7 +993,6 @@ export const subjectColumns: ColumnDef<Subject>[] = [
           toast.error("Arm creation failed", {
             description: "Something went wrong",
           });
-          console.log("error", error);
         }
       }
       return (
@@ -1021,7 +1014,7 @@ export const subjectColumns: ColumnDef<Subject>[] = [
                   <Pencil className="size-4" /> Edit subject
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>Edit arm</DialogTitle>
                   <DialogDescription>

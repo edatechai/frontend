@@ -2,14 +2,12 @@ import { latexToHTML } from "@/lib/utils";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../ui/card";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -26,10 +24,10 @@ const QuizReport = ({ quizResults }: { quizResults: any }) => {
       <SheetTrigger className="whitespace-nowrap rounded bg-white p-2 border">
         View Report
       </SheetTrigger>
-      <SheetContent className="sm:w-[540px] overflow-auto">
+      <SheetContent className="sm:w-[540px] overflow-auto" aria-describedby={undefined}>
         <SheetHeader className="overflow-y-scroll text-left">
           <SheetTitle>Quiz Report</SheetTitle>
-          <SheetDescription>
+          <div className="overflow-y-auto">
             {quizResults?.map((val: any, index: number) => (
               <Card className="mb-3" key={index}>
                 <CardHeader>
@@ -72,7 +70,7 @@ const QuizReport = ({ quizResults }: { quizResults: any }) => {
                 </CardContent>
               </Card>
             ))}
-          </SheetDescription>
+          </div>
         </SheetHeader>
       </SheetContent>
     </Sheet>

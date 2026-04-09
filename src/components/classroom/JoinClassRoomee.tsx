@@ -18,39 +18,33 @@ const Index = () => {
   const { data: classes } = useGetAllClassRoomByAccountIdQuery(
     userInfo?.accountId
   );
-  const { data: myClasses } = useFindMyClassesQuery(userInfo._id);
+  const { data: myClasses } = useFindMyClassesQuery(userInfo?._id, { skip: !userInfo?._id });
   const {
     data: quizResult,
     isLoading: quizResultLoading,
     isSuccess: quizResultSuccess,
     isError: quizResultError,
-  } = useGetQuizResultByUserIdQuery(userInfo._id);
+  } = useGetQuizResultByUserIdQuery(userInfo?._id, { skip: !userInfo?._id });
 
-  console.log("all here", quizResult);
 
   const [joinClass, { isLoading }] = useJoinClassMutation();
   const dialogRef = useRef(null);
   const [classesData, setClassesData] = useState([]);
 
-  console.log("my classes", myClasses);
 
   const [classRoom, setClassRoom] = useState();
 
   const handleSubmit = async () => {
-    console.log("this is data", classRoom);
     // filter classes where clesses id is classRoom
     const filteredClasses = classes?.filter((item) => item._id === classRoom);
-    console.log("filtered classes", filteredClasses[0]);
     const payload = {
       classId: filteredClasses[0]._id,
       ...userInfo,
     };
-    console.log(payload);
 
     try {
       const response = await joinClass(payload);
       response;
-      console.log(response);
       if (response.data.status === false) {
         dialogRef.current.close();
         return alert(response.data.message);

@@ -16,7 +16,6 @@ const Index = () => {
  
   const dialogRef = useRef(null);
 
-  console.log("all class rooms", classRooms);
 
   const [classRoomName, setClassRoomName] = useState();
   const [subject, setSubject] = useState();
@@ -29,7 +28,6 @@ const Index = () => {
     };
     try {
       const response = await createClassRoom(payload).unwrap();
-      console.log(response);
       if (response.status) {
         dialogRef.current.close();
         return alert(response.message);
@@ -37,7 +35,6 @@ const Index = () => {
       alert(response.message);
       dialogRef.current.close();
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -50,12 +47,10 @@ const Index = () => {
     ) {
       try {
         const response = await deleteClassRoom(id).unwrap();
-        console.log(response);
         if (response.status) {
           alert(response.message);
         }
       } catch (error) {
-        console.log(error);
       }
     }
   };

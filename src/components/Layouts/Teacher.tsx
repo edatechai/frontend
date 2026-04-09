@@ -18,11 +18,11 @@ import { apiSlice, useGetAccountByIdQuery } from "@/features/api/apiSlice";
 import { useState } from "react";
 
 export function TeachersLayout() {
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const userInfo = useSelector((state: any) => state.user.userInfo);
   const [openNav, setOpenNav] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data } = useGetAccountByIdQuery(userInfo.accountId);
+  const { data } = useGetAccountByIdQuery(userInfo?.accountId, { skip: !userInfo?.accountId });
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">

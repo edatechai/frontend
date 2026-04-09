@@ -10,7 +10,6 @@ function KaTeX({
   className: string;
 }) {
   const containerRef = useRef<HTMLInputElement>(null);
-  console.log({ texExpression });
 
   useEffect(() => {
     katex.render(texExpression, containerRef.current as HTMLInputElement);

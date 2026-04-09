@@ -1,8 +1,6 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   useGetAllChildrenQuery,
-  useUpdatePassScoreMutation,
-  useUpdateNumberOfLearningObjectiveMutation,
   useAddSubjectPriorityMutation,
   useFindMyClassesQuery,
 } from "../../features/api/apiSlice";
@@ -12,24 +10,23 @@ import { DataTable } from "../table/data-table";
 import { childColumns } from "../table/columns";
 import { Button } from "../ui/button";
 
+const getDialog = (id: string) =>
+  document.getElementById(id) as HTMLDialogElement | null;
+
 const ParentDashboard = () => {
-  const userInfo = useSelector((state) => state.user.userInfo);
-  const dialogRef = useRef();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
   const [childlicense, setChildlicense] = useState("");
   const [currentData, setCurrentData] = useState("");
 
-  const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray);
+  const { data, isLoading } = useGetAllChildrenQuery(userInfo?.childrenArray, { skip: !userInfo?.childrenArray });
   const [addChild, { isLoading: isAdding }] = useAddChildMutation();
   const [removeChild, { isLoading: isRemoving }] = useRemoveChildMutation();
   const [addSubjectPriority, { isLoading: isAdding2 }] =
     useAddSubjectPriorityMutation();
-  const { data: classes } = useFindMyClassesQuery(currentData);
-  console.log("this is my data", classes);
+  const { data: classes } = useFindMyClassesQuery(currentData, { skip: !currentData });
   const [subject_id, setSubject_id] = useState("");
   const [subject_important_ranking, setSubject_important_ranking] =
     useState("");
-
-  console.log({ classes });
 
   const handleSubmit = async () => {
     const payload = {
@@ -37,16 +34,14 @@ const ParentDashboard = () => {
       childlicense,
     };
     const res = await addChild(payload).unwrap();
-    console.log(res);
     if (res.error) {
       alert(res.error.data.message);
-      return dialogRef.current.close();
+      return getDialog("my_modal_3")?.close();
     }
     alert("child added successfully");
     setChildlicense("");
-    // reload the page
     window.location.reload();
-    dialogRef.current.close();
+    getDialog("my_modal_3")?.close();
   };
 
   const handleRemoveChild = async () => {
@@ -57,12 +52,11 @@ const ParentDashboard = () => {
     const res = await removeChild(payload).unwrap();
     if (res.error) {
       alert(res.error.data.message);
-      return dialogRef.current.close();
+      return getDialog("my_modal_7")?.close();
     }
     alert("child unlinked successfully");
     setChildlicense("");
-    dialogRef.current.close();
-    // reload the page
+    getDialog("my_modal_7")?.close();
     window.location.reload();
   };
 
@@ -76,27 +70,25 @@ const ParentDashboard = () => {
       const res = await addSubjectPriority(payload).unwrap();
       if (res.status === true) {
         alert("subject priority added successfully");
-        return dialogRef.current.close();
+        return getDialog("my_modal_6")?.close();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding subject priority:", error);
-      console.log("herre", error.data);
       if (error.status) {
         alert(error.data.message);
-        return dialogRef.current.close();
+        return getDialog("my_modal_6")?.close();
       }
       alert(error);
-      return dialogRef.current.close();
+      return getDialog("my_modal_6")?.close();
     }
   };
 
   return (
     <div className="min-w-screen lg:max-w-[100%] px-8 py-5 overflow-hidden">
 
-      <dialog id="my_modal_3" className="modal" ref={dialogRef}>
+      <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -129,10 +121,9 @@ const ParentDashboard = () => {
         </div>
       </dialog>
 
-      <dialog id="my_modal_6" className="modal" ref={dialogRef}>
+      <dialog id="my_modal_6" className="modal">
         <div className="modal-box">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -143,13 +134,14 @@ const ParentDashboard = () => {
             <div className="font-medium py-2">Select Student</div>
             <select
               disabled={isLoading}
+              defaultValue=""
               onChange={(e) => setCurrentData(e.target.value)}
               className="select select-bordered w-full"
             >
-              <option disabled selected>
+              <option disabled value="">
                 Select Student
               </option>
-              {data?.map((i, index) => (
+              {data?.map((i: any, index: number) => (
                 <option value={i?.user._id} key={index}>
                   {i?.user.fullName}
                 </option>
@@ -163,13 +155,14 @@ const ParentDashboard = () => {
                 <div className="font-medium py-2">Select Subject</div>
                 <select
                   disabled={isLoading}
+                  defaultValue=""
                   onChange={(e) => setSubject_id(e.target.value)}
                   className="select select-bordered w-full"
                 >
-                  <option disabled selected>
+                  <option disabled value="">
                     Select Subject
                   </option>
-                  {classes?.classes?.map((i, index) => (
+                  {classes?.classes?.map((i: any, index: number) => (
                     <option value={i?._id} key={index}>
                       {i?.subject}
                     </option>
@@ -186,10 +179,11 @@ const ParentDashboard = () => {
                   </span>
                 </div>
                 <select
+                  defaultValue=""
                   onChange={(e) => setSubject_important_ranking(e.target.value)}
                   className="select select-bordered w-full"
                 >
-                  <option disabled selected>
+                  <option disabled value="">
                     Select subject ranking
                   </option>
                   <option value="1">1</option>
@@ -214,10 +208,9 @@ const ParentDashboard = () => {
         </div>
       </dialog>
 
-      <dialog id="my_modal_7" className="modal" ref={dialogRef}>
+      <dialog id="my_modal_7" className="modal">
         <div className="modal-box">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -257,17 +250,17 @@ const ParentDashboard = () => {
       </div>
       <div className="flex flex-row justify-end mb-5 gap-4">
         <Button
-          onClick={() => document.getElementById("my_modal_6").showModal()}
+          onClick={() => getDialog("my_modal_6")?.showModal()}
         >
           Add Subject priority
         </Button>
         <Button
-          onClick={() => document.getElementById("my_modal_3").showModal()}
+          onClick={() => getDialog("my_modal_3")?.showModal()}
         >
           Link a child
         </Button>
         <Button
-          onClick={() => document.getElementById("my_modal_7").showModal()}
+          onClick={() => getDialog("my_modal_7")?.showModal()}
         >
           Unlink a child
         </Button>
@@ -278,6 +271,8 @@ const ParentDashboard = () => {
           columns={childColumns}
           data={data || []}
           isLoading={isLoading}
+          isError={false}
+          error={null}
         />
       </div>
     </div>

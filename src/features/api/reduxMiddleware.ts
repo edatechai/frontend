@@ -1,19 +1,7 @@
 import { createListenerMiddleware } from "@reduxjs/toolkit";
-import { isRejectedWithValue } from "@reduxjs/toolkit";
 
+// 401 redirects are now handled in basequery.ts via the re-auth / token-refresh flow.
+// This middleware is kept as a placeholder for other global action listeners.
 const unauthorizedMiddleware = createListenerMiddleware();
-
-unauthorizedMiddleware.startListening({
-  matcher: isRejectedWithValue,
-  effect: async (action, listenerApi) => {
-    console.log({ action, listenerApi });
-    if (
-      (action?.payload?.status === 401 || action?.payload?.status === 400) &&
-      window.location.pathname != "/"
-    ) {
-      window.location.href = "/";
-    }
-  },
-});
 
 export default unauthorizedMiddleware;

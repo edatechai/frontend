@@ -46,7 +46,6 @@ export const LoginForm = () => {
         window.location.reload();
       }
     } catch (error) {
-      console.log("error", error);
     }
   }
 

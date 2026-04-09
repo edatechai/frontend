@@ -48,7 +48,6 @@ const Index = () => {
     };
     try {
       const response = await createQuestion(payload).unwrap();
-      console.log(response);
       if (response.status) {
         dialogRef.current.close();
         return alert(response.message);
@@ -56,7 +55,6 @@ const Index = () => {
       alert(response.message);
       dialogRef.current.close();
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -68,12 +66,10 @@ const Index = () => {
     ) {
       try {
         const response = await deleteQuestion(id).unwrap();
-        console.log(response);
         if (response.status) {
           alert(response.message);
         }
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -116,10 +112,11 @@ const Index = () => {
               </div>
               <select
                 disabled={isLoading}
+                defaultValue=""
                 onChange={(e) => setObjCode(e.target.value)}
                 className="select select-bordered w-full min-w-full"
               >
-                <option disabled selected>
+                <option disabled value="">
                   Select an objective code
                 </option>
                 {allObjectives?.map((obj, index) => (

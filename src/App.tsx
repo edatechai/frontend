@@ -46,12 +46,15 @@ import StudentQuizzes from "./pages/Parent/StudentQiuzzes";
 
 const App = () => {
   const navigate = useNavigate();
+  const hasToken = !!localStorage.getItem("Token");
   const { data: user, isLoading } = useCurrentUserQuery(undefined, {
-    extraOptions: { navigate }, // Pass navigate here
+    extraOptions: { navigate },
+    skip: !hasToken,
   });
 
   const dispatch = useDispatch();
-  // const [userRole, setUserRole] = useState();
+  const userInfo = useSelector((state: any) => state.user.userInfo);
+
   useEffect(() => {
     if (user) {
       dispatch(setUserInfo(user));
@@ -60,7 +63,9 @@ const App = () => {
     }
   }, [user]);
 
-  if (isLoading) {
+  // Show loading while query is in flight OR while Redux hasn't been updated yet
+  // (there is a one-render gap between the query resolving and the useEffect firing)
+  if (isLoading || (!!user && !userInfo)) {
     return <div>Loading...</div>;
   } else {
     return (

@@ -72,7 +72,6 @@ export const FormContext = ({ children }: { children: ReactNode }) => {
   function handleNext(value: string = prevStep) {
     setStep(value);
   }
-  console.log({ data });
 
   return (
     <formState.Provider

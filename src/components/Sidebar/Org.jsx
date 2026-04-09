@@ -1,4 +1,8 @@
 // import React, { useState } from 'react';
+import { useLogoutMutation, apiSlice } from '../features/api/apiSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { setUserInfo } from '../features/user/userSlice';
 // import SidebarButton from '../cta/sidebarButton';
 // import { MdOutlineDashboard, MdOutlineSettings } from "react-icons/md";
 // import { FiUsers } from "react-icons/fi";
@@ -17,11 +21,9 @@
 
 // const Sidebar = () => {
 //   const userInfo = useSelector((state) => state.user.userInfo);
-//   console.log("userr info", userInfo)
 //   const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
   
 
-//   console.log("my ddata", data)
 
 
   
@@ -87,13 +89,17 @@ import { useGetAccountByIdQuery } from '../../features/api/apiSlice';
 
 const Sidebar = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
-  console.log("userr info", userInfo);
   const { data, error, isLoading } = useGetAccountByIdQuery(userInfo.accountId);
-  console.log("my data", data);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [logoutApi] = useLogoutMutation();
   const logout = async () => {
+    await logoutApi().catch(() => {});
     localStorage.removeItem('Token');
-    window.location.href = '/';
+    dispatch(setUserInfo(null));
+    dispatch(apiSlice.util.resetApiState());
+    navigate('/');
   };
 
   return (

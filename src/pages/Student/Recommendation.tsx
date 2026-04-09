@@ -32,7 +32,7 @@ type Objective = {
 
 const Recommedation = () => {
   const userInfo = useSelector((state: RootState) => state.user.userInfo);
-  const { data } = useRecommendObjectivesQuery();
+  const { data, isLoading: isLoadingRecs } = useRecommendObjectivesQuery();
   const [showChatBot, setShowChatBot] = useState(false);
   const [getRec, { isLoading, data: recData }] =
     useStudentRecommendationMutation();
@@ -52,7 +52,6 @@ const Recommedation = () => {
   const stepsPerPage = 1;
   const questionsPerPage = 1;
 
-  console.log({ recQuery: data, recData });
 
   useEffect(() => {
     if (recData?.objectives?.length === 0) {
@@ -79,7 +78,6 @@ const Recommedation = () => {
     }
   }, [data]);
 
-  console.log(" this is recData", data);
 
   const getRecommendation = async () => {
     const payload = {
@@ -87,12 +85,9 @@ const Recommedation = () => {
       objcode: preview?.objcode,
     };
 
-    console.log("thiss is payload", payload);
     try {
       const res = await getRec(payload);
-      console.log("res here", res);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -133,22 +128,15 @@ const Recommedation = () => {
   const evaluateQuiz = () => {
     const correctAnswers = recData.questions.reduce((acc, question, index) => {
       const isCorrect = selectedOptions[index] === question.answer;
-      console.log(
-        `Question ${index + 1}: ${isCorrect ? "Correct" : "Incorrect"}`
-      );
-      console.log(`Selected Option: ${selectedOptions[index]}`);
       return isCorrect ? acc + 1 : acc;
     }, 0);
 
-    console.log(`Total correct answers: ${correctAnswers}`);
 
     if (correctAnswers === recData.questions.length) {
       setQuizPassedCount((prevCount) => prevCount + 1);
       setQuizPassed(true);
-      console.log("Quiz passed");
     } else {
       setQuizPassed(false);
-      console.log("Quiz failed");
     }
 
     setQuizAttempted(true);
@@ -156,10 +144,8 @@ const Recommedation = () => {
     if (quizPassedCount + 1 >= 2) {
       // setShowChatBot(false);
       setCurrentStepPage(5);
-      console.log("Moving to step 5");
     } else {
       //setShowChatBot(true);
-      console.log("Opening chat with Eddey");
     }
   };
 
@@ -204,7 +190,14 @@ const Recommedation = () => {
       )}
 
       <div className="flex justify-center">
-        {!showSteps &&
+        {isLoadingRecs && (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-500">
+            <div className="w-10 h-10 border-4 border-t-transparent border-blue-500 rounded-full animate-spin" />
+            <span>Loading recommendations...</span>
+          </div>
+        )}
+
+        {!isLoadingRecs && !showSteps &&
           !showCon &&
           data?.recommendLearningObjectivesData?.length && (
             <div className="space-y-4">
@@ -263,7 +256,7 @@ const Recommedation = () => {
             </div>
           )}
 
-        {data && !data?.recommendLearningObjectivesData?.length && (
+        {!isLoadingRecs && data && !data?.recommendLearningObjectivesData?.length && (
           <p>No recommendations</p>
         )}
 
@@ -322,7 +315,7 @@ const Recommedation = () => {
 
         {!(quizAttempted && !quizPassed) && (
           <Dialog open={showSteps} onOpenChange={handleDialogClose}>
-            <DialogContent className="max-w-[95vw] md:max-w-[70vw]">
+            <DialogContent className="max-w-[95vw] md:max-w-[70vw]" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>
                   <p className="capitalize">
@@ -330,7 +323,7 @@ const Recommedation = () => {
                   </p>
                 </DialogTitle>
 
-                <DialogDescription className="flex flex-col md:flex-row gap-5 overflow-auto max-h-[70vh]">
+                <div className="flex flex-col md:flex-row gap-5 overflow-auto max-h-[70vh]">
                   {currentStepPage === 4 ? (
                     <div className="bg-white p-6 rounded-lg">
                       <p className="text-lg font-medium mb-4">
@@ -357,7 +350,7 @@ const Recommedation = () => {
                                   : currentStepPage + stepsPerPage
                               )
                               .map((step, index) => (
-                                <div className="mt-10 text-slate-800 first-letter:capitalize">
+                                <div key={index} className="mt-10 text-slate-800 first-letter:capitalize">
                                   {
                                     <TextWithLineBreaksRec
                                       texts={step.instruction}
@@ -424,7 +417,12 @@ const Recommedation = () => {
 
                   {currentStepPage <= 4 && (
                     <div className="border border-foreground/20 rounded p-4 grow flex flex-col justify-between min-w-[22vw]">
-                      <div className="my-auto">
+                      {currentStepPage < 4 && (
+                        <p className="text-xs text-muted-foreground mb-3 text-center">
+                          Complete the steps on the left to unlock these questions.
+                        </p>
+                      )}
+                      <div className={`my-auto ${currentStepPage < 4 ? "opacity-50 pointer-events-none" : ""}`}>
                         {recData?.questions
                           .slice(
                             currentQuestionPage,
@@ -444,6 +442,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="A"
                                     checked={
                                       selectedOptions[
@@ -471,6 +470,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="B"
                                     checked={
                                       selectedOptions[
@@ -498,6 +498,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="C"
                                     checked={
                                       selectedOptions[
@@ -525,6 +526,7 @@ const Recommedation = () => {
                                   <input
                                     type="radio"
                                     className="form-radio h-5 w-5 flex-none"
+                                    disabled={currentStepPage !== 4}
                                     value="D"
                                     checked={
                                       selectedOptions[
@@ -582,7 +584,7 @@ const Recommedation = () => {
                       )}
                     </div>
                   )}
-                </DialogDescription>
+                </div>
               </DialogHeader>
               <div className="bg-[#EBF0FC] px-4 py-3 md:py-1 rounded flex flex-col md:flex-row justify-between items-center gap-3">
                 <p>

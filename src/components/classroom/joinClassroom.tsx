@@ -69,7 +69,6 @@ export const JoinClassroom = ({ userInfo }) => {
     };
     try {
       const response = await createClassroom(payload).unwrap();
-      console.log(response);
       if (response.status) {
         toast(response.message);
         setShowCreateClassroomDialog(false);
@@ -79,7 +78,6 @@ export const JoinClassroom = ({ userInfo }) => {
         });
       }
     } catch (error) {
-      console.log(error);
       toast.error("Classroom creation failed", {
         description: "Something went wrong",
       });
@@ -88,7 +86,6 @@ export const JoinClassroom = ({ userInfo }) => {
 
   const handleSubmit = async () => {
     const filteredClasses = classes?.filter((item) => item._id === classRoom);
-    console.log("filtered classes", filteredClasses[0]);
     const payload = {
       classId: filteredClasses[0]._id,
       ...userInfo,
@@ -96,7 +93,6 @@ export const JoinClassroom = ({ userInfo }) => {
     try {
       const response = await joinClass(payload);
       response;
-      console.log(response);
       if (response?.data?.status === false) {
         toast.error("Unable to join classroom", {
           description: response.data.message,

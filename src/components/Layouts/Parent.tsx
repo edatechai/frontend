@@ -11,15 +11,6 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Header from "../others/Header";
 import {
@@ -45,6 +36,11 @@ export function ParentsLayout() {
   };
 
   const [wardId, setWardId] = useState<string | null>(getChildIdFromPath(pathname));
+
+  useEffect(() => {
+    const childId = getChildIdFromPath(pathname);
+    if (childId) setWardId(childId);
+  }, [pathname]);
 
   useEffect(() => {
     if (children?.length == 1) {
@@ -150,24 +146,7 @@ export function ParentsLayout() {
             </nav>
           </div>
           <div className="mt-auto py-7 text-sm px-5 lg:px-7">
-            {children?.length > 1 && (
-              <Select onValueChange={(e) => setWardId(e)}>
-                <SelectTrigger className="bg-primary text-primary-foreground mb-5">
-                  <SelectValue placeholder="Select child" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Children</SelectLabel>
-                    {children?.map(({ user }: { user: any }) => (
-                      <SelectItem value={user?._id} key={user?._id}>
-                        {user?.fullName}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-            <span className="flex gap-2 text-xs items-center">
+<span className="flex gap-2 text-xs items-center">
               <img alt="" src="/edat_logo.png" className="w-12" />
               <p>All Rights Reserved ©2024</p>
             </span>

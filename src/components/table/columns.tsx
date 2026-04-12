@@ -1,4 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { Link } from "react-router-dom";
 import {
   ArrowUpDown,
   MoreHorizontal,
@@ -498,7 +499,12 @@ export const childColumns: ColumnDef<Child>[] = [
   {
     header: "Name",
     cell: ({ row }) => (
-      <div className="capitalize">{row.original.user.fullName}</div>
+      <Link
+        to={`/parent/result/${row.original.user._id}`}
+        className="capitalize font-medium text-blue-600 hover:underline"
+      >
+        {row.original.user.fullName}
+      </Link>
     ),
   },
   {

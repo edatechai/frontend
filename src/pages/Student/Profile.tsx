@@ -1,7 +1,3 @@
-import {
-  EditPasswordForm,
-  EditProfileForm,
-} from "@/components/Profile/editProfile";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getInitialsFromFullName } from "@/lib/utils";
@@ -51,7 +47,7 @@ const Index = () => {
         newPassword: password,
         oldPassword: currentPassword,
       };
-      const res = await updatePassword(payload).unwrap();
+      await updatePassword(payload).unwrap();
       setIsLoading(false);
       toast.success("Password updated successfully");
       setPassword("");
@@ -70,12 +66,9 @@ const Index = () => {
     }
     try {
       setIsBioLoading(true);
-      const res = await updateBio({ id: userInfo?._id, bio }).unwrap();
+      await updateBio({ id: userInfo?._id, bio }).unwrap();
       toast.success("Bio updated successfully");
       setIsBioLoading(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     } catch (error: any) {
       setIsBioLoading(false);
       toast.error(error?.data?.message || "Failed to update bio");

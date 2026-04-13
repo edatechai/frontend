@@ -3,130 +3,161 @@ import { TbCurrencyNaira } from 'react-icons/tb';
 //import Cardone from '../components/cards/cardone';
 import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation, useUpdateMonthlyRequestLimitMutation } from '../../features/api/apiSlice';
 import countryList from "react-select-country-list";
+const CopyButton = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="ml-1 px-1.5 py-0.5 text-xs rounded border border-gray-300 hover:bg-gray-100 text-gray-500"
+      title="Copy"
+    >
+      {copied ? '✓' : 'Copy'}
+    </button>
+  );
+};
+
 const LicenseModal = ({ isVisible, onClose, license }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [deleteLicense, {isLoading, isError, isSuccess}] = useDeleteLicenseMutation()
-  const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
+  const [deleteLicense, { isLoading }] = useDeleteLicenseMutation();
 
   if (!isVisible) return null;
 
   const recordsPerPage = 10;
-
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const currentRecords = license.license.slice(indexOfFirstRecord, indexOfLastRecord);
-
   const totalPages = Math.ceil(license.license.length / recordsPerPage);
 
-  const handleDeleteLicense = async(license, id)=>{
-    const payload = {
-      id: id,
-      licenseCode: license.licenseCode
-    }
-
+  const handleDeleteLicense = async (item, id) => {
+    if (!confirm("You are about to delete a license and the user associated with it. This action cannot be undone.")) return;
     try {
-      const response = await deleteLicense(payload)
-      // pop a modal to confirm the deletion, telling the user this action cannot be undone
-      if(confirm("You are about to delete a license and the user associated with it, this action cannot be undone")){
-        if(response.error) {
-          alert(response.error.data.message);
-          onClose();
-        } else {
-          alert("License deleted successfully");
-          onClose();
-        }
+      const response = await deleteLicense({ id, licenseCode: item.licenseCode });
+      if (response.error) {
+        alert(response.error.data.message);
+      } else {
+        alert("License deleted successfully");
+        onClose();
       }
-    } catch (error) {
-    }
-
-   
-
-  
-  }
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    } catch (error) {}
   };
 
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
+  const assigned = license.license.filter(l => l.fullName).length;
+  const unassigned = license.license.length - assigned;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%]">
-        <h2 className="text-xl font-bold mb-4">License Information</h2>
-        <p><strong>Name of Organization:</strong> {license.accountName}</p>
-        <p><strong>Email:</strong> {license.email}</p>
-        <p><strong>Category:</strong> {license.category}</p>
-        <p><strong>Number of Licenses:</strong> {license.license.length}</p>
-        <p><strong>Monthly Request Limit:</strong> {license.monthlyRequestLimit}</p>
-        <div className="overflow-x-auto mt-10">
-          <table className="table">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] flex flex-col">
+
+        {/* Header */}
+        <div className="flex items-start justify-between px-6 py-4 border-b">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{license.accountName}</h2>
+            <p className="text-sm text-gray-500 mt-0.5">{license.email} &middot; {license.category}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none mt-1">&times;</button>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 px-6 py-4 border-b bg-gray-50">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-gray-800">{license.license.length}</p>
+            <p className="text-xs text-gray-500 mt-0.5">Total Licenses</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-green-600">{assigned}</p>
+            <p className="text-xs text-gray-500 mt-0.5">Assigned</p>
+          </div>
+          <div className="text-center">
+            <p className="text-2xl font-bold text-orange-500">{unassigned}</p>
+            <p className="text-xs text-gray-500 mt-0.5">Unassigned</p>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-auto flex-1 px-6 py-4">
+          <table className="w-full text-sm">
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>License</th>
-                <th>Parent License</th>
-                <th>Role</th>
-                <th>Action</th>
-             
+              <tr className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">
+                <th className="pb-3 pr-4 w-36">Name</th>
+                <th className="pb-3 pr-4 w-44">Email</th>
+                <th className="pb-3 pr-4">License Key</th>
+                <th className="pb-3 pr-4">Parent License</th>
+                <th className="pb-3 pr-4 w-28">Role</th>
+                <th className="pb-3 w-20">Status</th>
+                <th className="pb-3 w-20 text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {currentRecords.map((item, index) => (
-                <tr key={index}>
-                  <td> 
-                    {
-                      item.fullName ? item.fullName : "Not Assigned"
-                    }
-                    </td>
-                  <td>
-                  {
-                      item.email ? item.email : "Not Assigned"
-                    }
-                    </td>
-                  <td>{item.licenseCode}</td>
-                  <td>{item.parentLicense}</td>
-                  <td> {
-                      item.role ? item.role : "Not Assigned"
-                    }</td>
-                  <td>
-                    <span className=' cursor-pointer' onClick={() => handleDeleteLicense(item, license._id)}>Delete License</span>
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="py-3 pr-4 font-medium text-gray-800">
+                    {item.fullName || <span className="text-gray-400 italic">Unassigned</span>}
                   </td>
-                  {/* <td> {
-                      item.licenseLimit === 1 ? "Active" : "In-Active"
-                    }</td> */}
+                  <td className="py-3 pr-4 text-gray-600 truncate max-w-[160px]">
+                    {item.email || <span className="text-gray-400 italic">—</span>}
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-1">
+                      <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono text-gray-700">{item.licenseCode}</code>
+                      <CopyButton text={item.licenseCode} />
+                    </div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    <div className="flex items-center gap-1">
+                      <code className="text-xs bg-blue-50 px-2 py-1 rounded font-mono text-blue-700">{item.parentLicense}</code>
+                      <CopyButton text={item.parentLicense} />
+                    </div>
+                  </td>
+                  <td className="py-3 pr-4">
+                    {item.role
+                      ? <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 capitalize">{item.role}</span>
+                      : <span className="text-gray-400 italic text-xs">—</span>
+                    }
+                  </td>
+                  <td className="py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.licenseLimit === 1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {item.licenseLimit === 1 ? 'Active' : 'Free'}
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <button
+                      disabled={isLoading}
+                      onClick={() => handleDeleteLicense(item, license._id)}
+                      className="text-xs text-red-500 hover:text-red-700 hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="flex justify-between mt-4">
+        {/* Pagination */}
+        <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50 rounded-b-xl">
           <button
-            onClick={handlePreviousPage}
+            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
-            className="btn btn-primary"
+            className="btn btn-sm btn-outline"
           >
-            Previous
+            ← Previous
           </button>
-          <span>Page {currentPage} of {totalPages}</span>
+          <span className="text-sm text-gray-600">Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong></span>
           <button
-            onClick={handleNextPage}
+            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="btn btn-primary"
+            className="btn btn-sm btn-outline"
           >
-            Next
+            Next →
           </button>
         </div>
-
-        <button onClick={onClose} className="mt-4 btn btn-primary">Close</button>
       </div>
     </div>
   );

@@ -48,8 +48,8 @@ export function toTitleCase(title: string) {
 //     katex.renderToString(match)
 //   );
 
-export const latexToHTML = (latexString: string) =>
-  latexString.replace(
+export const latexToHTML = (latexString: string | null | undefined): string =>
+  (latexString ?? '').replace(
     /\\frac{(\w+)}{(\w+)}|(\w+)\^(\w+)/g,
     (match, num1, num2, base, exponent) => {
       if (num1 && num2) {

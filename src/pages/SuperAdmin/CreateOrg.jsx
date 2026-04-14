@@ -44,7 +44,9 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
         alert("License deleted successfully");
         onClose();
       }
-    } catch (error) {}
+    } catch (error) {
+      alert(error?.data?.message || "An error occurred while deleting the license. Please try again.");
+    }
   };
 
   const assigned = license.license.filter(l => l.fullName).length;

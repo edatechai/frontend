@@ -327,8 +327,13 @@ export const apiSlice = createApi({
     }),
 
     getAllQuizByObjCode: builder.query({
-      query: ({ lo, country, objCode }) =>
-        `/api/quiz/getAllQuizByObjCode?country=${country}&lo=${lo}&objCode=${objCode}`,
+      query: ({ lo, country, objCode }) => {
+        const params = new URLSearchParams();
+        if (lo) params.set('lo', lo);
+        if (country) params.set('country', country);
+        if (objCode) params.set('objCode', objCode);
+        return `/api/quiz/getAllQuizByObjCode?${params.toString()}`;
+      },
       providesTags: ["Quiz"],
     }),
 

@@ -34,10 +34,12 @@ const redirectToLogin = (extraOptions: ExtraOptions) => {
 const PUBLIC_PATHS = [
   '/api/users/login',
   '/api/users/register',
+  '/api/users/createUser',
   '/api/users/refresh-token',
   '/api/users/logout',
   '/api/users/forgot-password',
   '/api/users/reset-password',
+  '/api/users/verify-email',
   '/api/users/getCurrentUser',
 ];
 

@@ -4,7 +4,6 @@ import { Link, useLocation } from "react-router-dom";
 import {
   useFindAllObjectivesQuery,
   useCreateQuizMutation,
-  useLazyGetAllQuizByObjCodeQuery,
 } from "../../features/api/apiSlice";
 import {
   Dialog,
@@ -56,13 +55,11 @@ const TeacherRoom = () => {
 
   const [createQuiz] = useCreateQuizMutation();
   const [isLoadingQuiz, setIsLoadingQuiz] = useState(false);
-  // const { data: AllQuiz } = useFindAllQuizQuery();
-  // const { data: AllQuiz } = useGetAllQuizByObjCodeQuery("NM_6");
   const [openExamTypeDialog, setOpenExamTypeDialog] = useState(false);
   const [openQuizDialog, setOpenQuizDialog] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(false);
   const [openEditQuizDialog, setOpenEditQuizDialog] = useState(false);
-  const [getAllQuiz, { data }] = useLazyGetAllQuizByObjCodeQuery();
+  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
   const [edittedIndexes, setEdittedIndexes] = useState<string[]>([]);
   const [numberOfQuestions, setNumberOfQuestions] = useState("");
   const [search, setSearch] = useState("");
@@ -141,7 +138,7 @@ const TeacherRoom = () => {
           // }
         })
         .filter((objs) => {
-          return objs.subject == state.data.subject;
+          return objs.subject == state?.data?.subject;
         });
 
       setFilteredObjectives(filtered);
@@ -178,18 +175,11 @@ const TeacherRoom = () => {
 
 
     const response = await createQuiz(payload);
-   
+
     if (response.data.status === true) {
-      const getAllQ = await getAllQuiz({
-        lo: selectedObjective?.objective,
-        country: userInfo?.country,
-        objCode: selectedObjective?.objCode,
-      });
-
+      setQuizQuestions(response.data.questions ?? []);
       setIsLoadingQuiz(false);
-
       toast(response.data.message);
-     
       setOpenQuizDialog(false);
       setOpenEditQuizDialog(true);
     } else {
@@ -463,7 +453,7 @@ const TeacherRoom = () => {
       <div className="flex justify-end w-full mt-5">
         <Link
           to="/teacher/class/create-report"
-          state={{ studentData: state.data.numberOfStudents }}
+          state={{ studentData: state?.data?.numberOfStudents }}
           className="rounded bg-primary text-primary-foreground px-2 py-1.5"
         >
           Create Report
@@ -490,10 +480,11 @@ const TeacherRoom = () => {
             </DialogDescription> */}
           </DialogHeader>
           <div className="overflow-y-auto">
-            {data?.map((question, index) => {
+            {quizQuestions.map((question, index) => {
               if (edittedIndexes?.indexOf(question._id) == -1) {
                 return (
                   <EditQuiz
+                    key={question._id}
                     index={index}
                     question={question}
                     setEdittedIndexes={setEdittedIndexes}
@@ -501,7 +492,7 @@ const TeacherRoom = () => {
                     userInfo={userInfo}
                   />
                 );
-              } else return <></>;
+              } else return null;
             })}
           </div>
         </DialogContent>

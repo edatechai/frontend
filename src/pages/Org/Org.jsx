@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { licenseColumns } from "../../components/table/columns";
 import { DataTable } from "../../components/table/data-table";
-import { useGetAccountByIdQuery, useGenerateUserGuideMutation } from "../../features/api/apiSlice";
+import { useGetAccountByIdQuery } from "../../features/api/apiSlice";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import ExcelJS from 'exceljs';
@@ -21,15 +21,29 @@ const Index = () => {
         console.error("Failed to copy: ", err);
       });
   };
-  const [generateUserGuide, { isLoading: isGenerating }] = useGenerateUserGuideMutation();
+  const [isDownloading, setIsDownloading] = React.useState(false);
 
-  const handleGenerateUserGuide = async () => {
-   const response = await generateUserGuide(data?._id);
-   if(response?.data?.success === true){
-    alert(response?.data?.message);
-   }else{
-    alert(response?.data?.message);
-   }
+  const handleDownloadUserGuide = async () => {
+    try {
+      setIsDownloading(true);
+      const token = localStorage.getItem('Token');
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/users/downloadUserGuide`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Failed to download user guide');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'EDATECH-User-Guide.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Could not download user guide. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const handleExportToPDF = () => {
@@ -108,15 +122,9 @@ const Index = () => {
       <div className="flex justify-between items-center mb-4">
         <div className="text-xl font-medium">License Keys</div>
         <div className="space-x-2">
-          {data?.userGuideUrl ? (
-            <button onClick={() => window.open(data.userGuideUrl, '_blank')} className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
-              Download User Guide
-            </button>
-          ) : (
-            <button onClick={handleGenerateUserGuide} className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm">
-             {isGenerating ? "Generating..." : "Generate User Guide"}
-            </button>
-          )}
+          <button onClick={handleDownloadUserGuide} disabled={isDownloading} className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md text-sm disabled:opacity-60">
+            {isDownloading ? "Downloading..." : "Download User Guide"}
+          </button>
           <button onClick={handleExportToPDF} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
             Export to PDF
           </button>

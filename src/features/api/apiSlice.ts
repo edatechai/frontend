@@ -124,7 +124,7 @@ export const apiSlice = createApi({
 
     addMoreLicenses: builder.mutation({
       query: (payload) => ({
-        url: `/api/account/addMoreLicenses/${payload.id}/${payload.numberOfLicense}`,
+        url: `/api/account/addMoreLicenses/${payload.id}`,
         method: "POST",
         body: payload,
       }),

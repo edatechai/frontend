@@ -3,6 +3,7 @@ import { TbCurrencyNaira } from 'react-icons/tb';
 //import Cardone from '../components/cards/cardone';
 import { useCreateAccountMutation, useGetAllAccountsQuery, useDeleteLicenseMutation, useDeleteAccountAndUsersMutation, useAddMoreLicensesMutation, useUpdateMonthlyRequestLimitMutation } from '../../features/api/apiSlice';
 import countryList from "react-select-country-list";
+import { toast } from 'sonner';
 const CopyButton = ({ text }) => {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
@@ -22,30 +23,34 @@ const CopyButton = ({ text }) => {
   );
 };
 
-const LicenseModal = ({ isVisible, onClose, license }) => {
+const LicenseModal = ({ isVisible, onClose, license, isFetching }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [deleteLicense, { isLoading }] = useDeleteLicenseMutation();
+  const [deletingCode, setDeletingCode] = useState(null);
+  const [deleteLicense] = useDeleteLicenseMutation();
 
   if (!isVisible) return null;
 
   const recordsPerPage = 10;
+  const sortedLicenses = [...license.license].reverse();
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = license.license.slice(indexOfFirstRecord, indexOfLastRecord);
-  const totalPages = Math.ceil(license.license.length / recordsPerPage);
+  const currentRecords = sortedLicenses.slice(indexOfFirstRecord, indexOfLastRecord);
+  const totalPages = Math.ceil(sortedLicenses.length / recordsPerPage);
 
   const handleDeleteLicense = async (item, id) => {
     if (!confirm("You are about to delete a license and the user associated with it. This action cannot be undone.")) return;
+    setDeletingCode(item.licenseCode);
     try {
       const response = await deleteLicense({ id, licenseCode: item.licenseCode });
       if (response.error) {
-        alert(response.error.data.message);
+        toast.error(response.error.data.message);
       } else {
-        alert("License deleted successfully");
-        onClose();
+        toast.success("License deleted successfully");
       }
     } catch (error) {
-      alert(error?.data?.message || "An error occurred while deleting the license. Please try again.");
+      toast.error(error?.data?.message || "An error occurred while deleting the license. Please try again.");
+    } finally {
+      setDeletingCode(null);
     }
   };
 
@@ -62,7 +67,15 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
             <h2 className="text-xl font-bold text-gray-900">{license.accountName}</h2>
             <p className="text-sm text-gray-500 mt-0.5">{license.email} &middot; {license.category}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none mt-1">&times;</button>
+          <div className="flex items-center gap-3 mt-1">
+            {isFetching && (
+              <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                <span className="inline-block w-3 h-3 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                Updating...
+              </span>
+            )}
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -111,10 +124,13 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
                     </div>
                   </td>
                   <td className="py-3 pr-4">
-                    <div className="flex items-center gap-1">
-                      <code className="text-xs bg-blue-50 px-2 py-1 rounded font-mono text-blue-700">{item.parentLicense}</code>
-                      <CopyButton text={item.parentLicense} />
-                    </div>
+                    {item.parentLicense
+                      ? <div className="flex items-center gap-1">
+                          <code className="text-xs bg-blue-50 px-2 py-1 rounded font-mono text-blue-700">{item.parentLicense}</code>
+                          <CopyButton text={item.parentLicense} />
+                        </div>
+                      : <span className="text-gray-400 italic">—</span>
+                    }
                   </td>
                   <td className="py-3 pr-4">
                     {item.role
@@ -123,18 +139,21 @@ const LicenseModal = ({ isVisible, onClose, license }) => {
                     }
                   </td>
                   <td className="py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.licenseLimit === 1 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {item.licenseLimit === 1 ? 'Active' : 'Free'}
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.fullName ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {item.fullName ? 'Active' : 'Free'}
                     </span>
                   </td>
                   <td className="py-3 text-right">
-                    <button
-                      disabled={isLoading}
-                      onClick={() => handleDeleteLicense(item, license._id)}
-                      className="text-xs text-red-500 hover:text-red-700 hover:underline"
-                    >
-                      Delete
-                    </button>
+                    {deletingCode === item.licenseCode
+                      ? <span className="inline-block w-3 h-3 border-2 border-red-300 border-t-red-500 rounded-full animate-spin" />
+                      : <button
+                          disabled={deletingCode !== null}
+                          onClick={() => handleDeleteLicense(item, license._id)}
+                          className="text-xs text-red-500 hover:text-red-700 hover:underline disabled:opacity-40"
+                        >
+                          Delete
+                        </button>
+                    }
                   </td>
                 </tr>
               ))}
@@ -175,18 +194,19 @@ const Index = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('Admin');
   const [category, setCategory] = useState('');
-  const [numberOfLicense, setNumberOfLicense] = useState('');
+  const [numberOfTeacherLicenses, setNumberOfTeacherLicenses] = useState('');
+  const [numberOfStudentLicenses, setNumberOfStudentLicenses] = useState('');
   const [licenseStatus, setLicenseStatus] = useState('active');
   const [country, setCountry] = useState('');
-  const [showToast, setShowToast] = useState(false);
-  const [selectedLicense, setSelectedLicense] = useState(null);
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [monthlyRequestLimit, setMonthlyRequestLimit] = useState('');
 
   const [createAccount, { isloading, isError, isSuccess }] = useCreateAccountMutation();
   const [addMoreLicenses, { isLoading: isLoadingAddMoreLicenses, isError: isErrorAddMoreLicenses, isSuccess: isSuccessAddMoreLicenses }] = useAddMoreLicensesMutation();
-  const { data, isLoading } = useGetAllAccountsQuery();
+  const { data, isLoading, isFetching } = useGetAllAccountsQuery();
+  const selectedLicense = data?.find(a => a._id === selectedAccountId) ?? null;
   const [item, setItem] = useState(null);
   const [updateMonthlyRequestLimit, {isLoading: isLoadingUpdateMonthlyRequestLimit, isError: isErrorUpdateMonthlyRequestLimit, isSuccess: isSuccessUpdateMonthlyRequestLimit}] = useUpdateMonthlyRequestLimitMutation()
 
@@ -210,7 +230,8 @@ const Index = () => {
       email,
       role,
       category,
-      numberOfLicense,
+      numberOfTeacherLicenses: Number(numberOfTeacherLicenses),
+      numberOfStudentLicenses: Number(numberOfStudentLicenses),
       licenseStatus,
       country: country?.label,
       countryCode: country?.value
@@ -221,13 +242,10 @@ const Index = () => {
       const response = await createAccount(payload);
 
       if (response.error) {
-        alert(response.error.data.message);
+        toast.error(response.error.data.message);
       } else {
+        toast.success("Organization created successfully");
         document.getElementById('my-drawer-4').checked = false;
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 40000);
       }
     } catch (error) {
       console.error('Error creating account', error);
@@ -244,7 +262,7 @@ const Index = () => {
   };
 
   const handleViewLicense = (license) => {
-    setSelectedLicense(license);
+    setSelectedAccountId(license._id);
     setIsModalVisible(true);
   };
 
@@ -253,10 +271,10 @@ const Index = () => {
   const handleDeleteAccountAndUsers = async(id) => {
     if(confirm("You are about to delete an organization and all the users associated with it, this action cannot be undone")){
       const response = await deleteAccountAndUsers(id)
-      if(response.error){
-        alert(response.error.data.message);
+      if (response.error) {
+        toast.error(response.error.data.message);
       } else {
-        alert("Organization and users deleted successfully");
+        toast.success("Organization and users deleted successfully");
       }
     }
   }
@@ -272,41 +290,42 @@ const Index = () => {
   }
 
   const handleAddMoreLicensesSubmit = async() => {
-    // validate the number of license
-    if(numberOfLicense < 1){
-      alert("Number of licenses cannot be less than 1");
+    const teachers = Number(numberOfTeacherLicenses);
+    const students = Number(numberOfStudentLicenses);
+
+    if (isNaN(teachers) || isNaN(students)) {
+      toast.error("Please enter valid numbers for both teacher and student licenses");
       return;
     }
-    // validate the number of license is a number
-    if(isNaN(numberOfLicense)){
-      alert("Number of licenses must be a number");
+    if (teachers < 0 || students < 0) {
+      toast.error("License counts cannot be negative");
       return;
     }
-   const payload = {
-    id: item._id,
-    numberOfLicense
-  }
-
-  try {
-    const response = await addMoreLicenses(payload)
-    if(response.error){
-      alert(response.error.data.message);
-      // close the modal
-      setNumberOfLicense('');
-      document.getElementById('my_modal_3').close()
-
-    } else {
-      alert("Licenses added successfully");
-      // close the modal
-      setNumberOfLicense('');
-      document.getElementById('my_modal_3').close()
+    if (teachers + students < 1) {
+      toast.error("Total licenses must be at least 1");
+      return;
     }
-  } catch (error) {
-    console.error("Error adding more licenses", error);
+
+    const payload = {
+      id: item._id,
+      numberOfTeacherLicenses: teachers,
+      numberOfStudentLicenses: students,
+    };
+
+    try {
+      const response = await addMoreLicenses(payload);
+      if (response.error) {
+        toast.error(response.error.data.message);
+      } else {
+        toast.success("Licenses added successfully");
+      }
+      setNumberOfTeacherLicenses('');
+      setNumberOfStudentLicenses('');
+      document.getElementById('my_modal_3').close();
+    } catch (error) {
+      console.error("Error adding more licenses", error);
+    }
   }
-
-
-}
 
 const handleUpdateMonthlyRequestLimitSubmit = async() => {
   const payload = {
@@ -316,12 +335,12 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
 
   try {
     const response = await updateMonthlyRequestLimit(payload)
-    if(response.error){
-      alert(response.error.data.message);
+    if (response.error) {
+      toast.error(response.error.data.message);
     } else {
+      toast.success("Monthly request limit updated successfully");
       setMonthlyRequestLimit('');
-      document.getElementById('my_modal_9').close()
-      alert("Monthly request limit updated successfully");
+      document.getElementById('my_modal_9').close();
     }
   } catch (error) {
     console.error("Error updating monthly request limit", error);
@@ -348,15 +367,33 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
     </form>
     <h3 className="font-bold text-lg">Add More Licenses</h3>
     <div className='flex flex-col gap-4'>
-      <div className='flex flex-col gap-2 mt-10'>
-        
-        <input
-        disabled={isLoadingAddMoreLicenses}
-         value={numberOfLicense} onChange={(e) => setNumberOfLicense(e.target.value)} type="text" id="licenseNumber" placeholder='Number of licenses' className='input input-bordered w-full' />
+      <div className='flex flex-col gap-3 mt-6'>
+        <div className='flex flex-col gap-1'>
+          <label className='text-sm font-medium text-gray-700'>Number of Teacher Licenses</label>
+          <input
+            disabled={isLoadingAddMoreLicenses}
+            value={numberOfTeacherLicenses}
+            onChange={(e) => setNumberOfTeacherLicenses(e.target.value)}
+            type="number"
+            className='input input-bordered w-full'
+          />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <label className='text-sm font-medium text-gray-700'>Number of Student Licenses</label>
+          <input
+            disabled={isLoadingAddMoreLicenses}
+            value={numberOfStudentLicenses}
+            onChange={(e) => setNumberOfStudentLicenses(e.target.value)}
+            type="number"
+            className='input input-bordered w-full'
+          />
+        </div>
       </div>
       <button
-       disabled={isLoadingAddMoreLicenses}
-       onClick={handleAddMoreLicensesSubmit} className='btn btn-primary'>
+        disabled={isLoadingAddMoreLicenses}
+        onClick={handleAddMoreLicensesSubmit}
+        className='btn btn-primary'
+      >
         {isLoadingAddMoreLicenses ? <span className="loading loading-spinner loading-md"></span> : "Add Licenses"}
       </button>
     </div>
@@ -553,12 +590,23 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
                 </div>
 
                 <div className='mt-4'>
-                  <div className='text-md font-sm py-2'>Number of License</div>
+                  <div className='text-md font-sm py-2'>Number of Teacher Licenses</div>
                   <input
-                    value={numberOfLicense}
-                    onChange={(e) => setNumberOfLicense(e.target.value)}
+                    value={numberOfTeacherLicenses}
+                    onChange={(e) => setNumberOfTeacherLicenses(e.target.value)}
                     type="number"
-                    placeholder="Number of license"
+                    placeholder="Number of teacher licenses"
+                    className="input input-bordered w-full min-w-full"
+                  />
+                </div>
+
+                <div className='mt-4'>
+                  <div className='text-md font-sm py-2'>Number of Student Licenses</div>
+                  <input
+                    value={numberOfStudentLicenses}
+                    onChange={(e) => setNumberOfStudentLicenses(e.target.value)}
+                    type="number"
+                    placeholder="Number of student licenses"
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>
@@ -595,7 +643,7 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
         </div>
       </div>
 
-      <LicenseModal isVisible={isModalVisible} onClose={() => setIsModalVisible(false)} license={selectedLicense} />
+      <LicenseModal isVisible={isModalVisible} onClose={() => setIsModalVisible(false)} license={selectedLicense} isFetching={isFetching} />
     </div>
     </>
   );

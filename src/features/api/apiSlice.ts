@@ -131,6 +131,18 @@ export const apiSlice = createApi({
       invalidatesTags: ["AllAccounts"],
     }),
 
+    addOrgAdmin: builder.mutation({
+      query: (payload) => ({
+        url: `/api/account/addOrgAdmin/${payload.id}`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: (result, error, payload) => [
+        "AllAccounts",
+        { type: "Account", id: payload.id },
+      ],
+    }),
+
     updateMonthlyRequestLimit: builder.mutation({
       query: (payload) => ({
         url: `/api/account/updateMonthlyRequestLimit/${payload.id}/${payload.monthlyRequestLimit}`,
@@ -696,6 +708,7 @@ export const {
   useDeleteAccountAndUsersMutation,
   useGetUsersByAccountIdQuery,
   useAddMoreLicensesMutation,
+  useAddOrgAdminMutation,
   useUpdatePasswordMutation,
   useUpdateMonthlyRequestLimitMutation,
   //classRoom

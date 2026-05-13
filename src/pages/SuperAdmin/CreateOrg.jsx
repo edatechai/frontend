@@ -196,6 +196,7 @@ const Index = () => {
   const [category, setCategory] = useState('');
   const [numberOfTeacherLicenses, setNumberOfTeacherLicenses] = useState('');
   const [numberOfStudentLicenses, setNumberOfStudentLicenses] = useState('');
+  const [numberOfOrgAdminLicenses, setNumberOfOrgAdminLicenses] = useState('');
   const [licenseStatus, setLicenseStatus] = useState('active');
   const [country, setCountry] = useState('');
   const [selectedAccountId, setSelectedAccountId] = useState(null);
@@ -232,6 +233,7 @@ const Index = () => {
       category,
       numberOfTeacherLicenses: Number(numberOfTeacherLicenses),
       numberOfStudentLicenses: Number(numberOfStudentLicenses),
+      numberOfOrgAdminLicenses: Number(numberOfOrgAdminLicenses),
       licenseStatus,
       country: country?.label,
       countryCode: country?.value
@@ -292,16 +294,17 @@ const Index = () => {
   const handleAddMoreLicensesSubmit = async() => {
     const teachers = Number(numberOfTeacherLicenses);
     const students = Number(numberOfStudentLicenses);
+    const orgAdmins = Number(numberOfOrgAdminLicenses) || 0;
 
-    if (isNaN(teachers) || isNaN(students)) {
-      toast.error("Please enter valid numbers for both teacher and student licenses");
+    if (isNaN(teachers) || isNaN(students) || isNaN(orgAdmins)) {
+      toast.error("Please enter valid numbers for licenses");
       return;
     }
-    if (teachers < 0 || students < 0) {
+    if (teachers < 0 || students < 0 || orgAdmins < 0) {
       toast.error("License counts cannot be negative");
       return;
     }
-    if (teachers + students < 1) {
+    if (teachers + students + orgAdmins < 1) {
       toast.error("Total licenses must be at least 1");
       return;
     }
@@ -310,6 +313,7 @@ const Index = () => {
       id: item._id,
       numberOfTeacherLicenses: teachers,
       numberOfStudentLicenses: students,
+      numberOfOrgAdminLicenses: orgAdmins,
     };
 
     try {
@@ -321,6 +325,7 @@ const Index = () => {
       }
       setNumberOfTeacherLicenses('');
       setNumberOfStudentLicenses('');
+      setNumberOfOrgAdminLicenses('');
       document.getElementById('my_modal_3').close();
     } catch (error) {
       console.error("Error adding more licenses", error);
@@ -384,6 +389,16 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
             disabled={isLoadingAddMoreLicenses}
             value={numberOfStudentLicenses}
             onChange={(e) => setNumberOfStudentLicenses(e.target.value)}
+            type="number"
+            className='input input-bordered w-full'
+          />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <label className='text-sm font-medium text-gray-700'>Number of Org-Admin Licenses</label>
+          <input
+            disabled={isLoadingAddMoreLicenses}
+            value={numberOfOrgAdminLicenses}
+            onChange={(e) => setNumberOfOrgAdminLicenses(e.target.value)}
             type="number"
             className='input input-bordered w-full'
           />
@@ -607,6 +622,17 @@ const handleUpdateMonthlyRequestLimitSubmit = async() => {
                     onChange={(e) => setNumberOfStudentLicenses(e.target.value)}
                     type="number"
                     placeholder="Number of student licenses"
+                    className="input input-bordered w-full min-w-full"
+                  />
+                </div>
+
+                <div className='mt-4'>
+                  <div className='text-md font-sm py-2'>Number of Org-Admin Licenses</div>
+                  <input
+                    value={numberOfOrgAdminLicenses}
+                    onChange={(e) => setNumberOfOrgAdminLicenses(e.target.value)}
+                    type="number"
+                    placeholder="Number of org-admin licenses"
                     className="input input-bordered w-full min-w-full"
                   />
                 </div>
